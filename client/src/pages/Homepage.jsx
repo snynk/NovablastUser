@@ -1,169 +1,207 @@
-import React, { useState } from "react";
-import Head from "@/layout/head/Head";
-import Content from "@/layout/content/Content";
-import SentSMS from "@/components/partials/default/sentSMS/SentSMS";
-import DeliveredSMS from "@/components/partials/default/deliveredSMS/DeliveredSMS";
-import FailedSMS from "@/components/partials/default/failedSMS/FailedSMS";
-import QueuedSMS from "@/components/partials/default/queuedSMS/QueuedSMS";
-import SalesOverview from "@/components/partials/default/sales-overview/SalesOverview";
-import { Row, Col } from "reactstrap";
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import {
-  Block,
-  BlockDes,
-  BlockHead,
-  BlockHeadContent,
-  BlockTitle,
-  BlockBetween,
-} from "@/components/Component";
-
-// Import the CSS file
+// Dashboard.jsx
+import React from 'react';
+import { MessageSquare, Clock, Bell, HelpCircle, Info } from 'lucide-react';
 import "@/assets/css/style.css";
 
-// Create a custom card component with balloon animation
-const BalloonCard = ({ children }) => {
+const Dashboard = () => {
   return (
-    <div className="card-balloon">
-      <div className="balloon-container">
-        {/* Top balloons */}
-        <div className="balloon balloon-top balloon-1"></div>
-        <div className="balloon balloon-top balloon-2"></div>
-        
-        {/* Center balloons */}
-        <div className="balloon balloon-center balloon-3"></div>
-        
-        {/* Bottom balloons */}
-        <div className="balloon balloon-bottom balloon-4"></div>
-        <div className="balloon balloon-bottom balloon-5"></div>
-      </div>
-      <div className="card-inner">{children}</div>
-    </div>
-  );
-};
+    <div className="dashboard-page">
+      {/* Main Title */}
+        <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 20px 0'}}>Dashboard</h1>
+    
+      <div className="dashboard-container">
+        {/* Status Card */}
+        <div className="dashboard-card">
+          <div className="card-header">
+            <h2 className="card-title">What's on your plate</h2>
+            <div className="card-actions">
+              <Info size={18} className="info-icon" />
+            </div>
+          </div>
+          
+          <div className="status-list">
+            <div className="status-item unread">
+              <div className="status-icon">
+                <MessageSquare size={20} className="icon" />
+              </div>
+              <div className="status-content">
+                <h3>Unread</h3>
+                <p>Respond now →</p>
+              </div>
+              <div className="status-count">865</div>
+            </div>
+            
+            <div className="status-item unanswered">
+              <div className="status-icon">
+                <Clock size={20} className="icon" />
+              </div>
+              <div className="status-content">
+                <h3>Unanswered</h3>
+                <p>Reply now →</p>
+              </div>
+              <div className="status-count">946</div>
+            </div>
+            
+            <div className="status-item reminder">
+              <div className="status-icon">
+                <Bell size={20} className="icon" />
+              </div>
+              <div className="status-content">
+                <h3>Reminder</h3>
+                <p>View now →</p>
+              </div>
+              <div className="status-count">0</div>
+            </div>
+            
+            <div className="status-item no-status">
+              <div className="status-icon">
+                <HelpCircle size={20} className="icon" />
+              </div>
+              <div className="status-content">
+                <h3>No status</h3>
+                <p>View Inbox →</p>
+              </div>
+              <div className="status-count">952</div>
+            </div>
+          </div>
+        </div>
 
-const Homepage = () => {
-  const [sm, updateSm] = useState(false);
-
-  return (
-    <>
-      <Head title="Homepage"></Head>
-      <Content>
-        <BlockHead size="sm">
-          <BlockBetween>
-            <BlockHeadContent>
-              <BlockTitle page tag="h3">
-                Dashboard
-              </BlockTitle>
-              <BlockDes className="text-soft">
-                {/* <p>Welcome to Dashboard Template</p> */}
-              </BlockDes>
-            </BlockHeadContent>
-          </BlockBetween>
-        </BlockHead>
-        
-        <Block>
-            <Row className="g-3"> {/* Spacing between cards */}
-              {/* First Row with 4 Cards */}
-            {/* First Row with 4 Cards */}
-        <Col xs="12" sm="6" md="4" lg="3" xxl="3">
-          <BalloonCard>
-            <SentSMS />
-          </BalloonCard>
-        </Col>
-        <Col xs="12" sm="6" md="4" lg="3" xxl="3">
-          <BalloonCard>
-            <DeliveredSMS />
-          </BalloonCard>
-        </Col>
-        <Col xs="12" sm="6" md="4" lg="3" xxl="3">
-          <BalloonCard>
-            <FailedSMS />
-          </BalloonCard>
-        </Col>
-        <Col xs="12" sm="6" md="4" lg="3" xxl="3">
-          <BalloonCard>
-            <QueuedSMS />
-          </BalloonCard>
-        </Col>
-
-        {/* Center Report Section */}
-        <Col xs="12">
-          <div className="report-section mb-4">
-            <div className="card">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h5 className="mb-0">Report</h5>
-                  <div className="report-actions">
-                    <i className="bi bi-chevron-left"></i>
-                  </div>
+        {/* Prospect Leads */}
+        <div className="dashboard-card">
+          <div className="card-header">
+            <h2 className="card-title">Prospect Leads</h2>
+            <div className="card-actions">
+              <Info size={18} className="info-icon" />
+              <button className="dropdown-button">
+                Today
+                <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="prospect-grid">
+            <div className="metric-card">
+              <div className="progress-container">
+                <div className="progress-circle delivery">
+                  <svg width="100%" height="100%" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e6f7ff" strokeWidth="10" />
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#4dabf7" strokeWidth="10" strokeDasharray="282.7" strokeDashoffset="282.7" />
+                    <circle cx="50" cy="5" r="5" fill="#4dabf7" />
+                  </svg>
+                  <div className="progress-value">0.00</div>
                 </div>
-                <Row>
-          <Col md="3">
-            <div className="report-item">
-              <div className="report-title">Published Campaign</div>
-              <div className="report-value">
-                <span>10</span><span className="text-muted ms-2">%</span>
-              </div>
-              <div className="progress-wrapper">
-                <span className="type-ring danger"></span>
-                <div className="progress-indicator danger"></div>
               </div>
             </div>
-          </Col>
+            
+            <div className="stats-list">
+              <div className="stat-item">
+                <span className="stat-name">Initial Msg</span>
+                <span className="stat-value">0%</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name">Inbox</span>
+                <span className="stat-value">0%</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name">Drips</span>
+                <span className="stat-value">0%</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name">Follow Up</span>
+                <span className="stat-value">0%</span>
+              </div>
+            </div>
 
-          <Col md="3">
-            <div className="report-item">
-              <div className="report-title">Completed Campaign</div>
-              <div className="report-value">
-                <span>15</span><span className="text-muted ms-2">%</span>
-              </div>
-              <div className="progress-wrapper">
-                <span className="type-ring primary"></span>
-                <div className="progress-indicator primary"></div> {/* CHANGED from danger to primary */}
-              </div>
-            </div>
-          </Col>
-
-          <Col md="3">
-            <div className="report-item">
-              <div className="report-title">Successful Sent</div>
-              <div className="report-value">
-                <span>100</span><span className="text-muted ms-2">%</span>
-              </div>
-              <div className="progress-wrapper">
-                <span className="type-ring success"></span>
-                <div className="progress-indicator success"></div> {/* CHANGED from danger to success */}
+            <div className="metric-card">
+              <div className="progress-container">
+                <div className="progress-circle response">
+                  <svg width="100%" height="100%" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e6f7ff" strokeWidth="10" />
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#74c0fc" strokeWidth="10" strokeDasharray="282.7" strokeDashoffset="282.7" />
+                    <circle cx="50" cy="5" r="5" fill="#74c0fc" />
+                  </svg>
+                  <div className="progress-value">0.00</div>
+                </div>
               </div>
             </div>
-          </Col>
-
-          <Col md="3">
-            <div className="report-item">
-              <div className="report-title">Failed SMS</div>
-              <div className="report-value">
-                <span>10</span><span className="text-muted ms-2">%</span>
+            
+            <div className="stats-list">
+              <div className="stat-item">
+                <span className="stat-name">Initial Msg</span>
+                <span className="stat-value">0.00%</span>
               </div>
-              <div className="progress-wrapper">
-                <span className="type-ring danger"></span>
-                <div className="progress-indicator danger"></div>
+              <div className="stat-item">
+                <span className="stat-name">Inbox</span>
+                <span className="stat-value">0%</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name">Drips</span>
+                <span className="stat-value">0%</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-name">Follow Up</span>
+                <span className="stat-value">0.00%</span>
               </div>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
+        
+        {/* Lead Breakdown */}
+        <div className="dashboard-card">
+          <div className="card-header">
+            <h2 className="card-title">Lead Breakdown</h2>
+            <div className="card-actions">
+              <Info size={18} className="info-icon" />
+              <button className="dropdown-button">
+                Today
+                <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="lead-breakdown">
+            <div className="lead-chart">
+              <svg width="100%" height="100%" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#e9ecef" strokeWidth="10" />
+                <path d="M50,5 A45,45 0 0,1 95,50" fill="none" stroke="#dc3545" strokeWidth="10" />
+              </svg>
+              <div className="lead-chart-center">
+                <span className="lead-chart-label">Total</span>
+                <span className="lead-chart-total">201</span>
+              </div>
+            </div>
+            
+            <div className="lead-legend">
+              <div className="legend-item">
+                <div className="legend-color hot"></div>
+                <span className="legend-text">Hot 20</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color warm"></div>
+                <span className="legend-text">Warm 0</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color nurture"></div>
+                <span className="legend-text">Nurture 0</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color drip"></div>
+                <span className="legend-text">Drip 0</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color no-status-legend"></div>
+                <span className="legend-text">No Status 181</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</Col>
-
-{/* Chart Section */}
-          <Col xs="12">
-            <SalesOverview />
-          </Col>
-          </Row>
-        </Block>
-      </Content>
-    </>
   );
 };
 
-export default Homepage;
+export default Dashboard;

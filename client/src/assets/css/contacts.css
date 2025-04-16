@@ -337,6 +337,7 @@
     transition: all var(--animation-duration);
     font-weight: 500;
     box-shadow: 0 4px 10px rgba(95, 90, 246, 0.3);
+    margin: 10px;
   }
   
   .btn-download:hover {

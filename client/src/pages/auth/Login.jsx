@@ -64,9 +64,7 @@ const AdminLogin = () => {
                   </div>
                 </Col>
                 <Col md={6} className="p-4">
-                  <div className="text-center mb-3">
-                    <img src="/images/Gemini_Generated_Image_xdat3dxdat3dxdat.jpeg" alt="Logo" style={logoStyle} />
-                  </div>
+
                   {error && <Alert color="danger" className="mb-3">{error}</Alert>}
                   <Form onSubmit={handleSubmit}>
                     <FormGroup className="mb-3">

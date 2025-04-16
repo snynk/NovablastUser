@@ -8,7 +8,6 @@ import WelcomeHand from "./dropdown/WelcomeHand/WelcomeHand"; // ✅ corrected n
 import Notification from "./dropdown/notification/Notification";
 
 import { useTheme, useThemeUpdate } from "../provider/Theme";
-import Dialer from "./dropdown/call/Dailer";
 
 const Header = ({ fixed, className, ...props }) => {
   const theme = useTheme();
@@ -49,9 +48,9 @@ const Header = ({ fixed, className, ...props }) => {
                 <li className="notification-dropdown me-n1">
                   <Notification />
                 </li>
-                <li className="dialer-dropdown">
+                {/* <li className="dialer-dropdown">
                   <Dialer />
-                </li>
+                </li> */}
                 <li className="user-dropdown">
                   <User />
               </li>
