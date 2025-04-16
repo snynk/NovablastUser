@@ -43,9 +43,9 @@ const Sidebar = ({ fixed, className, menuData, ...props }) => {
               icon="menu"
             />
           </div>
-          <div className="nk-sidebar-brand">
+          {/* <div className="nk-sidebar-brand">
             <Logo />
-          </div>
+          </div> */}
         </div>
         <div className="nk-sidebar-content" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <SimpleBar className="nk-sidebar-menu">

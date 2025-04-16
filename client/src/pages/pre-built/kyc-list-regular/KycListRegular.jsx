@@ -55,24 +55,26 @@ const ImportContacts = () => {
 
   return (
     <>
-      <BlockHead size="lg">
-        <BlockBetween>
-          <BlockHeadContent>
-            <BlockTitle tag="h2" className="fw-normal">Import Contacts</BlockTitle>
-            <p className="text-soft">Import bulk contacts into database</p>
-          </BlockHeadContent>
-          <BlockHeadContent>
-            <div className="toggle-wrap nk-block-tools-toggle">
-              <Button color="primary" className="btn-icon btn-download">
-                <span className="icon-wrap">
-                  <em className="icon ni ni-download-cloud"></em>
-                </span>
-                <span>DOWNLOAD CSV FILE</span>
-              </Button>
-            </div>
-          </BlockHeadContent>
-        </BlockBetween>
-      </BlockHead>
+     <div style={{ marginTop: "100px" }}>
+  <BlockHead size="lg">
+    <BlockBetween>
+      <BlockHeadContent>
+        <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: ' 0 20px 10px'}}>Import Contacts</h1>
+      </BlockHeadContent>
+      <BlockHeadContent>
+        <div className="toggle-wrap nk-block-tools-toggle">
+          <Button color="primary" className="btn-icon btn-download">
+            <span className="icon-wrap">
+              <em className="icon ni ni-download-cloud"></em>
+            </span>
+            <span>DOWNLOAD CSV FILE</span>
+          </Button>
+        </div>
+      </BlockHeadContent>
+    </BlockBetween>
+  </BlockHead>
+</div>
+
 
       <Block>
         <div className="card">

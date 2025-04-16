@@ -1,144 +1,133 @@
-import React from "react";
-import Content from "@/layout/content/Content";
-import Head from "@/layout/head/Head";
-import { Badge, Button } from "reactstrap";
-import {
-  BlockBetween,
-  BlockDes,
-  Block,
-  BlockContent,
-  BlockHead,
-  BlockTitle,
-  Col,
-  Row,
-} from "@/components/Component";
-import { Card } from "reactstrap";
-import { pricingTableDataV1, pricingTableDataV2 } from "./PricingTableData";
+  import React, { useState } from 'react';
+  import { Search, ChevronDown, MoreVertical, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+  import "@/assets/css/campaings.css";
 
-const PricingTable = () => {
-  return (
-    <>
-      <Head title="Pricing Table"></Head>
-      <Content>
-        <BlockHead size="sm">
-          <BlockBetween className="g-3">
-            <BlockContent>
-              <BlockTitle>Pricing Table</BlockTitle>
-              <BlockDes className="text-soft">
-                <p>Choose your pricing plan and start enjoying our service.</p>
-              </BlockDes>
-            </BlockContent>
-          </BlockBetween>
-        </BlockHead>
+  const CampaignManagement = () => {
+    const [campaigns] = useState([
+      {
+        id: 1,
+        name: 'Statewide abstee non LLC owners',
+        market: 'Houston - TX',
+        sent: 2142,
+        remaining: 1718,
+        hot: 29,
+        drip: 0,
+        deliverability: '95.80%',
+        response: '24.22%',
+        created: '4/12/2025'
+      },
+      {
+        id: 2,
+        name: '1,000 leads sms blast OC + ...',
+        market: 'North Carolina',
+        sent: 4142,
+        remaining: 3047,
+        hot: 59,
+        drip: 0,
+        deliverability: '95.51%',
+        response: '15.70%',
+        created: '4/9/2025'
+      }
+    ]);
 
-        <Block>
-          <Row className="g-gs">
-            {pricingTableDataV1.map((item) => {
-              return (
-                <Col md={6} xxl={3} key={item.id}>
-                  <Card className={`card-bordered pricing ${item.tags ? "recommend" : ""}`}>
-                    {item.tags && (
-                      <Badge color="primary" className="pricing-badge">
-                        Recommend
-                      </Badge>
-                    )}
-                    <div className="pricing-head">
-                      <div className="pricing-title">
-                        <h4 className="card-title title">{item.title}</h4>
-                        <p className="sub-text">{item.caption}</p>
-                      </div>
-                      <div className="card-text">
-                        <Row>
-                          <Col size={6}>
-                            <span className="h4 fw-500">{item.interest}%</span>
-                            <span className="sub-text">Daily Interest</span>
-                          </Col>
-                          <Col size={6}>
-                            <span className="h4 fw-500">{item.return}</span>
-                            <span className="sub-text">Term Days</span>
-                          </Col>
-                        </Row>
-                      </div>
-                    </div>
-                    <div className="pricing-body">
-                      <ul className="pricing-features">
-                        <li>
-                          <span className="w-50">Min Deposit</span> -{" "}
-                          <span className="ms-auto">${item.minDeposit}</span>
-                        </li>
-                        <li>
-                          <span className="w-50">Max Deposit</span> -{" "}
-                          <span className="ms-auto">${item.maxDeposit}</span>
-                        </li>
-                        <li>
-                          <span className="w-50">Deposit Return</span> - <span className="ms-auto">{item.return}</span>
-                        </li>
-                        <li>
-                          <span className="w-50">Total Return</span> -{" "}
-                          <span className="ms-auto">{item.totalReturn}%</span>
-                        </li>
-                      </ul>
-                      <div className="pricing-action">
-                        <Button color="light" outline>
-                          Choose this plan
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        </Block>
+    const [entriesPerPage, setEntriesPerPage] = useState(25);
 
-        <Block size="lg">
-          <BlockHead>
-            <BlockBetween className="g-3">
-              <BlockContent>
-                <BlockTitle>Pricing Table V2</BlockTitle>
-                <BlockDes className="text-soft">
-                  <p>Choose your pricing plan and start enjoying our service.</p>
-                </BlockDes>
-              </BlockContent>
-            </BlockBetween>
-          </BlockHead>
-          <Row className="g-gs">
-            {pricingTableDataV2.map((item) => {
-              return (
-                <Col md={6} xxl={3} key={item.id}>
-                  <Card className={`card-bordered pricing text-center ${item.tags ? "recommend" : ""}`}>
-                    {item.tags && (
-                      <Badge color="primary" className="pricing-badge">
-                        Recommend
-                      </Badge>
-                    )}
-                    <div className="pricing-body">
-                      <div className="pricing-media">
-                        <img src={item.logo} alt="" />
-                      </div>
-                      <div className="pricing-title w-220px mx-auto">
-                        <h5 className="title">{item.title}</h5>
-                        <span className="sub-text">{item.desc}</span>
-                      </div>
-                      <div className="pricing-amount">
-                        <div className="amount">
-                          ${item.amount} <span>/yr</span>
-                        </div>
-                        <span className="bill">{item.userNumber} User, Billed Yearly</span>
-                      </div>
-                      <div className="pricing-action">
-                        <Button color="primary">Select Plan</Button>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        </Block>
-      </Content>
-    </>
-  );
-};
+    return (
+      <div className="campaign-container">
+      <h1 className="dashboard-title">Campaigns</h1>
+        <header className="header">
+          <div className="header-buttons">
+            <button className="create-button">Create New Campaign</button>
+            <button className="create-button">Create New Follow Up Campaign</button>
+          </div>
+        </header>
 
-export default PricingTable;
+        <div className="search-filter">
+          <div className="search-wrapper">
+            <Search className="search-icon" size={20} />
+            <input type="text" placeholder="Search for a Campaign" className="search-input" />
+          </div>
+          <button className="filter-button">
+            Show only Follow Ups
+          </button>
+        </div>
+
+        <div className="table-container">
+          <table className="campaigns-table">
+            <thead>
+              <tr>
+                <th className="campaign-name">Campaign Name</th>
+                <th>Market</th>
+                <th>Sent</th>
+                <th>Remaining</th>
+                <th>
+                  Hot
+                  {/* <span className="info-icon">i</span> */}
+                </th>
+                <th>
+                  Drip
+                  {/* <span className="info-icon">i</span> */}
+                </th>
+                <th>
+                  Deliverability
+                  {/* <span className="info-icon">i</span> */}
+                </th>
+                <th>
+                  Response
+                  {/* <span className="info-icon">i</span> */}
+                </th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campaigns.map((campaign) => (
+                <tr key={campaign.id}>
+                  <td className="campaign-name">{campaign.name}</td>
+                  <td>{campaign.market}</td>
+                  <td>
+                    <span className="dot green"></span> {campaign.sent}
+                  </td>
+                  <td>{campaign.remaining}</td>
+                  <td>{campaign.hot}</td>
+                  <td>
+                    <span className="dot green"></span> {campaign.drip}
+                  </td>
+                  <td>
+                    <span className="dot green"></span> {campaign.deliverability}
+                  </td>
+                  <td>{campaign.response}</td>
+                  <td className={campaign.id === 2 ? 'date' : ''}>{campaign.created}</td>
+                  <td>
+                    <button className="action-button">
+                      <MoreVertical size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="pagination-container">
+          <div className="total-entries">Total: 2</div>
+          <div className="pagination-controls">
+            <button className="pagination-button"><ChevronsLeft size={16} /></button>
+            <button className="pagination-button"><ChevronLeft size={16} /></button>
+            <button className="pagination-button active">1</button>
+            <button className="pagination-button"><ChevronRight size={16} /></button>
+            <button className="pagination-button"><ChevronsRight size={16} /></button>
+          </div>
+          <div className="entries-selector">
+            <span>Entries</span>
+            <div className="dropdown">
+              <span>{entriesPerPage}</span>
+              <ChevronDown size={16} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  export default CampaignManagement;

@@ -5,6 +5,7 @@ import { Icon } from "@/components/Component";
 import { LinkList, LinkItem } from "@/components/links/Links";
 import { useTheme, useThemeUpdate } from "@/layout/provider/Theme";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 const User = () => {
   const theme = useTheme();
@@ -42,14 +43,15 @@ const User = () => {
         className="dropdown-toggle"
         onClick={(ev) => ev.preventDefault()}
       >
-        <div className="user-toggle">
+          <div className="user-toggle flex items-center gap-1">
           <UserAvatar icon="user-alt" className="sm" />
-          <div className="user-info d-none d-md-block">
-            <div className="user-status">Administrator</div>
+          <ChevronDown style={{ width: '24px', height: '24px', color: '#4B5563' }} />
+          {/* <div className="user-info d-none d-md-block">
+            <div className="user-status">Welcome<span className="wave" role="img" aria-label="wave">👋</span> </div>
             <div className="user-name dropdown-indicator" style={{ marginRight: "3.25rem" }}>
               {user?.name || "User"}
             </div>
-          </div>
+          </div> */}
         </div>
       </DropdownToggle>
       <DropdownMenu end className="dropdown-menu-md dropdown-menu-s1">
@@ -75,7 +77,7 @@ const User = () => {
             <LinkItem link="/user-profile-activity" icon="activity-alt" onClick={toggle}>
               Login Activity
             </LinkItem>
-            <li>
+            {/* <li>
               <a
                 className={`dark-switch ${theme.skin === 'dark' ? 'active' : ''}`}
                 href="#"
@@ -96,7 +98,7 @@ const User = () => {
                   </>
                 )}
               </a>
-            </li>
+            </li> */}
           </LinkList>
         </div>
         <div className="dropdown-inner">
