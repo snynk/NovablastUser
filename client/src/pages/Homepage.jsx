@@ -71,8 +71,8 @@ const Dashboard = () => {
           <div className="card-header">
             <h2 className="card-title">Prospect Leads</h2>
             <div className="card-actions">
-              <Info size={18} className="info-icon" />
-              <button className="dropdown-button">
+            {/* <Info size={18} className="info-icon" /> */}
+            <button className="dropdown-button">
                 Today
                 <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -153,7 +153,7 @@ const Dashboard = () => {
           <div className="card-header">
             <h2 className="card-title">Lead Breakdown</h2>
             <div className="card-actions">
-              <Info size={18} className="info-icon" />
+              {/* <Info size={18} className="info-icon" /> */}
               <button className="dropdown-button">
                 Today
                 <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -4,7 +4,7 @@ import { ProductContextProvider } from "@/pages/pre-built/products/ProductContex
 import { UserContextProvider } from "@/pages/pre-built/user-manage/UserContext";
 
 import Homepage from "@/pages/Homepage";
-import BuyNumber from "@/pages/BuyNumber";
+import Template from "@/pages/Template";
 import Analytics from "@/pages/Analytics";
 import BulkMessage from "@/pages/BulkMessage";
 import MessageTemplates from "@/pages/Message-Templates";
@@ -83,7 +83,7 @@ import InvoiceList from "@/pages/pre-built/invoice/InvoiceList";
 import InvoiceDetails from "@/pages/pre-built/invoice/InvoiceDetails";
 import InvoicePrint from "@/pages/pre-built/invoice/InvoicePrint";
 import Campaigns from "@/pages/pre-built/Campaigns-table/Campaigns";
-import GalleryPreview from "@/pages/pre-built/gallery/GalleryCardPreview";
+import Batches from "@/pages/pre-built/gallery/Batches";
 import ReactToastify from "@/pages/components/misc/ReactToastify";
 
 import AppMessages from "@/pages/app/messages/Messages";
@@ -148,8 +148,12 @@ const Router = () => {
           <Route element={<ThemeProvider />}>
             <Route element={<Layout />}>
               <Route index element={<PrivateRoute><Homepage /></PrivateRoute>}></Route>
+
               <Route path="buynumber" element={<PrivateRoute><BuyNumber /></PrivateRoute>}></Route>
-              <Route path="analytics" element={<Analytics />}></Route>
+
+              <Route path="Template" element={<PrivateRoute><Template /></PrivateRoute>}></Route>
+
+              <Route path="analytics" element={<PrivateRoute><Analytics /></PrivateRoute>}></Route>
               <Route path="bulk-message" element={<PrivateRoute><BulkMessage /></PrivateRoute>}></Route>
               <Route path="message-templates" element={<PrivateRoute><MessageTemplates /></PrivateRoute>}></Route>
               <Route path="_blank" element={<Blank />}></Route>
@@ -185,7 +189,8 @@ const Router = () => {
               <Route path="invoice-list" element={<InvoiceList />}></Route>
               <Route path="invoice-details/:invoiceId" element={<InvoiceDetails />}></Route>
               <Route path="campaigns-table" element={<Campaigns />}></Route>
-              <Route path="image-gallery" element={<GalleryPreview />}></Route>
+              <Route path="Batches" element={<Batches />}></Route>
+
 
               <Route path="pages">
                 <Route path="terms-policy" element={<Terms />}></Route>

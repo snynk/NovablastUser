@@ -1,0 +1,441 @@
+/* BatchesDataTable.css */
+.batches-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .batches-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .batches-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    color: #0f172a;
+  }
+  
+  .create-batch-btn {
+    background-color: rgba(8, 28, 40, 0.834);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 192, 127, 0.2);
+  }
+  
+  .create-batch-btn:hover {
+    background-color:  rgba(15, 25, 31, 0.91);
+    box-shadow: 0 4px 8px rgba(0, 192, 127, 0.3);
+  }
+  
+  .batches-content {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  
+  .tab-header {
+    background-color: #f8fafc;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .tab-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #0f172a;
+  }
+  
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 300px;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  
+  .search-box input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+  }
+  
+  .filter-options {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .filter-btn:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+  
+  .view-select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .batches-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .batches-table th,
+  .batches-table td {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .batches-table th {
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+  }
+  
+  .th-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+  
+  .sort-indicator {
+    display: flex;
+    flex-direction: column;
+    font-size: 8px;
+    color: #cbd5e1;
+    margin-left: 4px;
+  }
+  
+  .sort-indicator .up-arrow,
+  .sort-indicator .down-arrow {
+    line-height: 6px;
+  }
+  
+  .sort-indicator.active-asc .up-arrow {
+    color: #3b82f6;
+  }
+  
+  .sort-indicator.active-desc .down-arrow {
+    color: #3b82f6;
+  }
+  
+  .info-icon {
+    color: #94a3b8;
+  }
+  
+  .batches-table tbody tr.data-row {
+    transition: all 0.2s;
+  }
+  
+  .batches-table tbody tr.data-row:hover {
+    background-color: #f8fafc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .batch-number {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .batch-date {
+    font-size: 12px;
+    color: #64748b;
+  }
+  
+  .campaign-cell {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background-color: #3b82f6;
+    border-radius: 3px;
+  }
+  
+  .response-bar .progress-fill {
+    background-color: #22c55e;
+  }
+  
+  .status-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .status-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .status-icon.success {
+    background-color: #22c55e;
+  }
+  
+  .status-icon.warning {
+    background-color: #f59e0b;
+  }
+  
+  .status-icon.error {
+    background-color: #ef4444;
+  }
+  
+  .action-dropdown {
+    position: relative;
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+  }
+  
+  .action-btn:hover {
+    background-color: #f1f5f9;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 150px;
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: none;
+    overflow: hidden;
+  }
+  
+  .action-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  .dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  
+  .dropdown-menu a:hover {
+    background-color: #f8fafc;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: #fff;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .total-records {
+    font-size: 14px;
+    color: #64748b;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .pagination-btn {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    color: #64748b;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .pagination-btn:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+  
+  .pagination-btn.active {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+  }
+  
+  .entries-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748b;
+  }
+  
+  .entries-selector select {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1200px) {
+    .table-container {
+      overflow-x: auto;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .batches-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .create-batch-btn {
+      width: 100%;
+    }
+    
+    .table-controls {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    
+    .search-box {
+      max-width: 100%;
+      width: 100%;
+    }
+    
+    .filter-options {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .pagination {
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .pagination-controls {
+      order: 2;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .total-records {
+      order: 1;
+    }
+    
+    .entries-selector {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+    }
+  }

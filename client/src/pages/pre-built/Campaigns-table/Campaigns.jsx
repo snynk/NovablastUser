@@ -73,7 +73,7 @@ const CampaignManagement = () => {
 
       <div className="search-filter">
         <div className="search-wrapper">
-          <Search className="search-icon" size={20} />
+          {/* <Search className="search-icon" size={20} /> */}
           <input type="text" placeholder="Search for a Campaign" className="search-input" />
         </div>
         <button className="filter-button">
