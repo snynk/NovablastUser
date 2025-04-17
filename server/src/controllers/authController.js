@@ -1,16 +1,19 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+// Load environment variables
+dotenv.config();
 
 // Login controller
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, passcode } = req.body;
 
     // Validate request
-    if (!email || !password) {
+    if (!email || !passcode) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: 'Please provide email and passcode'
       });
     }
 
@@ -25,8 +28,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check if password matches
-    const isMatch = await user.comparePassword(password);
+    // Check if passcode matches
+    const isMatch = await user.comparePassword(passcode);
     
     if (!isMatch) {
       return res.status(401).json({
@@ -36,7 +39,7 @@ exports.login = async (req, res) => {
     }
 
     // Check if user is active
-    if (user.status !== 'active') {
+    if (user.status !== 'Active') {
       return res.status(401).json({
         success: false,
         message: 'Your account is inactive. Please contact administrator.'
@@ -63,9 +66,9 @@ exports.login = async (req, res) => {
         name: user.name,
         email: user.email,
         status: user.status,
-        profile_image: user.profile_image,
-        assign_number: user.assign_number,
-        upload_permission: user.upload_permission
+        // profile_image: user.profile_image,
+        // assign_number: user.assign_number,
+        // upload_permission: user.upload_permission
       },
       token
     });
