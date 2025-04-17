@@ -165,7 +165,7 @@ const ImportContacts = () => {
                                 <option value="name">Name</option>
                                 <option value="full_name">Full Name</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
@@ -180,7 +180,7 @@ const ImportContacts = () => {
                                 <option value="phone">Phone</option>
                                 <option value="mobile">Mobile</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
@@ -198,7 +198,7 @@ const ImportContacts = () => {
                                 <option value="city">City</option>
                                 <option value="town">Town</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
@@ -213,7 +213,7 @@ const ImportContacts = () => {
                                 <option value="address">Address</option>
                                 <option value="street_address">Street Address</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
@@ -231,7 +231,7 @@ const ImportContacts = () => {
                                 <option value="zipcode">Zip Code</option>
                                 <option value="postal_code">Postal Code</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
@@ -246,7 +246,7 @@ const ImportContacts = () => {
                                 <option value="state">State</option>
                                 <option value="province">Province</option>
                               </select>
-                              <div className="dropdown-indicator"></div>
+                              {/* <div className="dropdown-indicator"></div> */}
                             </div>
                           </div>
                         </div>
