@@ -66,7 +66,7 @@ const menu = [
   {
     icon: "view-col",
     text: "Campaigns",
-    link: "/pricing-table",
+    link: "/campaigns-table",
   },
  
     {

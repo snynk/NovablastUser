@@ -72,7 +72,7 @@ import UserProfileRegular from "@/pages/pre-built/user-manage/UserProfileRegular
 import UserProfileSetting from "@/pages/pre-built/user-manage/UserProfileSetting";
 import UserProfileNotification from "@/pages/pre-built/user-manage/UserProfileNotification";
 import UserProfileActivity from "@/pages/pre-built/user-manage/UserProfileActivity";
-import KycListRegular from "@/pages/pre-built/kyc-list-regular/KycListRegular";
+import ImportDirect from "@/pages/pre-built/kyc-list-regular/ImportDirect";
 import KycDetailsRegular from "@/pages/pre-built/kyc-list-regular/kycDetailsRegular";
 import TransListBasic from "@/pages/pre-built/trans-list/TransListBasic";
 import TransListCrypto from "@/pages/pre-built/trans-list/TransListCrypto";
@@ -82,7 +82,7 @@ import ProductDetails from "@/pages/pre-built/products/ProductDetails";
 import InvoiceList from "@/pages/pre-built/invoice/InvoiceList";
 import InvoiceDetails from "@/pages/pre-built/invoice/InvoiceDetails";
 import InvoicePrint from "@/pages/pre-built/invoice/InvoicePrint";
-import PricingTable from "@/pages/pre-built/pricing-table/PricingTable";
+import Campaigns from "@/pages/pre-built/Campaigns-table/Campaigns";
 import GalleryPreview from "@/pages/pre-built/gallery/GalleryCardPreview";
 import ReactToastify from "@/pages/components/misc/ReactToastify";
 
@@ -172,7 +172,7 @@ const Router = () => {
                 <Route path="user-profile-setting" element={<UserProfileSetting />}></Route>
               </Route>
 
-              <Route path="kyc-list-regular" element={<KycListRegular />}></Route>
+              <Route path="kyc-list-regular" element={<ImportDirect />}></Route>
               <Route path="kyc-details-regular/:kycId" element={<KycDetailsRegular />}></Route>
               <Route path="transaction-basic" element={<TransListBasic />}></Route>
               <Route path="transaction-crypto" element={<TransListCrypto />}></Route>
@@ -184,7 +184,7 @@ const Router = () => {
 
               <Route path="invoice-list" element={<InvoiceList />}></Route>
               <Route path="invoice-details/:invoiceId" element={<InvoiceDetails />}></Route>
-              <Route path="pricing-table" element={<PricingTable />}></Route>
+              <Route path="campaigns-table" element={<Campaigns />}></Route>
               <Route path="image-gallery" element={<GalleryPreview />}></Route>
 
               <Route path="pages">
