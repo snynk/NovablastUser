@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const AdminLogin = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", passcode: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +21,7 @@ const AdminLogin = () => {
     let loginSuccessful = false;
     let loginError = null;
 
-    const loginPromise = axios.post('http://localhost:3000/api/auth/login', { email: formData.email, password: formData.password });
+    const loginPromise = axios.post('http://localhost:3000/api/auth/login', { email: formData.email, passcode: formData.passcode });
     const delayPromise = new Promise(resolve => setTimeout(resolve, 2000));
 
     try {
@@ -73,10 +73,10 @@ const AdminLogin = () => {
                     </FormGroup>
                     <FormGroup className="mb-3" style={passwordInputWrapperStyle}>
                       <div className="d-flex justify-content-between">
-                        <label className="form-label" htmlFor="password">Password</label>
+                        <label className="form-label" htmlFor="passcode">Password</label>
                         <a href="/forgot-password" className="text-muted small">Forgot password?</a>
                       </div>
-                      <Input type={showPassword ? "text" : "password"} id="password" name="password" className="form-control" placeholder="********" value={formData.password} onChange={handleInputChange} required style={passwordInputStyle} />
+                      <Input type={showPassword ? "text" : "password"} id="passcode" name="passcode" className="form-control" placeholder="********" value={formData.passcode} onChange={handleInputChange} required style={passwordInputStyle} />
                       <span style={eyeIconStyle} onClick={togglePasswordVisibility}>
                         <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                       </span>

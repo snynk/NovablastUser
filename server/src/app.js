@@ -12,7 +12,7 @@ const campaignRoutes = require('./routes/campaignRoutes');
 // Init express
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/textjin';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/suny2';
 
 // Middleware
 app.use(cors());
@@ -34,7 +34,7 @@ app.use('/api/campaigns', campaignRoutes);
 
 // Default route
 app.get('/', (req, res) => {
-  res.send('🚀 Welcome to the TextJin API');
+  res.send('🚀 Welcome to the NovaBlast');
 });
 
 // Start server

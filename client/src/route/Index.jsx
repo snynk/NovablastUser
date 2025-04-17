@@ -148,14 +148,18 @@ const Router = () => {
           <Route element={<ThemeProvider />}>
             <Route element={<Layout />}>
               <Route index element={<PrivateRoute><Homepage /></PrivateRoute>}></Route>
-              <Route path="Template" element={<Template />}></Route>
-              <Route path="analytics" element={<Analytics />}></Route>
-              <Route path="bulk-message" element={<BulkMessage />}></Route>
-              <Route path="message-templates" element={<MessageTemplates />}></Route>
+
+              <Route path="buynumber" element={<PrivateRoute><BuyNumber /></PrivateRoute>}></Route>
+
+              <Route path="Template" element={<PrivateRoute><Template /></PrivateRoute>}></Route>
+
+              <Route path="analytics" element={<PrivateRoute><Analytics /></PrivateRoute>}></Route>
+              <Route path="bulk-message" element={<PrivateRoute><BulkMessage /></PrivateRoute>}></Route>
+              <Route path="message-templates" element={<PrivateRoute><MessageTemplates /></PrivateRoute>}></Route>
               <Route path="_blank" element={<Blank />}></Route>
 
-              <Route path="campaignreport" element={<CampaignReportPage />}></Route>
-              <Route path="single-message" element={<SingleMessage />}></Route>
+              <Route path="campaignreport" element={<PrivateRoute><CampaignReportPage /></PrivateRoute>}></Route>
+              <Route path="single-message" element={<PrivateRoute><SingleMessage /></PrivateRoute>}></Route>
 
               
               <Route element={<UserContextProvider />} >
@@ -172,10 +176,10 @@ const Router = () => {
                 <Route path="user-profile-setting" element={<UserProfileSetting />}></Route>
               </Route>
 
-              <Route path="kyc-list-regular" element={<ImportDirect />}></Route>
-              <Route path="kyc-details-regular/:kycId" element={<KycDetailsRegular />}></Route>
-              <Route path="transaction-basic" element={<TransListBasic />}></Route>
-              <Route path="transaction-crypto" element={<TransListCrypto />}></Route>
+              <Route path="kyc-list-regular" element={<PrivateRoute><ImportDirect /></PrivateRoute>}></Route>
+              <Route path="kyc-details-regular/:kycId" element={<PrivateRoute><KycDetailsRegular /></PrivateRoute>}></Route>
+              <Route path="transaction-basic" element={<PrivateRoute><TransListBasic /></PrivateRoute>}></Route>
+              <Route path="transaction-crypto" element={<PrivateRoute><TransListCrypto /></PrivateRoute>}></Route>
               <Route element={<ProductContextProvider />}>
                 <Route path="product-list" element={<ProductList />}></Route>
                 <Route path="product-card" element={<ProductCard />}></Route>
