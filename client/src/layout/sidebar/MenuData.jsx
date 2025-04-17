@@ -72,19 +72,19 @@ const menu = [
     {
     icon: "bitcoin-cash",
     text: "Templates",
-    link: "/buynumber",
+    link: "/Template",
   },
   
   {
     icon: "img",
     text: "Batches",
-    link: "/image-gallery",
+    link: "/Batches",
   },
 
   {
     icon: "img",
     text: "Drip Automations",
-    link: "/image-gallery",
+    link: "/drip",
   },
 
   {
@@ -94,7 +94,7 @@ const menu = [
   {
     icon: "setting",
     text: "Setting",
-    link: "/image-gallery",
+    link: "/Batches",
   },
   {
     icon: "img",
