@@ -64,6 +64,16 @@ const menu = [
     link: "/kyc-list-regular",
   },
   {
+    icon: "file-docs",
+    text: "Contact List",
+    link: "/Contact-list",
+  },
+  // {
+  //   icon: "file-docs",
+  //   text: "view contacts",
+  //   link: "/View-contacts/:samplename",
+  // },
+  {
     icon: "view-col",
     text: "Campaigns",
     link: "/campaigns-table",

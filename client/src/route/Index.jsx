@@ -74,6 +74,8 @@ import UserProfileSetting from "@/pages/pre-built/user-manage/UserProfileSetting
 import UserProfileNotification from "@/pages/pre-built/user-manage/UserProfileNotification";
 import UserProfileActivity from "@/pages/pre-built/user-manage/UserProfileActivity";
 import ImportDirect from "@/pages/pre-built/kyc-list-regular/ImportDirect";
+import ContactList from "@/pages/pre-built/kyc-list-regular/ContactList";
+import ViewContacts from "@/pages/pre-built/kyc-list-regular/ViewContacts";
 import KycDetailsRegular from "@/pages/pre-built/kyc-list-regular/kycDetailsRegular";
 import TransListBasic from "@/pages/pre-built/trans-list/TransListBasic";
 import TransListCrypto from "@/pages/pre-built/trans-list/TransListCrypto";
@@ -183,6 +185,8 @@ const Router = () => {
               </Route>
 
               <Route path="kyc-list-regular" element={<PrivateRoute><ImportDirect /></PrivateRoute>}></Route>
+              <Route path="Contact-list" element={<PrivateRoute><ContactList /></PrivateRoute>}></Route>
+              <Route path="View-contacts/:sampleName" element={<PrivateRoute><ViewContacts /></PrivateRoute>}></Route>
               <Route path="kyc-details-regular/:kycId" element={<PrivateRoute><KycDetailsRegular /></PrivateRoute>}></Route>
               <Route path="transaction-basic" element={<PrivateRoute><TransListBasic /></PrivateRoute>}></Route>
               <Route path="transaction-crypto" element={<PrivateRoute><TransListCrypto /></PrivateRoute>}></Route>
