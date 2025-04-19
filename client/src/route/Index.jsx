@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Routes,Route, useLocation, BrowserRouter } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter, useLocation  } from "react-router-dom";
+
 import { ProductContextProvider } from "@/pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "@/pages/pre-built/user-manage/UserContext";
 
@@ -136,7 +137,8 @@ const ScrollToTop = (props) => {
   return <>{props.children}</>
 };
 
-const Router = () => {
+// Inside your Router component
+const Router = () => { 
   return (
     
     <BrowserRouter basename="/" future={{
@@ -145,11 +147,15 @@ const Router = () => {
     }}>
       <ScrollToTop>
         <Routes>
+          {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/auth-login" />} />
+
+{/* Other routes */}
           <Route element={<ThemeProvider />}>
             <Route element={<Layout />}>
               <Route index element={<PrivateRoute><Homepage /></PrivateRoute>}></Route>
 
-              <Route path="buynumber" element={<PrivateRoute><BuyNumber /></PrivateRoute>}></Route>
+              {/* <Route path="buynumber" element={<PrivateRoute><BuyNumber /></PrivateRoute>}></Route> */}
 
               <Route path="Template" element={<PrivateRoute><Template /></PrivateRoute>}></Route>
 

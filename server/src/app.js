@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const assignNumberRoutes = require('./routes/assignNumberRoutes');
 const authRoutes = require('./routes/authRoutes');
 const campaignRoutes = require('./routes/campaignRoutes');
+const contactRoutes = require("./routes/contactRoutes");
 
 // Init express
 const app = express();
@@ -31,6 +32,7 @@ mongoose.connect(MONGO_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/assignnumbers', assignNumberRoutes);
 app.use('/api/campaigns', campaignRoutes);
+app.use("/api/contacts", contactRoutes); // Example endpoint: /contacts/import
 
 // Default route
 app.get('/', (req, res) => {

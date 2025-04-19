@@ -1,29 +1,70 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Block, BlockHead, BlockBetween, BlockHeadContent, BlockTitle } from "@/components/Component";
 import "@/assets/css/contacts.css";
+import Papa from "papaparse";
 
 const ImportContacts = () => {
   const [fileSelected, setFileSelected] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [entries, setEntries] = useState([
-    {
-      id: 0,
-      title: "amirsfd",
-      video_link: "https://www.youtube.com/watch?v=i32NHRtzgLin=FLb2CZ4bLzduS8u#QiuFMq-qLhb02&index=17",
-      thumbnail_image: "pingme_facebook-messenger-android-application-package-mobile-app-instant-messaging-phones.png",
-      created_at: "3/31/25",
-      updated_at: "3/31/25"
-    }
-  ]);
+  const [entries, setEntries] = useState([]);
+  const [headers, setHeaders] = useState([]);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
-  const [importing, setImporting] = useState(false);
+  const [mappedFields, setMappedFields] = useState({});
+  const [importing, setImporting] = useState(false); 
   const [importComplete, setImportComplete] = useState(false);
+  const requiredFields = [
+    "FirstName", "LastName", "City", "State", "Zip","Address", "PropertyAddress", 
+    "PropertyCity", "PropertyState", "PropertyZip", "Phone1", "Phone2","Phone3"
+  ]; // Required database fields
+  const [sampleName, setSampleName] = useState(""); // State to store CSV file name
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     Papa.parse(file, {
+  //       header: true, // Extract column headers from the CSV
+  //       skipEmptyLines: true,
+  //       complete: (results) => {
+  //         const parsedData = results.data;
+  //         setEntries(parsedData); // Store parsed rows
+  //         setHeaders(Object.keys(parsedData[0])); // Extract headers dynamically
+  //         setFileSelected(true);
+  //         console.log("Headers:", Object.keys(parsedData[0])); // Dynamically extract headers
+  //       },
+  //       error: (error) => {
+  //         console.error("Error Parsing CSV:", error);
+  //       },
+  //     });
+  //   }
+  // };
+  
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // Extract the file name without the extension
+    const fileName = file.name.split(".")[0];
+    setSampleName(fileName); // Store file name in state
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFileSelected(true);
-    }
+    Papa.parse(file, {
+      header: true, // Extract headers
+      skipEmptyLines: true,
+      complete: (results) => {
+        const parsedData = results.data;
+        setEntries(parsedData); // Store parsed rows
+        setHeaders(Object.keys(parsedData[0])); // Extract headers dynamically
+        setFileSelected(true);
+      },
+      error: (error) => {
+        console.error("Error Parsing CSV:", error);
+      },
+    });
+  }
+};
+
+
+
+  const handleFieldMapping = (header, field) => {
+    setMappedFields((prev) => ({ ...prev, [header]: field }));
   };
 
   const handleNextStep = () => {
@@ -38,19 +79,78 @@ const ImportContacts = () => {
     }
   };
 
+  // const handleImport = () => {
+  //   setImporting(true);
+  
+  //   // Prepare the mapped data for submission
+  //   const mappedData = entries.map((entry) => {
+  //     const contact = {};
+  //     requiredFields.forEach((field) => {
+  //       const selectedHeader = mappedFields[field];
+  //       contact[field] = selectedHeader ? entry[selectedHeader] : ""; // Assign values based on selected headers
+  //     });
+  //     return contact;
+  //   });
+  
+  //   // Send the data to the backend
+  //   fetch("http://localhost:3000/api/contacts/import", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ contacts: mappedData }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then(() => {
+  //       setImporting(false);
+  //       setImportComplete(true);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Import Error:", error);
+  //       setImporting(false);
+  //     });
+  // };
+
   const handleImport = () => {
     setImporting(true);
-    // Simulate import process
-    setTimeout(() => {
-      setImporting(false);
-      setImportComplete(true);
-    }, 2000);
+  
+    // Prepare the mapped data for submission
+    const mappedData = entries.map((entry) => {
+      const contact = {};
+      requiredFields.forEach((field) => {
+        const selectedHeader = mappedFields[field];
+        contact[field] = selectedHeader ? entry[selectedHeader] : ""; // Assign values based on selected headers
+      });
+      return contact;
+    });
+  
+    // Send the data to the backend
+    fetch("http://localhost:3000/api/contacts/import", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sampleName, contacts: mappedData }), // Include SampleName in request body
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setImporting(false);
+        setImportComplete(true);
+      })
+      .catch((error) => {
+        console.error("Import Error:", error);
+        setImporting(false);
+      });
   };
+  
+  
 
   const resetImport = () => {
     setCurrentStep(1);
     setFileSelected(false);
     setImportComplete(false);
+    setEntries([]);
+    setMappedFields({});
   };
 
   return (
@@ -108,6 +208,7 @@ const ImportContacts = () => {
               <div className="nk-stepper-content">
                 {/* Step 1: Upload File */}
                 <div className={`step-content ${currentStep === 1 ? "active" : ""}`}>
+                  
                   <div className="nk-upload-form">
                     <h5 className="title mb-3">Upload File <span className="text-danger">(*Please select CSV file)</span></h5>
                     <div className="upload-zone">
@@ -151,296 +252,206 @@ const ImportContacts = () => {
 
                 {/* Step 2: Spreadsheet Details */}
                 <div className={`step-content ${currentStep === 2 ? "active" : ""}`}>
-                  <div className="nk-upload-form">
-                    <h5 className="title mb-4">Spreadsheet Details</h5>
-                    
-                    <Row className="g-4 mb-4">
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="name">Name:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="name">
-                                <option value="">Select value</option>
-                                <option value="name">Name</option>
-                                <option value="full_name">Full Name</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="mobile">Mobile Number:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="mobile">
-                                <option value="">Select value</option>
-                                <option value="phone">Phone</option>
-                                <option value="mobile">Mobile</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
+  <div className="nk-upload-form">
+    <h5 className="title mb-4">Spreadsheet Details</h5>
 
-                    <Row className="g-4 mb-4">
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="city">City:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="city">
-                                <option value="">Select value</option>
-                                <option value="city">City</option>
-                                <option value="town">Town</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="address">Address:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="address">
-                                <option value="">Select value</option>
-                                <option value="address">Address</option>
-                                <option value="street_address">Street Address</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-
-                    <Row className="g-4 mb-5">
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="zipcode">Zip Code:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="zipcode">
-                                <option value="">Select value</option>
-                                <option value="zipcode">Zip Code</option>
-                                <option value="postal_code">Postal Code</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col md="6">
-                        <div className="form-group">
-                          <label className="form-label" htmlFor="state">State:</label>
-                          <div className="form-control-wrap">
-                            <div className="form-control-select">
-                              <select className="form-control" id="state">
-                                <option value="">Select value</option>
-                                <option value="state">State</option>
-                                <option value="province">Province</option>
-                              </select>
-                              {/* <div className="dropdown-indicator"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-
-                    <h5 className="title mb-3">Current Sheet Details</h5>
-                    
-                    <div className="mb-3 d-flex justify-content-between align-items-center">
-                      <div className="dataTables_length">
-                        <label>
-                          <span className="d-none d-sm-inline-block">Show</span>
-                          <div className="form-control-select">
-                            <select 
-                              className="custom-select form-select form-select-sm" 
-                              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                              value={entriesPerPage}
-                            >
-                              <option value="10">10</option>
-                              <option value="25">25</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                            </select>
-                          </div>
-                          <span className="d-none d-sm-inline-block">entries</span>
-                        </label>
-                      </div>
-                      <div className="dataTables_filter">
-                        <label>
-                          <span>Search:</span>
-                          <input 
-                            type="search" 
-                            className="form-control form-control-sm" 
-                            placeholder="" 
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            value={searchTerm}
-                          />
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="table-responsive">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>id</th>
-                            <th>title</th>
-                            <th>video_link</th>
-                            <th>thumbnail_image</th>
-                            <th>created_at</th>
-                            <th>updated_at</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entries.map((entry) => (
-                            <tr key={entry.id}>
-                              <td>{entry.id}</td>
-                              <td>{entry.title}</td>
-                              <td>{entry.video_link}</td>
-                              <td>{entry.thumbnail_image}</td>
-                              <td>{entry.created_at}</td>
-                              <td>{entry.updated_at}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <div>
-                        Showing 1 to {Math.min(entriesPerPage, entries.length)} of {entries.length} entries
-                      </div>
-                      <div className="pagination-wrap">
-                        <ul className="pagination">
-                          <li className="page-item"><a className="page-link" href="#">Previous</a></li>
-                          <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                          <li className="page-item"><a className="page-link" href="#">Next</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="nk-stepper-footer pt-4">
-                    <Row>
-                      <Col xs="6" className="text-left">
-                        <Button color="secondary" className="btn-previous" onClick={handlePrevious}>
-                          Previous
-                        </Button>
-                      </Col>
-                      <Col xs="6" className="text-right">
-                        <Button color="primary" className="btn-next" onClick={handleNextStep}>
-                          Next Step
-                        </Button>
-                      </Col>
-                    </Row>
+    {headers.length > 0 && (
+      <div className="field-mapping-section">
+        {requiredFields.reduce((rows, field, index) => {
+          if (index % 2 === 0) {
+            // Create a new row for every two selects
+            rows.push([]);
+          }
+          rows[rows.length - 1].push(field);
+          return rows;
+        }, []).map((row, rowIndex) => (
+          <Row key={rowIndex} className="g-3 mb-4">
+            {row.map((field, colIndex) => (
+              <Col md="6" key={colIndex}>
+                <div className="form-group">
+                  <label className="form-label">{field}</label>
+                  <div className="form-control-wrap">
+                    <select
+                      className="form-control"
+                      onChange={(e) => handleFieldMapping(field, e.target.value)}
+                      value={mappedFields[field] || ""}
+                    >
+                      <option value="">Select Column</option>
+                      {headers
+                        .filter(
+                          (header) =>
+                            !Object.values(mappedFields).includes(header) || mappedFields[field] === header
+                        ) // Filter out already selected headers
+                        .map((header, i) => (
+                          <option key={i} value={header}>
+                            {header}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
+              </Col>
+            ))}
+          </Row>
+        ))}
+      </div>
+    )}
+
+    <h5 className="title mb-3">Current Sheet Details</h5>
+
+    <div className="table-responsive">
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            {requiredFields.map((field, index) => (
+              <th key={index}>{field}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map((entry, index) => (
+            <tr key={index}>
+              {requiredFields.map((field, i) => (
+                <td key={i}>{entry[mappedFields[field]] || ""}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div className="nk-stepper-footer pt-4">
+      <Row>
+        <Col xs="6" className="text-left">
+          <Button color="secondary" className="btn-previous" onClick={handlePrevious}>
+            Previous
+          </Button>
+        </Col>
+        <Col xs="6" className="text-right">
+          <Button color="primary" className="btn-next" onClick={handleNextStep}>
+            Next Step
+          </Button>
+        </Col>
+      </Row>
+    </div>
+  </div>
+</div>
+
+
 
                 {/* Step 3: Confirm */}
                 <div className={`step-content ${currentStep === 3 ? "active" : ""}`}>
-                  <div className="nk-upload-form">
-                    {!importComplete ? (
-                      <>
-                        <div className="text-center mb-5">
-                          <h5 className="title mb-4">Confirm Import</h5>
-                          <div className="nk-modal-head mb-3">
-                            <h4 className="nk-modal-title title">Ready to Import</h4>
-                          </div>
-                          <div className="nk-modal-text">
-                            <p className="lead">You are about to import <strong>1</strong> contact(s) to your database. Please confirm to proceed.</p>
-                            <div className="my-4">
-                              <div className="row justify-content-center">
-                                <div className="col-xl-8">
-                                  <ul className="list-group">
-                                    <li className="list-group-item d-flex justify-content-between align-items-center">
-                                      <span>Total Records</span>
-                                      <span>1</span>
-                                    </li>
-                                    <li className="list-group-item d-flex justify-content-between align-items-center">
-                                      <span>Mapped Fields</span>
-                                      <span>6</span>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="alert alert-info">
-                              <div className="alert-icon">
-                                <em className="icon ni ni-info-fill"></em>
-                              </div>
-                              <div className="alert-text">
-                                <p>Once you confirm, the import process will begin. This may take a few moments depending on the size of your file.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="nk-stepper-footer pt-4">
-                          <Row>
-                            <Col xs="6" className="text-left">
-                              <Button color="secondary" className="btn-previous" onClick={handlePrevious}>
-                                Previous
-                              </Button>
-                            </Col>
-                            <Col xs="6" className="text-right">
-                              <Button 
-                                color="primary" 
-                                className="btn-import"
-                                disabled={importing}
-                                onClick={handleImport}
-                              >
-                                {importing ? (
-                                  <>
-                                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                                    Importing...
-                                  </>
-                                ) : "Confirm Import"}
-                              </Button>
-                            </Col>
-                          </Row>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center">
-                        <div className="nk-modal-head mb-4">
-                          <div className="nk-modal-icon icon-circle icon-circle-xxl bg-success">
-                            <em className="icon ni ni-check-circle-fill fs-5x text-white"></em>
-                          </div>
-                        </div>
-                        <div className="nk-modal-text mb-5">
-                          <h4 className="title mb-3">Import Successful!</h4>
-                          <p className="text-soft">Your contacts have been successfully imported into the database.</p>
-                          <ul className="list-group mt-4">
-                            <li className="list-group-item d-flex justify-content-between align-items-center">
-                              <span>Total Records Processed</span>
-                              <span>1</span>
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-center">
-                              <span>Successfully Imported</span>
-                              <span className="text-success">1</span>
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-center">
-                              <span>Failed Records</span>
-                              <span className="text-danger">0</span>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="nk-modal-action">
-                          <Button color="primary" onClick={resetImport}>Import Another File</Button>
-                          <Button color="secondary" className="ms-2">View Contacts</Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+  <div className="nk-upload-form">
+    {!importComplete ? (
+      <>
+        <div className="text-center mb-5">
+          <h5 className="title mb-4">Confirm Import</h5>
+          <div className="nk-modal-head mb-3">
+            <h4 className="nk-modal-title title">Ready to Import</h4>
+          </div>
+          <div className="nk-modal-text">
+            <p className="lead">
+              You are about to import <strong>{entries.length}</strong> contact(s) to your database. Please confirm to proceed.
+            </p>
+            <div className="my-4">
+              <div className="row justify-content-center">
+                <div className="col-xl-8">
+                  <ul className="list-group">
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                      <span>Total Records</span>
+                      <span>{entries.length}</span>
+                    </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                      <span>Mapped Fields</span>
+                      <span>{Object.keys(mappedFields).length}</span>
+                    </li>
+                  </ul>
                 </div>
+              </div>
+            </div>
+            <div className="alert alert-info">
+              <div className="alert-icon">
+                <em className="icon ni ni-info-fill"></em>
+              </div>
+              <div className="alert-text">
+                <p>
+                  Once you confirm, the import process will begin. This may take a few moments depending on the size of your file.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="nk-stepper-footer pt-4">
+          <Row>
+            <Col xs="6" className="text-left">
+              <Button color="secondary" className="btn-previous" onClick={handlePrevious}>
+                Previous
+              </Button>
+            </Col>
+            <Col xs="6" className="text-right">
+              <Button
+                color="primary"
+                className="btn-import"
+                disabled={importing}
+                onClick={handleImport}
+              >
+                {importing ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-1"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Importing...
+                  </>
+                ) : (
+                  "Confirm Import"
+                )}
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      </>
+    ) : (
+      <div className="text-center">
+        <div className="nk-modal-head mb-4">
+          <div className="nk-modal-icon icon-circle icon-circle-xxl bg-success">
+            <em className="icon ni ni-check-circle-fill fs-5x text-white"></em>
+          </div>
+        </div>
+        <div className="nk-modal-text mb-5">
+          <h4 className="title mb-3">Import Successful!</h4>
+          <p className="text-soft">
+            Your contacts have been successfully imported into the database.
+          </p>
+          <ul className="list-group mt-4">
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <span>Total Records Processed</span>
+              <span>{entries.length}</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <span>Successfully Imported</span>
+              <span className="text-success">{entries.length}</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <span>Failed Records</span>
+              <span className="text-danger">0</span>
+            </li>
+          </ul>
+        </div>
+        <div className="nk-modal-action">
+          <Button color="primary" onClick={resetImport}>
+            Import Another File
+          </Button>
+          <Button color="secondary" className="ms-2">
+            View Contacts
+          </Button>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
               </div>
             </div>
           </div>
