@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Row, Col, Button, Block, BlockHead, BlockBetween, BlockHeadContent, BlockTitle } from "@/components/Component";
 import "@/assets/css/contacts.css";
 import Papa from "papaparse";
 
 const ImportContacts = () => {
+  const navigate = useNavigate();
   const [fileSelected, setFileSelected] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [entries, setEntries] = useState([]);
@@ -18,32 +20,15 @@ const ImportContacts = () => {
     "PropertyCity", "PropertyState", "PropertyZip", "Phone1", "Phone2","Phone3"
   ]; // Required database fields
   const [sampleName, setSampleName] = useState(""); // State to store CSV file name
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     Papa.parse(file, {
-  //       header: true, // Extract column headers from the CSV
-  //       skipEmptyLines: true,
-  //       complete: (results) => {
-  //         const parsedData = results.data;
-  //         setEntries(parsedData); // Store parsed rows
-  //         setHeaders(Object.keys(parsedData[0])); // Extract headers dynamically
-  //         setFileSelected(true);
-  //         console.log("Headers:", Object.keys(parsedData[0])); // Dynamically extract headers
-  //       },
-  //       error: (error) => {
-  //         console.error("Error Parsing CSV:", error);
-  //       },
-  //     });
-  //   }
-  // };
-  
+  const [selectedFileName, setSelectedFileName] = useState(""); // Track uploaded file name  
 const handleFileChange = (e) => {
   const file = e.target.files[0];
   if (file) {
     // Extract the file name without the extension
     const fileName = file.name.split(".")[0];
     setSampleName(fileName); // Store file name in state
+    setSelectedFileName(file.name); // Store file name to display
+    setFileSelected(true); // Enable "NEXT" button
 
     Papa.parse(file, {
       header: true, // Extract headers
@@ -61,6 +46,19 @@ const handleFileChange = (e) => {
   }
 };
 
+const handleDragOver = (e) => {
+  e.preventDefault(); // Prevent default browser behavior
+};
+
+const handleDrop = (e) => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0]; // Get the dropped file
+  if (file) {
+    setSelectedFileName(file.name); // Show file name
+    setFileSelected(true); // Enable "NEXT" button
+    handleFileChange({ target: { files: [file] } }); // Pass the file to the input handler
+  }
+};
 
 
   const handleFieldMapping = (header, field) => {
@@ -78,40 +76,7 @@ const handleFileChange = (e) => {
       setCurrentStep(currentStep - 1);
     }
   };
-
-  // const handleImport = () => {
-  //   setImporting(true);
-  
-  //   // Prepare the mapped data for submission
-  //   const mappedData = entries.map((entry) => {
-  //     const contact = {};
-  //     requiredFields.forEach((field) => {
-  //       const selectedHeader = mappedFields[field];
-  //       contact[field] = selectedHeader ? entry[selectedHeader] : ""; // Assign values based on selected headers
-  //     });
-  //     return contact;
-  //   });
-  
-  //   // Send the data to the backend
-  //   fetch("http://localhost:3000/api/contacts/import", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ contacts: mappedData }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then(() => {
-  //       setImporting(false);
-  //       setImportComplete(true);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Import Error:", error);
-  //       setImporting(false);
-  //     });
-  // };
-
-  const handleImport = () => {
+const handleImport = () => {
     setImporting(true);
   
     // Prepare the mapped data for submission
@@ -132,10 +97,21 @@ const handleFileChange = (e) => {
       },
       body: JSON.stringify({ sampleName, contacts: mappedData }), // Include SampleName in request body
     })
-      .then((response) => response.json())
-      .then(() => {
-        setImporting(false);
-        setImportComplete(true);
+      // .then((response) => response.json())
+      // .then(() => {
+      //   setImporting(false);
+      //   setImportComplete(true);
+      // })
+      .then(async (response) => {
+        const result = await response.json(); // ✅ Store response properly
+        if (response.ok) {
+          setImportComplete(true); // ✅ Show success message
+          setTimeout(() => {
+            navigate("/contact-list"); // ✅ Auto-redirect after 2 seconds
+          }, 2000);
+        } else {
+          console.error("Import failed:", result.error);
+        }
       })
       .catch((error) => {
         console.error("Import Error:", error);
@@ -162,15 +138,19 @@ const handleFileChange = (e) => {
         <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: ' 0 20px 10px'}}>Import Contacts</h1>
       </BlockHeadContent>
       <BlockHeadContent>
-        <div className="toggle-wrap nk-block-tools-toggle">
-          <Button color="primary" className="btn-icon btn-download">
-            <span className="icon-wrap">
-              <em className="icon ni ni-download-cloud"></em>
-            </span>
-            <span>DOWNLOAD CSV FILE</span>
-          </Button>
-        </div>
-      </BlockHeadContent>
+  <div className="toggle-wrap nk-block-tools-toggle">
+    <Button
+      color="primary"
+      className="btn-icon btn-download"
+      onClick={() => window.location.href = "/sample.csv"} // Trigger file download
+    >
+      <span className="icon-wrap">
+        <em className="icon ni ni-download-cloud"></em>
+      </span>
+      <span>DOWNLOAD CSV FILE</span>
+    </Button>
+  </div>
+</BlockHeadContent>
     </BlockBetween>
   </BlockHead>
 </div>
@@ -209,45 +189,60 @@ const handleFileChange = (e) => {
                 {/* Step 1: Upload File */}
                 <div className={`step-content ${currentStep === 1 ? "active" : ""}`}>
                   
-                  <div className="nk-upload-form">
-                    <h5 className="title mb-3">Upload File <span className="text-danger">(*Please select CSV file)</span></h5>
-                    <div className="upload-zone">
-                      <div className="dz-message" data-dz-message>
-                        <span className="dz-message-text">Drag & drop files here ...</span>
-                      </div>
-                    </div>
-                    <Row className="g-3 pt-4">
-                      <Col size="12">
-                        <div className="form-control-wrap">
-                          <div className="form-file">
-                            <input 
-                              type="file" 
-                              className="form-file-input" 
-                              id="customFile"
-                              accept=".csv"
-                              onChange={handleFileChange}
-                            />
-                            <label className="form-file-label" htmlFor="customFile">
-                              {/* <span className="form-file-text">Select file...</span> */}
-                              {/* <span className="form-file-button btn-browse">Browse...</span> */}
-                            </label>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-                  </div>
-                  <div className="nk-stepper-footer pt-4">
-                    <div className="form-group text-center">
-                      <Button 
-                        className="btn-next"
-                        color="primary" 
-                        disabled={!fileSelected}
-                        onClick={handleNextStep}
-                      >
-                        NEXT
-                      </Button>
-                    </div>
-                  </div>
+                  
+        <div className="nk-upload-form">
+    <h5 className="title mb-3">
+      Upload File <span className="text-danger">(*Please select a CSV file)</span>
+    </h5>
+
+    <Row className="g-3 pt-4">
+      {/* Full-width Drag & Drop Zone */}
+      <Col md="12">
+        <div
+          className="upload-zone"
+          onClick={() => document.getElementById("customFile").click()} // Clicking opens file picker
+          onDragOver={handleDragOver} // Allow dragging over the area
+          onDrop={handleDrop} // Handle file drop
+        >
+          <div className="dz-message">
+            <span className="dz-message-text">
+              {selectedFileName ? `Selected File: ${selectedFileName}` : "Drag & drop files here or click to upload..."}
+            </span>
+          </div>
+        </div>
+      </Col>
+
+      {/* File Input (Visible & Functional) */}
+      <Col md="12">
+        <div className="form-control-wrap">
+          <div className="form-file">
+            <input
+              type="file"
+              className="form-file-input"
+              id="customFile"
+              accept=".csv"
+              onChange={handleFileChange}
+            />
+            <label className="form-file-label" htmlFor="customFile"></label>
+          </div>
+        </div>
+      </Col>
+    </Row>
+
+    {/* NEXT Button */}
+    <div className="nk-stepper-footer pt-4">
+      <div className="form-group text-center">
+        <Button
+          className="btn-next"
+          color="primary"
+          disabled={!fileSelected} // Disabled until a file is selected
+          onClick={handleNextStep}
+        >
+          NEXT
+        </Button>
+      </div>
+    </div>
+  </div>
                 </div>
 
                 {/* Step 2: Spreadsheet Details */}
