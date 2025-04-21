@@ -1,16 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Container, Row, Col, Card, Form, FormGroup, Input, Button, Spinner, Alert } from "reactstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import "@/assets/css/login.css";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: "", passcode: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isAnimated, setIsAnimated] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Apply background image to body element
+    document.body.style.backgroundImage = "url('/images/login_bg-tQVGET2T.jpg')";
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundAttachment = 'fixed';
+    
+    // Trigger animation after component mounts
+    setTimeout(() => {
+      setIsAnimated(true);
+    }, 100);
+    
+    // Cleanup function to remove background when component unmounts
+    return () => {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
+    };
+  }, []);
 
   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -44,55 +69,96 @@ const AdminLogin = () => {
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-  const backgroundStyle = { backgroundImage: `url('/images/login_bg-tQVGET2T.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' };
-  const logoStyle = { maxWidth: '150px', height: 'auto', marginBottom: '20px' };
-  const passwordInputWrapperStyle = { position: 'relative' };
-  const passwordInputStyle = { paddingRight: '35px' };
-  const eyeIconStyle = { position: 'absolute', top: '70%', right: '10px', transform: 'translateY(-50%)', cursor: 'pointer', zIndex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '25px', height: '25px' };
-
   return (
-    <div style={backgroundStyle}>
-      <Container fluid className="">
-        <Row className="justify-content-center align-items-center">
-          <Col md={1} lg={6} xl={7}>
-            <Card className="shadow-lg border-0 rounded-3">
-              <Row className="g-0">
-                <Col className="d-none d-md-flex align-items-center justify-content-center p-4" style={{ backgroundImage: `url('/images/teamworklogin.avif')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
-                  <div className="text-center">
-                    <h4 className="mb-3 text-black">Welcome Back</h4>
-                    <p className="text-muted small text-black-50">Secure login to your personalized dashboard. Your journey continues here.</p>
-                  </div>
-                </Col>
-                <Col md={6} className="p-4">
-
-                  {error && <Alert color="danger" className="mb-3">{error}</Alert>}
-                  <Form onSubmit={handleSubmit}>
-                    <FormGroup className="mb-3">
-                      <label className="form-label" htmlFor="email">Email Address</label>
-                      <Input type="email" id="email" name="email" className="form-control" placeholder="jake.stein@comcast.net" value={formData.email} onChange={handleInputChange} required />
-                    </FormGroup>
-                    <FormGroup className="mb-3" style={passwordInputWrapperStyle}>
-                      <div className="d-flex justify-content-between">
-                        <label className="form-label" htmlFor="passcode">Password</label>
-                        <a href="/forgot-password" className="text-muted small">Forgot password?</a>
-                      </div>
-                      <Input type={showPassword ? "text" : "password"} id="passcode" name="passcode" className="form-control" placeholder="********" value={formData.passcode} onChange={handleInputChange} required style={passwordInputStyle} />
-                      <span style={eyeIconStyle} onClick={togglePasswordVisibility}>
-                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                      </span>
-                    </FormGroup>
-                    <div className="d-grid" style={{ width: '50%', margin: '0 auto' }}>
-                      <Button type="submit" color="primary" size="lg" disabled={loading} style={{ width: '100%', height: '50px', padding: '15px', background: '#ADD8E11', color: 'white', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.4s ease', position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {loading ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Spinner size="sm" className="me-2" /> Signing in...</span> : "Login"}
-                      </Button>
-                    </div>
-                  </Form>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+    <div className="login-container">
+      <div className={`login-card ${isAnimated ? 'animated' : ''}`}>
+        <div className="login-visual">
+          <div className="login-visual-content">
+            <h1>Welcome Back</h1>
+            <p>Secure login to your personalized dashboard. Your journey continues here.</p>
+          </div>
+          <div className="particles">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="particle"></div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="login-form">
+          <div className="logo-container">
+          {/* <img 
+  src="\public\images\RDUzpIudSyC617i0fcGn8.jpg" 
+  alt="Company Logo" 
+  style={{ width: '80px', height: '70px' }} 
+  className="logo" 
+/> */}
+          </div>
+          
+          <h2>Sign In</h2>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <Form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <div className="input-container">
+                <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
+                <Input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  className="control" 
+                  placeholder="Enter your email"
+                  value={formData.email} 
+                  onChange={handleInputChange} 
+                  required 
+                />
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <div className="password-header">
+                <label htmlFor="passcode">Password</label>
+                <a href="/forgot-password" className="forgot-password">Forgot password?</a>
+              </div>
+              <div className="input-container">
+                <FontAwesomeIcon icon={faLock} className="input-icon" />
+                <Input 
+                  type={showPassword ? "text" : "password"} 
+                  id="passcode" 
+                  name="passcode" 
+                  className="control" 
+                  placeholder="Enter your password"
+                  value={formData.passcode} 
+                  onChange={handleInputChange} 
+                  required 
+                />
+                <div className="password-toggle" onClick={togglePasswordVisibility}>
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
+              className={`login-btn ${loading ? 'loading' : ''}`} 
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="loader">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              ) : "Sign In"}
+            </button>
+          </Form>
+          
+          {/* <div className="sign-up-link">
+            Don't have an account? <a href="/register">Sign up now</a>
+          </div> */}
+        </div>
+      </div>
     </div>
   );
 };

@@ -159,10 +159,10 @@ const Router = () => {
 
               {/* <Route path="buynumber" element={<PrivateRoute><BuyNumber /></PrivateRoute>}></Route> */}
 
-              <Route path="Template" element={<PrivateRoute><Template /></PrivateRoute>}></Route>
+              <Route path="Template" element={<Template />}></Route>
 
-              <Route path="analytics" element={<PrivateRoute><Analytics /></PrivateRoute>}></Route>
-              <Route path="bulk-message" element={<PrivateRoute><BulkMessage /></PrivateRoute>}></Route>
+              <Route path="analytics" element={<Analytics />}></Route>
+              <Route path="bulk-message" element={<BulkMessage />}></Route>
               <Route path="message-templates" element={<PrivateRoute><MessageTemplates /></PrivateRoute>}></Route>
               <Route path="_blank" element={<Blank />}></Route>
 
