@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Search, Trash2, Eye } from "lucide-react";
-import "@/assets/css/campaings.css";
+import "@/assets/css/contactlist.css";
 
 const ContactList = () => {
     const navigate = useNavigate();
@@ -62,7 +62,12 @@ const ContactList = () => {
       </div>
 
       {/* Contacts Table */}
-      <div className="table-container">
+      <div className="table-container"  style={{
+    maxHeight: "500px",
+    overflowY: "auto",
+    overflowX: "auto",
+    border: "1px solid #ccc",
+  }}>
         <table className="campaigns-table">
           <thead>
             <tr>
@@ -94,20 +99,18 @@ const ContactList = () => {
                   <td>{formatDate(group.created)}</td>
                   <td>
                   <div style={{ display: "flex", gap: "10px" }}>
-                  <button 
-  className="action-button view-button"
-  onClick={() => navigate(`/View-contacts/${group.sampleName}`)} // ✅ Correct Placement
->
-  <Eye size={18} />
-</button>
-
-
-                      <button
+                  <label 
+                      className="action-button view-button"
+                      onClick={() => navigate(`/View-contacts/${group.sampleName}`)} // ✅ Correct Placement
+                    >
+                      <Eye size={18} />
+                    </label>
+                      <label
                         className="action-button delete-button"
                         onClick={() => handleDelete(group.sampleName)}
                       >
                         <Trash2 size={18} />
-                      </button>
+                      </label>
                       
                     </div>
                   </td>

@@ -233,7 +233,7 @@ const handleImport = () => {
     <div className="nk-stepper-footer pt-4">
       <div className="form-group text-center">
         <Button
-          className="btn-next"
+          className="btn-next1"
           color="primary"
           disabled={!fileSelected} // Disabled until a file is selected
           onClick={handleNextStep}
