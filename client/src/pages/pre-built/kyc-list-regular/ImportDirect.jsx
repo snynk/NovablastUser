@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Button, Block, BlockHead, BlockBetween, BlockHeadContent, BlockTitle } from "@/components/Component";
 import "@/assets/css/contacts.css";
-import Papa from "papaparse";
+// import Papa from "papaparse";
 
 const ImportContacts = () => {
   const navigate = useNavigate();

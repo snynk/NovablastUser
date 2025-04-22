@@ -87,6 +87,8 @@ import InvoiceDetails from "@/pages/pre-built/invoice/InvoiceDetails";
 import InvoicePrint from "@/pages/pre-built/invoice/InvoicePrint";
 import Campaigns from "@/pages/pre-built/Campaigns-table/Campaigns";
 import Batches from "@/pages/pre-built/gallery/Batches";
+import Dripauto from "@/pages/pre-built/gallery/Dripauto";
+import Useracount from "@/pages/pre-built/gallery/Useracount";
 import ReactToastify from "@/pages/components/misc/ReactToastify";
 
 import AppMessages from "@/pages/app/messages/Messages";
@@ -200,6 +202,9 @@ const Router = () => {
               <Route path="invoice-details/:invoiceId" element={<InvoiceDetails />}></Route>
               <Route path="campaigns-table" element={<Campaigns />}></Route>
               <Route path="Batches" element={<Batches />}></Route>
+              <Route path="Dripauto" element={<Dripauto />}></Route>
+              <Route path="useracount" element={<Useracount />}></Route>
+
 
 
               <Route path="pages">

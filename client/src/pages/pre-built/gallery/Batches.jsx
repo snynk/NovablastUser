@@ -95,7 +95,7 @@ const BatchesDataTable = () => {
   return (
     <div className="batches-container">
       <div className="batches-header" style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 20px 0'}}>
-        <h1>Batches</h1>
+        <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0 20px 0'}}>Batches</h1>
         <button className="create-batch-btn">Create New Batches</button>
       </div>
 
