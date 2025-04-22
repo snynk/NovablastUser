@@ -64,3 +64,50 @@ exports.getContactsBySample = async (req, res) => {
     return res.status(500).json({ error: "Failed to retrieve contacts." });
   }
 };
+
+
+// ✅ Add a new contact
+exports.addContact = async (req, res) => {
+  try {
+    const newContact = new Contact(req.body);
+    const savedContact = await newContact.save();
+    return res.status(201).json(savedContact);
+  } catch (error) {
+    console.error("Error adding contact:", error);
+    return res.status(500).json({ error: "Failed to add contact." });
+  }
+};
+
+// ✅ Update an existing contact
+exports.updateContact = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const updatedContact = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
+
+    if (!updatedContact) {
+      return res.status(404).json({ error: "Contact not found." });
+    }
+
+    return res.status(200).json(updatedContact);
+  } catch (error) {
+    console.error("Error updating contact:", error);
+    return res.status(500).json({ error: "Failed to update contact." });
+  }
+};
+
+// ✅ Delete a contact
+exports.deleteContact = async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const deletedContact = await Contact.findByIdAndDelete(contactId);
+
+    if (!deletedContact) {
+      return res.status(404).json({ error: "Contact not found." });
+    }
+
+    return res.status(200).json({ message: "Contact deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting contact:", error);
+    return res.status(500).json({ error: "Failed to delete contact." });
+  }
+};
