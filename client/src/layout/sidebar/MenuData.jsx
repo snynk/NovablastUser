@@ -94,7 +94,7 @@ const menu = [
   {
     icon: "img",
     text: "Drip Automations",
-    link: "/drip",
+    link: "/dripauto",
   },
 
   {
@@ -104,12 +104,12 @@ const menu = [
   {
     icon: "setting",
     text: "Setting",
-    link: "/Batches",
+    link: "/Setting",
   },
   {
     icon: "img",
     text: "User Accounts",
-    link: "/image-gallery",
+    link: "/useracount",
   },
 
  
