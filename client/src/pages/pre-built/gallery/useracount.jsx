@@ -175,7 +175,11 @@ const UserManagement = () => {
         </div>
       </div>
 
-      <div className="user-table-container">
+      <div className="user-table-container" style={{
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "auto",
+            }}>        
         <table className="user-table">
           <thead>
             <tr>
@@ -256,7 +260,7 @@ const UserManagement = () => {
               </div>
 
               <div className="form-grid">
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="firstName">First Name <span className="required">*</span></label>
                   <input
                     type="text"
@@ -269,7 +273,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="lastName">Last Name <span className="required">*</span></label>
                   <input
                     type="text"
@@ -282,7 +286,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="email">Email <span className="required">*</span></label>
                   <input
                     type="email"
@@ -295,7 +299,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="aliasName">
                     Alias/Rep Name <span className="required">*</span>
                     <span className="info-icon">ⓘ</span>
@@ -311,7 +315,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="companyName">
                     Company Name <span className="required">*</span>
                     <span className="info-icon">ⓘ</span>
@@ -327,7 +331,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="phoneNumber">Phone Number <span className="required">*</span></label>
                   <input
                     type="text"
@@ -340,7 +344,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="timezone">Timezone <span className="required">*</span></label>
                   <select
                     id="timezone"
@@ -357,7 +361,7 @@ const UserManagement = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="role">Role <span className="required">*</span></label>
                   <select
                     id="role"
@@ -373,7 +377,7 @@ const UserManagement = () => {
                   </select>
                 </div>
 
-                <div className="form-group checkbox-group">
+                <div className="form-group1 checkbox-group">
                   <input
                     type="checkbox"
                     id="active"
@@ -428,7 +432,7 @@ const UserManagement = () => {
               </div>
 
               <div className="form-grid">
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="firstName">First Name <span className="required">*</span></label>
                   <input
                     type="text"
@@ -441,7 +445,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="lastName">Last Name <span className="required">*</span></label>
                   <input
                     type="text"
@@ -454,7 +458,7 @@ const UserManagement = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group1">
                   <label htmlFor="role">Role <span className="required">*</span></label>
                   <select
                     id="role"
@@ -470,7 +474,7 @@ const UserManagement = () => {
                   </select>
                 </div>
 
-                <div className="form-group checkbox-group">
+                <div className="form-group1 checkbox-group">
                   <input
                     type="checkbox"
                     id="active"

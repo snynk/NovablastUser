@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Button, Block, BlockHead, BlockBetween, BlockHeadContent, BlockTitle } from "@/components/Component";
 import "@/assets/css/contacts.css";
-// import Papa from "papaparse";
+import Papa from "papaparse";
 
 const ImportContacts = () => {
   const navigate = useNavigate();
@@ -233,7 +233,7 @@ const handleImport = () => {
     <div className="nk-stepper-footer pt-4">
       <div className="form-group text-center">
         <Button
-          className="btn-next"
+          className="btn-next1"
           color="primary"
           disabled={!fileSelected} // Disabled until a file is selected
           onClick={handleNextStep}

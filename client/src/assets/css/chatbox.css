@@ -178,7 +178,7 @@
   align-items: center;
 }
 
-.action-button {
+/* .action-button {
   background: none;
   border: none;
   color: #6b7280;
@@ -186,7 +186,7 @@
   padding: 6px;
   border-radius: 6px;
   transition: all 0.15s ease;
-}
+} */
 
 .action-button:hover {
   background-color: #f3f4f6;
