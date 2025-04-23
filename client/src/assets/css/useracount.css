@@ -29,21 +29,31 @@
     position: relative;
     width: 30%;
   }
-  
-  .search-input {
+  .search-input2 {
     width: 100%;
     padding: 10px 40px 10px 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     font-size: 14px;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    color: #333;
   }
   
-  .search-input:focus {
+  /* When focused */
+  .search-input2:focus {
     outline: none;
-    border-color: #00bfa5;
-    box-shadow: 0 0 0 2px rgba(0, 191, 165, 0.2);
+    border-color: #3b82f6; /* Classic Blue */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   }
+  
+  /* Optional: hover effect */
+  .search-input2:hover {
+    border-color: #999;
+    background-color: #fff;
+  }
+  
   
   .filter-container {
     display: flex;
@@ -92,17 +102,60 @@
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
     transition: background-color 0.3s, transform 0.2s;
   }
   
+  /* Classy gradient border */
+  .create-user-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    padding: 2px;
+    background: linear-gradient(270deg, #e16237, #ff0202, #52778e, #ee4030);
+    background-size: 600% 600%;
+    animation: borderMove 6s linear infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+  }
+  
+  /* Show border on hover */
+  .create-user-button:hover::before {
+    opacity: 1;
+  }
+  
+  /* Button movement on hover */
   .create-user-button:hover {
-    background-color: rgba(15, 25, 31, 0.91);
+    background-color: #1a2a2f;
     transform: translateY(-2px);
   }
   
   .create-user-button:active {
     transform: translateY(0);
   }
+  
+  /* Smooth color animation */
+  @keyframes borderMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
   
   /* Table Styles */
   .user-table-container {

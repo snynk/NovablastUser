@@ -57,20 +57,7 @@ const UserProfileAside = ({updateSm,sm}) => {
         </div>
         </div>
     </div>
-    <div className="card-inner">
-        <div className="user-account-info py-0">
-        <h6 className="overline-title-alt">Nio Wallet Account</h6>
-        <div className="user-balance">
-            12.395769 <small className="currency currency-btc">BTC</small>
-        </div>
-        <div className="user-balance-sub">
-            Locked{" "}
-            <span>
-            0.344939 <span className="currency currency-btc">BTC</span>
-            </span>
-        </div>
-        </div>
-    </div>
+
     <div className="card-inner p-0">
         <ul className="link-list-menu">
         <li onClick={() => updateSm(false)}>
@@ -81,14 +68,14 @@ const UserProfileAside = ({updateSm,sm}) => {
             <span>Personal Information</span>
             </NavLink>
         </li>
-        <li onClick={() => updateSm(false)}>
+        {/* <li onClick={() => updateSm(false)}>
             <NavLink
             to={`/user-profile-notification`}
             >
             <Icon name="bell-fill"></Icon>
             <span>Notification</span>
             </NavLink>
-        </li>
+        </li> */}
         <li onClick={() => updateSm(false)}>
             <NavLink
             to={`/user-profile-activity`}

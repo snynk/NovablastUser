@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search, ChevronDown, MoreVertical, Smile, Code, Trash2, Check, X, Edit } from 'lucide-react';
 
-import { Search, Trash2, Eye } from "lucide-react";
+// import { Search, Trash2, Eye } from "lucide-react";
 import "@/assets/css/contactlist.css";
 
 const ContactList = () => {
@@ -38,7 +39,7 @@ const ContactList = () => {
       <header className="header">
   <div className="header-buttons">
     <button 
-      className="create-button"
+      className="create-button create-user-button"
       onClick={() => navigate("/kyc-list-regular")}
     >
       Import Contacts
@@ -52,7 +53,7 @@ const ContactList = () => {
           <input
             type="text"
             placeholder="Search Contacts List"
-            className="search-input"
+            className="search-input3"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -98,22 +99,26 @@ const ContactList = () => {
                   <td>{group.duplicates}</td>
                   <td>{formatDate(group.created)}</td>
                   <td>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                  <label 
-                      className="action-button view-button"
-                      onClick={() => navigate(`/View-contacts/${group.sampleName}`)} // ✅ Correct Placement
-                    >
-                      <Eye size={18} />
-                    </label>
-                      <label
-                        className="action-button delete-button"
-                        onClick={() => handleDelete(group.sampleName)}
-                      >
-                        <Trash2 size={18} />
-                      </label>
-                      
-                    </div>
-                  </td>
+                                      <div className="table-actions flex gap-2">
+                                        <button
+                                          className="edit-button action-btn"
+                                          onClick={() => handleEditUser(automation)}
+                                          aria-label="Edit"
+                                        >
+                                          <Edit size={18} />
+                                        </button>
+                                        <button
+                                          className="delete-button action-btn"
+                                          onClick={() => handleDeleteUser(automation.id)}
+                                          aria-label="Delete"
+                                        >
+                                          <Trash2 size={18} />
+                                        </button>
+                                        <button className="action-btn more-options-button" aria-label="More options">
+                                          <MoreVertical size={18} />
+                                        </button>
+                                      </div>
+                                    </td>
                 </tr>
               ))}
           </tbody>

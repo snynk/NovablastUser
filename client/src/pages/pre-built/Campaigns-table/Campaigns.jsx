@@ -57,13 +57,13 @@ const CampaignManagement = () => {
       <header className="header">
         <div className="header-buttons">
           <button 
-            className="create-button"
+            className="create-user-button create-button"
             onClick={() => setShowNewCampaignModal(true)}
           >
             Create New Campaign
           </button>
           <button 
-            className="create-button"
+            className="create-user-button create-button"
             onClick={() => setShowFollowUpModal(true)}
           >
             Create New Follow Up Campaign
@@ -74,7 +74,7 @@ const CampaignManagement = () => {
       <div className="search-filter">
         <div className="search-wrapper">
           {/* <Search className="search-icon" size={20} /> */}
-          <input type="text" placeholder="Search for a Campaign" className="search-input" />
+          <input type="text" placeholder="Search for a Campaign" className=" search-input3" />
         </div>
         <button className="filter-button">
           Show only Follow Ups

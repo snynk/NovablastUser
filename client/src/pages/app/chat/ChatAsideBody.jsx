@@ -30,13 +30,11 @@ export const ChatAsideBody = ({
       <SimpleBar className="chat-sidebar-scroll">
         <div className="chat-sidebar-header">
           <h3>Messages</h3>
-          <div className={`search-container ${searchFocused ? "focused" : ""}`}>
-            <div className="search-icon">
-              {/* <Icon name="search" /> */}
-            </div>
+          <div className={` ${searchFocused ? "focused" : ""}`}>
+          
             <Input
               type="text"
-              className="search-input"
+              className="search-input4"
               placeholder="Search conversations"
               onChange={(e) => onInputChange(e)}
               onFocus={() => setSearchFocused(true)}
