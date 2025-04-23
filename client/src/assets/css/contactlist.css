@@ -27,11 +27,11 @@
     gap: 0.75rem;
   }
   
-  /* .create-button {
+  .create-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #4f46e5;
+    background-color: rgba(8, 28, 40, 0.834);
     color: white;
     padding: 0.625rem 1rem;
     border-radius: 0.375rem;
@@ -42,8 +42,8 @@
   }
   
   .create-button:hover {
-    background-color: #4338ca;
-  } */
+    background-color:  rgba(15, 25, 31, 0.91);
+  }
   
   /* Search and Filter Section */
   .search-filter {
