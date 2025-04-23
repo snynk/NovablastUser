@@ -385,61 +385,29 @@
 }
 
 /* Search bar styles */
-.mb-6 {
-  margin-bottom: 1.5rem;
+.search-input1 {
+  width: 30%;
+  padding: 10px 40px 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  color: #333;
 }
 
-.relative {
-  position: relative;
+/* When focused */
+.search-input1:focus {
+  outline: none;
+  border-color: #3b82f6; /* Classic Blue */
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
-.absolute {
-  position: absolute;
-}
-
-.inset-y-0 {
-  top: 0;
-  bottom: 0;
-}
-
-.left-0 {
-  left: 0;
-}
-
-.pl-3 {
-  padding-left: 0.75rem;
-}
-
-.pointer-events-none {
-  pointer-events: none;
-}
-
-.text-gray-400 {
-  color: #9ca3af;
-}
-
-.pl-10 {
-  padding-left: 2.5rem;
-}
-
-.pr-4 {
-  padding-right: 1rem;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.border-gray-300 {
-  border-color: #d1d5db;
-}
-
-.border-red-500 {
-  border-color: #ef4444;
-}
-
-.w-full {
-  width: 100%;
+/* Optional: hover effect */
+.search-input1:hover {
+  border-color: #999;
+  background-color: #fff;
 }
 
 /* Pagination styles */

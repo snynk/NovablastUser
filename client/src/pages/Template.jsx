@@ -86,7 +86,7 @@ const TemplatesManagement = () => {
           <input
             type="text"
             placeholder="Search initial template"
-            className="search-input"
+            className="search-input2"
           />
         </div>
         

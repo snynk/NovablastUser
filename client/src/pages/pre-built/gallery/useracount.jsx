@@ -153,7 +153,7 @@ const UserManagement = () => {
               placeholder="Search for a user"
               value={searchQuery}
               onChange={handleSearch}
-              className="search-input"
+              className="search-input2"
             />
           </div>
           <div className="filter-container">
