@@ -170,7 +170,11 @@ export default function DripAutomation() {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto"  style={{
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "auto",
+            }}>        
             <table className="automation-table">
               <thead>
                 <tr>
@@ -204,19 +208,19 @@ export default function DripAutomation() {
                         </div>
                       </div>
                     </td>
-                    <td className="actions-cell">
-                      <div className="table-actions">
-                        <button className="edit-button action-btn" onClick={() => { /* Your edit logic */ }}>
-                          <Edit size={18} />
-                        </button>
-                        <button className="delete-button action-btn" onClick={() => { /* Your delete logic */ }}>
-                          <Trash2 size={18} />
-                        </button>
-                        <button className="action-btn">
-                          <MoreVertical size={18} />
-                        </button>
-                      </div>
-                    </td>
+                     <td>
+                           <div className="table-actions">
+                             <button className="edit-button action-btn" onClick={() => handleEditUser(user)} aria-label="Edit">
+                               <Edit size={18} />
+                             </button>
+                             <button className="delete-button action-btn" onClick={() => handleDeleteUser(user.id)} aria-label="Delete">
+                               <Trash2 size={18} />
+                             </button>
+                             <button className="action-btn more-options-button" aria-label="More options">
+                               <MoreVertical size={18} />
+                             </button>
+                           </div>
+                         </td>
                   </tr>
                 ))}
               </tbody>

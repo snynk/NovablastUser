@@ -187,7 +187,7 @@ body {
   font-weight: 500;
 }
 
-.action-button {
+/* .action-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -195,7 +195,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
+} */
 
 .action-button:hover {
   color: var(--text-dark);

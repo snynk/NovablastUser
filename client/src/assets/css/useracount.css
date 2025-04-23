@@ -210,15 +210,14 @@
     color: #9c27b0;
   }
   
-  .action-button {
+  /* .action-button {
     background: none;
     border: none;
     font-size: 18px;
     cursor: pointer;
     color: #9e9e9e;
-    /* transform: rotate(90deg); */
     transition: color 0.3s;
-  }
+  } */
   
   .action-button:hover {
     color: #616161;
@@ -227,7 +226,7 @@
   /* Modal Styles */
   .modal-overlay1 {
     position: fixed;
-    top: 100;
+    /* top: 100px; fixed top, corrected with px */
     left: 300px;
     right: 0;
     bottom: 0;
@@ -238,6 +237,15 @@
     z-index: 1000;
     backdrop-filter: blur(3px);
   }
+  
+  /* Mobile View (screens 600px and below) */
+  @media (max-width: 600px) {
+    .modal-overlay1 {
+      left: 0;     /* Remove the 300px left shift */
+      top: 70px;      /* Optional: center from top too */
+    }
+  }
+  
   
   .create-user-modal {
     background-color: white;
@@ -385,13 +393,13 @@
     margin-top: 24px;
   }
   
-  .form-group {
+  .form-group1 {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
   
-  .form-group label {
+  .form-group1 label {
     font-size: 14px;
     font-weight: 500;
     color: #334155;
@@ -400,7 +408,7 @@
     gap: 4px;
   }
   
-  .form-group .required {
+  .form-group1 .required {
     color: #ef4444;
   }
   
@@ -423,9 +431,9 @@
     color: #334155;
   }
   
-  .form-group input[type="text"],
-  .form-group input[type="email"],
-  .form-group select {
+  .form-group1 input[type="text"],
+  .form-group1 input[type="email"],
+  .form-group1 select {
     padding: 10px 12px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
@@ -434,15 +442,15 @@
     transition: border-color 0.3s, box-shadow 0.3s;
   }
   
-  .form-group input[type="text"]:focus,
-  .form-group input[type="email"]:focus,
-  .form-group select:focus {
+  .form-group1 input[type="text"]:focus,
+  .form-group1 input[type="email"]:focus,
+  .form-group1 select:focus {
     outline: none;
     border-color: #0284c7;
     box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
   }
   
-  .form-group select {
+  .form-group1 select {
     appearance: none;
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6"><path d="M0 0l6 6 6-6z" fill="%2364748b"/></svg>') no-repeat;
     background-position: right 12px center;
@@ -551,7 +559,7 @@
   }
 
   /* Style for the action buttons container */
-.user-table .action-button {
+/* .user-table .action-button {
     padding: 6px 10px;
     margin-right: 5px;
     border: none;
@@ -559,7 +567,7 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-  }
+  } */
   
   /* Style for the Edit button */
   .user-table .action-button:not(.delete-button) {

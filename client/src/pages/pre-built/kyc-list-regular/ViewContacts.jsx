@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"; // Capture the selected Sample Nam
 import { Search, Trash2, Edit } from "lucide-react";
 import AddModal from "./AddModal"; // ✅ Import Add Modal
 import EditModal from "./EditModal"; // ✅ Import Edit Modal
-import "@/assets/css/campaings.css";
+import "@/assets/css/contactsample.css";
 
 const ContactList = () => {
      const navigate = useNavigate();
@@ -88,13 +88,13 @@ const handleUpdate = (formData) => {
   <div className="header-buttons">
 
 
-    <button 
+    <label 
       className="create-button"
       onClick={() => navigate("/Contact-list")}
     >
       Contacts List
-    </button>
-    <button className="create-button" onClick={() => setModal({ add: true })}>Add Contact</button> {/* ✅ Open Add Modal */}
+    </label>
+    <label className="create-button" onClick={() => setModal({ add: true })}>Add Contact</label> {/* ✅ Open Add Modal */}
   </div>
 </header>
 
@@ -113,8 +113,13 @@ const handleUpdate = (formData) => {
       </div>
 
       {/* Contacts Table */}
-      <div className="table-container">
-        <table className="campaigns-table">
+      <div className="table-container"  style={{
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "auto",
+              border: "1px solid #ccc",
+            }}>        
+            <table className="campaigns-table">
           <thead>
             <tr>
               <th>First Name</th>
