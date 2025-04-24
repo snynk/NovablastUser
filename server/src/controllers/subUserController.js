@@ -58,7 +58,23 @@ exports.createSubUser = async (req, res) => {
 
   exports.updateSubUser = async (req, res) => {
     try {
-      const updatedSubUser = await SubUser.findByIdAndUpdate(req.params.subUserId, req.body, { new: true });
+      const updateFields = { ...req.body };
+
+      // ✅ Handle avatar upload
+      if (req.files?.avatar) {
+        const avatar = req.files.avatar;
+        const uploadDir = path.join(__dirname, "..", "uploads");
+        const filePath = path.join(uploadDir, Date.now() + "-" + avatar.name);
+  
+        // Save the avatar file to the server
+        await avatar.mv(filePath);
+  
+        // Add the file path to the update fields
+        updateFields.avatar = `/uploads/${path.basename(filePath)}`;
+      }
+  
+      // ✅ Update subuser in the database
+      const updatedSubUser = await SubUser.findByIdAndUpdate(req.params.subUserId, updateFields, { new: true });
   
       if (!updatedSubUser) {
         return res.status(404).json({ error: "Subuser not found." });
