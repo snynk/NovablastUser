@@ -50,6 +50,14 @@ const UserManagement = () => {
   };
 
   const handleCreateUser = () => {
+    setNewUser({
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "",
+      active: true,
+      avatar: null, // ✅ Clear avatar when creating a new user
+    });
     setShowCreateModal(true);
   };
 
@@ -114,6 +122,7 @@ const UserManagement = () => {
     firstName: user.firstName,
     lastName: user.lastName,
     role: user.role,
+    email: user.email,
     active: user.active,
     avatar: user.avatar ? user.avatar : null, // ✅ Ensure avatar is valid,
   });
@@ -122,24 +131,46 @@ const UserManagement = () => {
 
  // ✅ Update a subuser
  const handleUpdateUser = async () => {
+  const formData = new FormData();
+
+  formData.append("firstName", newUser.firstName);
+  formData.append("lastName", newUser.lastName);
+ 
+  formData.append("role", newUser.role);
+  formData.append("active", newUser.active);
+
+  if (newUser.avatar && typeof newUser.avatar === "object") {
+    formData.append("avatar", newUser.avatar); // ✅ Only append if it's a file
+  }
+  if (newUser.email !== selectedUser.email) {
+    formData.append("email", newUser.email); // ✅ Only send email if it's defined
+  }
+  
+
   try {
     const response = await fetch(`http://localhost:3000/api/subusers/${selectedUser._id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newUser),
+      body: formData,
     });
 
-    const updatedUser = await response.json();
-    if (response.ok) {
-      setUsers(users.map((user) => (user._id === selectedUser._id ? updatedUser : user)));
-      setShowEditModal(false);
-    } else {
-      console.error("Error updating subuser:", updatedUser.error);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
     }
+    const updatedSubUser = await response.json(); // ✅ Parse the updated user
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user._id === updatedSubUser._id ? updatedSubUser : user
+      )
+    ); // ✅ Update the users state to reflect the changes
+
+    alert("User updated successfully!");
+    setShowEditModal(false);
   } catch (error) {
-    console.error("Failed to update subuser:", error);
+    console.error("Failed to update user:", error);
   }
 };
+
 
  // ✅ Delete a subuser
  const handleDeleteUser = async (userId) => {
@@ -479,6 +510,19 @@ const filteredUsers = Array.isArray(users) ? users.filter(user => {
                     required
                   />
                 </div>
+
+                <div className="form-group1">
+            <label htmlFor="email">Email <span className="required">*</span></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter email"
+              value={newUser.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
 
                 <div className="form-group1">
                   <label htmlFor="role">Role <span className="required">*</span></label>

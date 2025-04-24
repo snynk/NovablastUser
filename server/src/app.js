@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fileUpload = require("express-fileupload");
+const path = require("path"); // ✅ Import the path module
+
 
 // Routes
 const assignNumberRoutes = require('./routes/assignNumberRoutes');
@@ -17,7 +19,8 @@ const subUserRoutes = require("./routes/subUserRoutes");
 const app = express();
 app.use(express.json());
 app.use(fileUpload()); // ✅ Enables file uploads
-app.use("/uploads", express.static("uploads")); // ✅ Serve uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // ✅ Serve static files
+
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/suny2';
 
