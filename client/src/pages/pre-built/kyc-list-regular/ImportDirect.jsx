@@ -134,9 +134,27 @@ const handleImport = () => {
      <div style={{ marginTop: "100px" }}>
   <BlockHead size="lg">
     <BlockBetween>
-      <BlockHeadContent>
-        <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: ' 0 20px 10px'}}>Import Contacts</h1>
-      </BlockHeadContent>
+    <BlockHeadContent>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+    <h1 
+      className="dashboard-title" 
+      style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '0 20px 10px' }}
+    >
+      Import Contacts
+    </h1>
+    <div 
+      style={{ 
+        height: '4px', 
+        width: '140px', 
+        backgroundColor: '#22c55e', // Tailwind's green-500 
+        // backgroundColor: '#081c28D5',
+        borderRadius: '9999px', 
+        marginLeft: '20px' // match the left margin of h1
+      }} 
+    />
+  </div>
+</BlockHeadContent>
+
       <BlockHeadContent>
   <div className="toggle-wrap nk-block-tools-toggle">
     <Button

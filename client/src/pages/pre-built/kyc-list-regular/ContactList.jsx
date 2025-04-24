@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ChevronDown, MoreVertical, Smile, Code, Trash2, Check, X, Edit } from 'lucide-react';
-
-// import { Search, Trash2, Eye } from "lucide-react";
+import { MoreVertical, Edit, Trash2 } from 'lucide-react';
 import "@/assets/css/contactlist.css";
 
 const ContactList = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch grouped contacts dynamically from the new API route
   useEffect(() => {
     fetch("http://localhost:3000/api/groupedContacts")
       .then((res) => res.json())
@@ -30,101 +27,116 @@ const ContactList = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toISOString().split("T")[0]; // Extract YYYY-MM-DD
+    return new Date(dateString).toISOString().split("T")[0];
   };
 
   return (
-    <div className="campaign-container">
-      <h1 className="dashboard-title">Contact List</h1>
+    <>
+      {/* 👇 Moved outside the main container */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h1 
+    className="dashboard-title" 
+    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '100px 20px 10px' }}
+  >
+    Contact List
+  </h1>
+  <div 
+    style={{ 
+      height: '4px', 
+      width: '100px', 
+      backgroundColor: '#22c55e', // Tailwind's green-500
+      borderRadius: '9999px', 
+      marginLeft: '20px' 
+    }} 
+  />
+</div>
       <header className="header">
-  <div className="header-buttons">
-    <button 
-      className="create-button create-user-button"
-      onClick={() => navigate("/kyc-list-regular")}
-    >
-      Import Contacts
-    </button>
-  </div>
-</header>
-      {/* Search Input */}
-      <div className="search-filter">
-        <div className="search-wrapper">
-          
-          <input
-            type="text"
-            placeholder="Search Contacts List"
-            className="search-input3"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {/* <Search className="search-icon" size={20} /> */}
+        <div className="header-buttons">
+          <button
+            className="create-button create-user-button"
+            onClick={() => navigate("/kyc-list-regular")}
+          >
+            Import Contacts
+          </button>
         </div>
-        
-      </div>
+      </header>
 
-      {/* Contacts Table */}
-      <div className="table-container"  style={{
-    maxHeight: "500px",
-    overflowY: "auto",
-    overflowX: "auto",
-    border: "1px solid #ccc",
-  }}>
-        <table className="campaigns-table">
-          <thead>
-            <tr>
-              <th>List Name</th>
-              <th>Total Rows</th>
-              <th>Mobile</th>
-              <th>Landlines</th>
-              <th>VOIP</th>
-              <th>DNC</th>
-              <th>Duplicates</th>
-              <th>Created</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contacts
-              .filter((group) =>
-                group.sampleName.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((group, index) => (
-                <tr key={index}>
-                  <td>{group.sampleName}</td>
-                  <td>{group.totalRows}</td>
-                  <td>{group.mobilesType || "-"}</td>
-                  <td>{group.landlinesType || "-"}</td>
-                  <td>{group.voip || "-"}</td>
-                  <td>{group.dnc || "-"}</td>
-                  <td>{group.duplicates}</td>
-                  <td>{formatDate(group.created)}</td>
-                  <td>
-                                      <div className="table-actions flex gap-2">
-                                        <button
-                                          className="edit-button action-btn"
-                                          onClick={() => handleEditUser(automation)}
-                                          aria-label="Edit"
-                                        >
-                                          <Edit size={18} />
-                                        </button>
-                                        <button
-                                          className="delete-button action-btn"
-                                          onClick={() => handleDeleteUser(automation.id)}
-                                          aria-label="Delete"
-                                        >
-                                          <Trash2 size={18} />
-                                        </button>
-                                        <button className="action-btn more-options-button" aria-label="More options">
-                                          <MoreVertical size={18} />
-                                        </button>
-                                      </div>
-                                    </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+      <div className="contact-list-container">
+        <div className="search-filter">
+          <div className="search-wrapper">
+            <input
+              type="text"
+              placeholder="Search Contacts List"
+              className="search-input3"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="table-container" style={{
+          maxHeight: "500px",
+          overflowY: "auto",
+          overflowX: "auto",
+          border: "1px solid #ccc",
+        }}>
+          <table className="campaigns-table">
+            <thead>
+              <tr>
+                <th>List Name</th>
+                <th>Total Rows</th>
+                <th>Mobile</th>
+                <th>Landlines</th>
+                <th>VOIP</th>
+                <th>DNC</th>
+                <th>Duplicates</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts
+                .filter((group) =>
+                  group.sampleName.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((group, index) => (
+                  <tr key={index}>
+                    <td>{group.sampleName}</td>
+                    <td>{group.totalRows}</td>
+                    <td>{group.mobilesType || "-"}</td>
+                    <td>{group.landlinesType || "-"}</td>
+                    <td>{group.voip || "-"}</td>
+                    <td>{group.dnc || "-"}</td>
+                    <td>{group.duplicates}</td>
+                    <td>{formatDate(group.created)}</td>
+                    <td>
+                      <div className="table-actions flex gap-2">
+                        <button
+                          className="edit-button action-btn"
+                          onClick={() => console.log("Edit clicked")}
+                          aria-label="Edit"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          className="delete-button action-btn"
+                          onClick={() => handleDelete(group.sampleName)}
+                          aria-label="Delete"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        <button className="action-btn more-options-button" aria-label="More options">
+                          <MoreVertical size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

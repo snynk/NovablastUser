@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, BrowserRouter, useLocation  } from "react-router-dom";
+import PageLoader from "@/components/Loader/PageLoader"; // Import the loader component
 
 import { ProductContextProvider } from "@/pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "@/pages/pre-built/user-manage/UserContext";
@@ -134,17 +135,32 @@ import PublicRoute from "./PublicRoute.jsx";
 
 const ScrollToTop = (props) => {
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Show loader when route changes
+    setIsLoading(true);
+    
+    // Hide loader after a short delay to ensure components have time to load
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [location]);
 
-  return <>{props.children}</>
+  return (
+    <>
+      {isLoading && <PageLoader />}
+      {props.children}
+    </>
+  );
 };
-
 // Inside your Router component
 const Router = () => { 
   return (
-    
     <BrowserRouter basename="/" future={{
       v7_startTransition: true,
       v7_relativeSplatPath: true,

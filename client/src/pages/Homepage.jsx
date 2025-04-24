@@ -7,7 +7,17 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page">
       {/* Main Title */}
-        <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 20px 0'}}>Dashboard</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}>
+    Dashboard
+  </h1>
+  <div style={{
+    height: '4px',
+    width: '80px',
+    backgroundColor: '#22c55e', // Tailwind's green-500
+    borderRadius: '9999px'
+  }} />
+</div>
     
       <div className="dashboard-container">
         {/* Status Card */}

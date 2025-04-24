@@ -12,6 +12,8 @@
     font-weight: 600;
     color: #333;
     margin-bottom: 1.5rem;
+    line-height: 1.2;
+    position: relative; 
   }
   
   /* Header section with buttons */

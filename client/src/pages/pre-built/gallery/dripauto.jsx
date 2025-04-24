@@ -44,10 +44,24 @@ export default function DripAutomation() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="batches-header px-6 pt-8" style={{ color: '#0f172a', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0 20px 0' }}>
-          Drip Automation
-        </h1>
+      <div className="batches-header px-7 pt-8" style={{ color: '#0f172a', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h1 
+    className="dashboard-title" 
+    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0 0 20px' }}
+  >
+    Drip Automation
+  </h1>
+  <div 
+    style={{ 
+      height: '4px', 
+      width: '60%',  // Adjust to span the full width of the container or as required
+      backgroundColor: '#22c55e', // Green color
+      marginTop: '1px',
+      marginLeft:'20px' ,
+    }} 
+  />
+</div>
         <button
           className="create-user-button bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md mt-4"
           onClick={() => setIsModalOpen(true)}

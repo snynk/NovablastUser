@@ -40,12 +40,10 @@ body {
   padding: 20px;
 }
 
-/* .dashboard-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-top  : 80px 0 20px 0;
-} */
+.dashboard-title {
+  line-height: 1.2;
+  position: relative; 
+}
 
 /* Dashboard Container and Grid Layout */
 .dashboard-container {

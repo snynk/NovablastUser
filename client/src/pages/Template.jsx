@@ -56,7 +56,22 @@ const TemplatesManagement = () => {
 
   return (
     <div className="templates-container">
-      <h1 style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 20px 0'}}>Templates</h1>
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h1 
+    className="dashboard-title" 
+    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}
+  >
+    Templates
+  </h1>
+  <div 
+    style={{ 
+      height: '4px', 
+      width: '100px', 
+      backgroundColor: '#22c55e', // Tailwind's green-500
+      borderRadius: '9999px',
+    }} 
+  />
+</div>
 
       {/* Tabs */}
       <div className="tabs-container">
