@@ -235,6 +235,7 @@ const handleImport = () => {
         <Button
           className="btn-next1"
           color="primary"
+        
           disabled={!fileSelected} // Disabled until a file is selected
           onClick={handleNextStep}
         >

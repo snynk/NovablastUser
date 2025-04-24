@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fileUpload = require("express-fileupload");
 
 // Routes
 const assignNumberRoutes = require('./routes/assignNumberRoutes');
@@ -10,9 +11,13 @@ const authRoutes = require('./routes/authRoutes');
 const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
+const subUserRoutes = require("./routes/subUserRoutes");
 
 // Init express
 const app = express();
+app.use(express.json());
+app.use(fileUpload()); // ✅ Enables file uploads
+app.use("/uploads", express.static("uploads")); // ✅ Serve uploaded images
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/suny2';
 
@@ -35,6 +40,7 @@ app.use('/api/assignnumbers', assignNumberRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes); // Example endpoint: /contacts/import
 app.use("/api/groupedContacts", groupedContactRoutes);
+app.use("/api/subusers", subUserRoutes);
 
 // Default route
 app.get('/', (req, res) => {

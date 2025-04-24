@@ -3,6 +3,8 @@ import "@/assets/css/useracount.css";
 import { Search, ChevronDown, MoreVertical, Smile, Code, Trash2, Check, X, Edit } from 'lucide-react';
 
 const UserManagement = () => {
+  const user = JSON.parse(localStorage.getItem("user")); // ✅ Get stored user object
+  const loggedInCustomerId = user && user.id ? user.id : null; // ✅ Use "id" instead of "_id"
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
@@ -22,22 +24,17 @@ const UserManagement = () => {
     avatar: null, // Add avatar field
   });
 
-  // Simulate fetching users data
   useEffect(() => {
-    // Mock data
-    const mockUsers = [
-      {
-        id: 'JS',
-        fullName: 'Jonathan Sandoval',
-        status: 'Active',
-        role: 'Agent',
-        joinedDate: '4/10/2025',
-        avatar: null, // Example avatar
-      }
-    ];
+    if (!loggedInCustomerId) {
+      alert("Customer ID is missing! sunil");
+      return;
+    }
 
-    setUsers(mockUsers);
-  }, []);
+    fetch(`http://localhost:3000/api/subusers/${loggedInCustomerId}`)
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error("Error fetching subusers:", err));
+  }, [loggedInCustomerId]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -68,79 +65,105 @@ const UserManagement = () => {
       [name]: type === 'checkbox' ? checked : files ? files[0] : value, // Handle file input
     });
   };
+ // ✅ Create a subuser associated with a customer
+ const handleSaveUser = async () => {
+  if (!loggedInCustomerId) {
+    console.error("Error: loggedInCustomerId is undefined!");
+    alert("Customer ID is missing!");
+    return;
+  }
 
-  const handleSaveUser = () => {
-    // Create new user logic
-    const newUserData = {
-      id: `${newUser.firstName.charAt(0)}${newUser.lastName.charAt(0)}`,
-      fullName: `${newUser.firstName} ${newUser.lastName}`,
-      status: newUser.active ? 'Active' : 'Inactive',
-      role: newUser.role,
-      joinedDate: new Date().toLocaleDateString(),
-      avatar: newUser.avatar, // Save avatar
-    };
+  const formData = new FormData();
+  formData.append("customerId", loggedInCustomerId);
+  formData.append("firstName", newUser.firstName);
+  formData.append("lastName", newUser.lastName);
+  formData.append("email", newUser.email);
+  formData.append("role", newUser.role);
+  formData.append("active", newUser.active);
+  if (newUser.avatar) {
+    formData.append("avatar", newUser.avatar);
+  }
 
-    setUsers([...users, newUserData]);
-    setShowCreateModal(false);
+  console.log("Sending request with data:", Object.fromEntries(formData));
 
-    // Reset form
-    setNewUser({
-      firstName: '',
-      lastName: '',
-      email: '',
-      aliasName: '',
-      companyName: '',
-      phoneNumber: '',
-      timezone: '',
-      role: '',
-      active: true,
-      avatar: null,
+  try {
+    const response = await fetch("http://localhost:3000/api/subusers", {
+      method: "POST",
+      body: formData,
     });
-  };
 
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setNewUser({
-      firstName: user.fullName.split(' ')[0],
-      lastName: user.fullName.split(' ')[1],
-      role: user.role,
-      active: user.status === 'Active',
-      avatar: user.avatar,
-    });
-    setShowEditModal(true);
-  };
-
-  const handleUpdateUser = () => {
-    const updatedUsers = users.map(user =>
-      user.id === selectedUser.id
-        ? {
-          ...user,
-          fullName: `${newUser.firstName} ${newUser.lastName}`,
-          status: newUser.active ? 'Active' : 'Inactive',
-          role: newUser.role,
-          avatar: newUser.avatar,
-        }
-        : user
-    );
-    setUsers(updatedUsers);
-    setShowEditModal(false);
-    setSelectedUser(null);
-  };
-
-  const handleDeleteUser = (userId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
-    if (confirmDelete) {
-      const updatedUsers = users.filter(user => user.id !== userId);
-      setUsers(updatedUsers);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
     }
-  };
 
-  // Filter users based on search query and selected role
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = selectedRole ? user.role === selectedRole : true;
-    return matchesSearch && matchesRole;
+    const createdUser = await response.json();
+    setUsers([...users, createdUser]);
+    setShowCreateModal(false);
+  } catch (error) {
+    console.error("Failed to create user:", error);
+  }
+};
+
+
+
+ // ✅ Edit user details
+ const handleEditUser = (user) => {
+  setSelectedUser(user);
+  setNewUser({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
+    active: user.active,
+    avatar: user.avatar ? user.avatar : null, // ✅ Ensure avatar is valid,
   });
+  setShowEditModal(true);
+};
+
+ // ✅ Update a subuser
+ const handleUpdateUser = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/subusers/${selectedUser._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newUser),
+    });
+
+    const updatedUser = await response.json();
+    if (response.ok) {
+      setUsers(users.map((user) => (user._id === selectedUser._id ? updatedUser : user)));
+      setShowEditModal(false);
+    } else {
+      console.error("Error updating subuser:", updatedUser.error);
+    }
+  } catch (error) {
+    console.error("Failed to update subuser:", error);
+  }
+};
+
+ // ✅ Delete a subuser
+ const handleDeleteUser = async (userId) => {
+  if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/subusers/${userId}`, { method: "DELETE" });
+
+    if (response.ok) {
+      setUsers(users.filter((user) => user._id !== userId));
+    } else {
+      console.error("Error deleting subuser.");
+    }
+  } catch (error) {
+    console.error("Failed to delete subuser:", error);
+  }
+};
+
+const filteredUsers = Array.isArray(users) ? users.filter(user => {
+  const matchesSearch = user.firstName.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesRole = selectedRole ? user.role === selectedRole : true;
+  return matchesSearch && matchesRole;
+}) : []; // ✅ Ensure users.filter always runs on an array
+
 
   return (
     <div className="user-management-container" style={{ color: '#0f172a', margin: '80px 0 20px 0' }}>
@@ -164,8 +187,7 @@ const UserManagement = () => {
             >
               <option value="">Roles</option>
               <option value="Admin">Admin</option>
-              <option value="Agent">Agent</option>
-              <option value="User">User</option>
+               <option value="User">User</option>
             </select>
             <button onClick={handleReset} className="reset-button">Reset</button>
           </div>
@@ -192,28 +214,27 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {filteredUsers.map(user => (
-              <tr key={user.id} className="user-row">
+              <tr key={user._id} className="user-row">
                 <td className="user-name">
-                  <span className="user-initials">{user.id}</span>
-                  <span>{user.fullName}</span>
+                {user.firstName} {user.lastName}
                 </td>
                 <td>
-                  <span className={`status-badge ${user.status.toLowerCase()}`}>
-                    {user.status}
-                  </span>
+                <span className={`status-badge ${user.active ? "active" : "inactive"}`}>
+    {user.active ? "Active" : "Inactive"}
+  </span>
                 </td>
                 <td>
                   <span className={`role-badge ${user.role.toLowerCase()}`}>
                     {user.role}
                   </span>
                 </td>
-                <td>{user.joinedDate}</td>
+                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td>
         <div className="table-actions">
           <button className="edit-button action-btn" onClick={() => handleEditUser(user)} aria-label="Edit">
             <Edit size={18} />
           </button>
-          <button className="delete-button action-btn" onClick={() => handleDeleteUser(user.id)} aria-label="Delete">
+          <button className="delete-button action-btn" onClick={() => handleDeleteUser(user._id)} aria-label="Delete">
             <Trash2 size={18} />
           </button>
           <button className="action-btn more-options-button" aria-label="More options">
@@ -371,8 +392,7 @@ const UserManagement = () => {
                     required
                   >
                     <option value="">Select</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Agent">Agent</option>
+                    <option value="Admin">Admin</option>                    
                     <option value="User">User</option>
                   </select>
                 </div>
@@ -409,8 +429,10 @@ const UserManagement = () => {
             <div className="modal-body">
               <div className="avatar-section">
                 <div className="avatar-container">
-                  {newUser.avatar ? (
+                {newUser.avatar && typeof newUser.avatar === "object" ? (
                     <img src={URL.createObjectURL(newUser.avatar)} alt="User Avatar" className="avatar-preview" />
+                  ) : newUser.avatar ? (
+                    <img src={`http://localhost:3000${newUser.avatar}`} alt="User Avatar" className="avatar-preview" /> // ✅ Add base URL for correct image rendering
                   ) : (
                     <div className="avatar-placeholder">N/A</div>
                   )}
@@ -468,8 +490,7 @@ const UserManagement = () => {
                     required
                   >
                     <option value="">Select</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Agent">Agent</option>
+                    <option value="Admin">Admin</option>                   
                     <option value="User">User</option>
                   </select>
                 </div>
