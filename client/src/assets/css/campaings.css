@@ -28,14 +28,26 @@ body {
 }
 
 .campaign-container {
-  padding: 2rem;
-  max-width: 1600px;
-  margin-top: 70px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  margin: 10px auto 30px;
+  border: 1px solid var(--border-color);
+  transition: transform var(--animation-duration), box-shadow var(--animation-duration);
+  width: 100%;
+  max-width: 1200px;
+  min-height: 600px;
+  overflow: hidden;
+  padding: 30px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* margin-top: 100px; */
 }
 
 /* Header styles */
 /* Header styles */
-.header {
+/* .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,13 +56,15 @@ body {
   background-color: #ffffff7d;
   height: 100px;
   border-radius: 10px;
-}
+} */
 
 .dashboard-title {
   font-size: 2rem;
   font-weight: 700;
   color: #0f172a;
-  margin: 0px 0 20px 0;
+  margin: 100px 20px 10px;
+  line-height: 1.2;
+  position: relative; 
 }
 
 

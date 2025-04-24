@@ -198,8 +198,22 @@ const filteredUsers = Array.isArray(users) ? users.filter(user => {
 
   return (
     <div className="user-management-container" style={{ color: '#0f172a', margin: '80px 0 20px 0' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0 20px 0' }}>User Accounts</h1>
-      <div className="user-management-header">
+ <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h1 
+    className="dashboard-title" 
+    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0' }}
+  >
+    User Accounts
+  </h1>
+  <div 
+    style={{ 
+      height: '4px', 
+      width: '10%',  // Adjust to span the full width of the container or as required
+      backgroundColor: '#22c55e', // Green color
+      marginTop: '1px' 
+    }} 
+  />
+</div>      <div className="user-management-header">
         <div className="search-filter-container">
           <div className="search-container">
             <input
