@@ -90,6 +90,7 @@ import Campaigns from "@/pages/pre-built/Campaigns-table/Campaigns";
 import Batches from "@/pages/pre-built/gallery/Batches";
 import Dripauto from "@/pages/pre-built/gallery/Dripauto";
 import Useracount from "@/pages/pre-built/gallery/Useracount";
+import Settings from "@/pages/pre-built/gallery/Settings";
 import ReactToastify from "@/pages/components/misc/ReactToastify";
 
 import AppMessages from "@/pages/app/messages/Messages";
@@ -220,6 +221,8 @@ const Router = () => {
               <Route path="Batches" element={<Batches />}></Route>
               <Route path="Dripauto" element={<Dripauto />}></Route>
               <Route path="useracount" element={<Useracount />}></Route>
+              <Route path="Settings" element={<Settings />}></Route>
+
 
 
 

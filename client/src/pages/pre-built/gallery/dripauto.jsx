@@ -57,13 +57,13 @@ export default function DripAutomation() {
       height: '4px', 
       width: '60%',  // Adjust to span the full width of the container or as required
       backgroundColor: '#22c55e', // Green color
-      marginTop: '1px',
+      marginTop: '10px',
       marginLeft:'20px' ,
     }} 
   />
 </div>
         <button
-          className="create-user-button bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md mt-4"
+          className="create-button create-user-button"
           onClick={() => setIsModalOpen(true)}
         >
           Create New Drip Automation
@@ -117,23 +117,14 @@ export default function DripAutomation() {
                     </td>
                     <td>
                       <div className="table-actions flex gap-2">
-                        <button
-                          className="edit-button action-btn"
-                          onClick={() => handleEditUser(automation)}
-                          aria-label="Edit"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          className="delete-button action-btn"
-                          onClick={() => handleDeleteUser(automation.id)}
-                          aria-label="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                        <button className="action-btn more-options-button" aria-label="More options">
-                          <MoreVertical size={18} />
-                        </button>
+                  <div className="actions-cell">
+                    <button className="icon-button">
+                      <span className="edit-icon">✏️</span>
+                    </button>
+                    <button className="icon-button">
+                      <span className="delete-icon">🗑️</span>
+                    </button>
+                  </div>
                       </div>
                     </td>
                   </tr>
