@@ -8,7 +8,7 @@ import {
   Block,
   BlockBetween,
   BlockDes,
-  BlockHead,,
+  BlockHead,
   BlockHeadContent,
   BlockTitle,
   Icon,
