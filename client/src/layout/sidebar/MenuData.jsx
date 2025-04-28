@@ -104,7 +104,7 @@ const menu = [
   {
     icon: "setting",
     text: "Setting",
-    link: "/Setting",
+    link: "/Settings",
   },
   {
     icon: "img",
