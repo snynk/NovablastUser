@@ -1,140 +1,400 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  ChevronDown, ChevronUp, ChevronLeft, ChevronRight, 
+  ChevronsLeft, ChevronsRight, X, Smile, AlertCircle, MessageSquare, Eye
+} from 'lucide-react';
 import "@/assets/css/template.css";
-import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MoreVertical, X, Smile } from 'lucide-react';
+import { 
+  getTemplates, createTemplate, updateTemplate, deleteTemplate, searchTemplates 
+} from '../services/templateService';
+
+// Toast notification component
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+  
+  const icons = {
+    success: <Smile className="toast-icon" />,
+    error: <AlertCircle className="toast-icon" />,
+  };
+  
+  return (
+    <div className={`toast-notification ${type}`}>
+      {icons[type]}
+      <span className="toast-message">{message}</span>
+      <button className="toast-close" onClick={onClose}><X size={16} /></button>
+    </div>
+  );
+};
+
+// DeleteConfirmationModal component
+const DeleteConfirmationModal = ({ isOpen, templateName, onCancel, onConfirm }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="modal-overlay">
+      <div className="delete-modal">
+        <h3>Delete Template</h3>
+        <p>Are you sure you want to delete <strong>"{templateName}"</strong>?</p>
+        <p>This action cannot be undone.</p>
+        <div className="delete-modal-actions">
+          <button className="cancel-button" onClick={onCancel}>Cancel</button>
+          <button className="delete-button" onClick={onConfirm}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+  // View Template Modal Component
+  const ViewTemplateModal = ({ isOpen, template, onClose }) => {
+    if (!isOpen || !template) return null;
+    
+    return (
+      <div className="modal-overlay5 view-modal-overlay5">
+        <div className="view-modal1">
+          <div className="view-modal-header1">
+            <h5>View Template</h5>
+            <button className="close-button" onClick={onClose}><X size={18} /></button>
+          </div>
+          
+          <div className="view-modal-content1">
+            <div className="view-template-details1">
+              <div className="detail-row1">
+                <div className="detail-label1">Template Name:</div>
+                <div className="detail-value1">{template.name}</div>
+              </div>
+              
+              <div className="detail-row1">
+                <div className="detail-label1">Template Type:</div>
+                <div className="detail-value1">{template.type}</div>
+              </div>
+              
+              <div className="detail-row1">
+                <div className="detail-label1">Template ID:</div>
+                <div className="detail-value1">{template._id}</div>
+              </div>
+              
+              <div className="detail-row">
+                <div className="detail-label1">Created Date:</div>
+                <div className="detail-value1">{new Date(template.created).toLocaleDateString()}</div>
+              </div>
+              
+              <div className="detail-row1">
+                <div className="detail-label1">Performance:</div>
+                <div className="detail-value1">
+                  <span className="performance-stat1">Delivery: {template.delivery?.toFixed(2) || '0.00'}%</span>
+                  <span className="performance-stat1">Response: {template.response?.toFixed(2) || '0.00'}%</span>
+                </div>
+              </div>
+            </div>
+            
+            {template.messages && template.messages.length > 0 && (
+              <div className="view-template-messages1">
+                <h4>Messages</h4>
+                <div className="message-list1">
+                  {template.messages.map((message, index) => (
+                    <div key={index} className="message-item1">
+                      <div className="message-header1">
+                        <div className="message-number1">Message {message.messageNumber}</div>
+                      </div>
+                      <div className="message-body1">{message.content}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="view-modal-footer1">
+            <button className="close-view-button1" onClick={onClose}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+// Message Preview Component
+const MessagePreview = ({ messages }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  if (!messages || messages.length === 0) {
+    return <div className="no-messages">No messages</div>;
+  }
+  
+  return (
+    <div className="message-row message-preview-container">
+      <div className="message-content">
+        <div className="message-text">{messages[0]?.content || 'No message content'}</div>
+        <button className="expand-button" onClick={() => setExpanded(!expanded)}>
+          {expanded ? <ChevronUp className="expand-icon" /> : <ChevronDown className="expand-icon" />}
+        </button>
+      </div>
+
+      {/* dropdown message show */}
+      
+      {/* {expanded && messages.length > 1 && (
+        <div className="additional-messages">
+          {messages.slice(1).map((msg, index) => (
+            <div key={index} className="additional-message">
+              <div className="message-number">Message {msg.messageNumber}:</div>
+              <div className="message-text">{msg.content}</div>
+            </div>
+          ))}
+        </div>
+      )} */}
+      
+      {!expanded && messages.length > 1 && (
+        <div className="message-count1">
+          <MessageSquare size={14} />
+          <span>{messages.length} messages</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const TemplatesManagement = () => {
+  // State variables
   const [activeTab, setActiveTab] = useState('initial');
-  const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editTemplateId, setEditTemplateId] = useState(null);
   const [activeModalMessage, setActiveModalMessage] = useState(1);
-  const [messageContent, setMessageContent] = useState('');
+  const [messageContents, setMessageContents] = useState({1: '', 2: '', 3: '', 4: '', 5: ''});
   const [templateName, setTemplateName] = useState('');
   const [templateType, setTemplateType] = useState('Residential');
   const [totalVariations, setTotalVariations] = useState(0);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeMessageCount, setActiveMessageCount] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    entriesPerPage: 50
+  });
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    templateId: null,
+    templateName: ''
+  });
+  // View template modal state
+  const [viewModal, setViewModal] = useState({
+    isOpen: false,
+    template: null
+  });
+  // Form validation
+  const [formErrors, setFormErrors] = useState({
+    templateName: '',
+    message1: ''
+  });
   
-  // Template Data (keeping your original data)
-  const initialTemplateData = [
-    {
-      name: "4",
-      message: <>Hi there! I'm reaching out about <span className="property-address">{'{PropertyAddress}'}</span>. Would you be open to reviewing a <span className="proposal-text">{'{Proposal? /Proposal!/Proposal}'}</span> Reply with "yes" or "no" to stop all messages. Thanks<span className="proposal-text">{': Marcy/Marcy/, Marcy'}</span></>,
-      type: "Residential",
-      delivery: "95.98%",
-      response: "16.77%",
-      date: "4/9/2025"
-    },
-    {
-      name: "3",
-      message: <><span className="proposal-text">{'{Hey!/Hi/Hello}'}</span> there I'm reaching out about <span className="property-address">{'{PropertyAddress}'}</span> would you be open to reviewing a <span className="proposal-text">{'{offer /offer letter / offer?}'}</span> Reply with "yes" or "no" to stop all messages Thanks Marcy</>,
-      type: "Residential",
-      delivery: "95.88%",
-      response: "19.12%",
-      date: "4/9/2025"
-    },
-    {
-      name: "2",
-      message: <><span className="proposal-text">{'{Hey!/Hi/Hello}'}</span> there I'm reaching out about <span className="property-address">{'{PropertyAddress}'}</span> would you be able to reviewing a <span className="proposal-text">{'{proposal? /proposal!/proposal}'}</span> Reply with "yes" or "no" to stop all messages Thanks Marcy</>,
-      type: "Residential",
-      delivery: "95.05%",
-      response: "17.41%",
-      date: "4/9/2025"
-    }
-  ];
+  // Fetch templates on component mount and tab change
+  useEffect(() => {
+    fetchTemplates();
+  }, [activeTab]);
 
-  // Quick Replies Tab Data
-  const quickRepliesData = [
-    {
-      id: "1",
-      title: "No worries when would be a good time to touch base?",
-      category: "My templates1",
-      message: "No worries when would be a good time to touch base?"
-    }
-  ];
+  // Toast handler
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+  };
 
-  // Follow Up Messages Tab Data
-  const followUpData = [
-    {
-      name: "Template 1",
-      message: <>[Hi/Hello/Hey] {'{FirstName}'}, {'{AliasRepName}'} at {'{CompanyName}'}. We're [keen on/open in/focused on] houses like {'{PropertyAddress}'} for our next project. [Wondering/Thinking/Contemplating] if a sale has crossed your mind? Let's talk.</>,
-      type: "Residential",
-      delivery: "0.00%",
-      response: "0.00%",
-      date: "4/9/2025"
-    },
-    {
-      name: "Template 2",
-      message: <>[Hi/Hello/Hey] {'{FirstName}'}, {'{AliasRepName}'} with {'{CompanyName}'}. We're on the lookout to embrace homes into our portfolio and would be delighted to consider {'{PropertyAddress}'} with an easygoing proposal. [Think this fits your plans/See an opportunity here/Wonder about the possibilities]?</>,
-      type: "Commercial",
-      delivery: "0.00%",
-      response: "0.00%",
-      date: "4/9/2025"
+  // Fetch templates
+  const fetchTemplates = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await getTemplates({ templateType: activeTab });
+      setTemplates(data);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: Math.ceil(data.length / prev.entriesPerPage),
+        currentPage: 1
+      }));
+    } catch (err) {
+      setError('Failed to fetch templates');
+      showToast('Failed to fetch templates', 'error');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  // Function to open the modal
-  const handleOpenModal = () => {
+  // Handle view template
+  const handleOpenViewModal = (template) => {
+    setViewModal({
+      isOpen: true,
+      template
+    });
+  };
+
+  // Handle search
+  const handleSearch = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    try {
+      if (value.trim()) {
+        const data = await searchTemplates(value, activeTab);
+        setTemplates(data);
+      } else {
+        fetchTemplates();
+      }
+    } catch (err) {
+      showToast('Search failed. Please try again.', 'error');
+    }
+  };
+
+  // Form validation
+  const validateForm = () => {
+    const errors = {
+      templateName: !templateName.trim() ? 'Template name is required' : '',
+      message1: !messageContents[1].trim() ? 'Message 1 is required' : ''
+    };
+    
+    setFormErrors(errors);
+    return !Object.values(errors).some(error => error);
+  };
+
+  // Modal functions
+  const handleOpenModal = (template = null) => {
+    if (template) {
+      // Edit mode
+      setIsEditMode(true);
+      setEditTemplateId(template._id);
+      setTemplateName(template.name);
+      setTemplateType(template.type);
+      
+      // Set message contents
+      const newMessageContents = { ...messageContents };
+      template.messages.forEach(msg => {
+        newMessageContents[msg.messageNumber] = msg.content;
+      });
+      setMessageContents(newMessageContents);
+      
+      // Calculate variations and set active message count
+      calculateTotalVariations(newMessageContents[1] || '');
+      setActiveMessageCount(Math.max(...template.messages.map(msg => msg.messageNumber)));
+    } else {
+      // Create mode
+      resetModalForm();
+    }
+    
     setIsModalOpen(true);
     setActiveModalMessage(1);
-    setTemplateType('Residential');
+    setFormErrors({ templateName: '', message1: '' });
+  };
+
+  const resetModalForm = () => {
+    setIsEditMode(false);
+    setEditTemplateId(null);
     setTemplateName('');
-    setMessageContent('');
+    setTemplateType('Residential');
+    setMessageContents({1: '', 2: '', 3: '', 4: '', 5: ''});
     setTotalVariations(0);
+    setActiveMessageCount(1);
   };
 
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  // Save template
+  const handleSaveTemplate = async () => {
+    if (!validateForm()) return;
+    
+    try {
+      setError('');
+      
+      // Prepare messages array
+      const messages = Object.entries(messageContents)
+        .filter(([number, content]) => content.trim() && parseInt(number) <= activeMessageCount)
+        .map(([number, content]) => ({
+          messageNumber: parseInt(number),
+          content
+        }));
+      
+      const templateData = {
+        name: templateName,
+        type: templateType,
+        messages,
+        templateType: activeTab,
+      };
+      
+      if (isEditMode) {
+        await updateTemplate(editTemplateId, templateData);
+        showToast(`Template "${templateName}" updated successfully`);
+      } else {
+        await createTemplate(templateData);
+        showToast(`Template "${templateName}" created successfully`);
+      }
+      
+      fetchTemplates();
+      setIsModalOpen(false);
+    } catch (err) {
+      setError(err.toString());
+      showToast(`Failed to ${isEditMode ? 'update' : 'create'} template`, 'error');
+    }
   };
 
-  // Function to handle template creation
-  const handleCreateTemplate = () => {
-    console.log('New template created:', {
-      name: templateName,
-      type: templateType,
-      message: messageContent
+  // Delete template
+  const handleOpenDeleteModal = (template) => {
+    setDeleteModal({
+      isOpen: true,
+      templateId: template._id,
+      templateName: template.name
     });
-    // Here you would typically add the new template to your state or send to API
-    setIsModalOpen(false);
   };
 
-  // Function to handle next message
-  const handleNextMessage = () => {
-    setActiveModalMessage(prev => prev + 1);
-  };
-
-  // Function to handle back action
-  const handleBack = () => {
-    if (activeModalMessage > 1) {
-      setActiveModalMessage(prev => prev - 1);
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteTemplate(deleteModal.templateId);
+      showToast(`Template "${deleteModal.templateName}" deleted successfully`, 'success');
+      fetchTemplates();
+    } catch (err) {
+      showToast('Failed to delete template', 'error');
+    } finally {
+      setDeleteModal({ isOpen: false, templateId: null, templateName: '' });
     }
   };
 
-  // Function to switch between message tabs in modal
-  const handleMessageTabChange = (messageNum) => {
-    setActiveModalMessage(messageNum);
+  // Message handling
+  const handleMessageChange = (e) => {
+    const content = e.target.value;
+    setMessageContents(prev => ({...prev, [activeModalMessage]: content}));
+    
+    if (activeModalMessage === 1) {
+      calculateTotalVariations(content);
+      setFormErrors(prev => ({...prev, message1: !content.trim() ? 'Message 1 is required' : ''}));
+    }
   };
 
-  // Function to add a text spinner
   const handleAddTextSpinner = () => {
-    const updatedContent = messageContent + '{option1/option2/option3}';
-    setMessageContent(updatedContent);
-    calculateVariations(updatedContent);
-  };
-
-  // Function to add a merge field
-  const handleAddMergeField = () => {
-    const updatedContent = messageContent + '{PropertyAddress}';
-    setMessageContent(updatedContent);
-    calculateVariations(updatedContent);
-  };
-
-  // Function to calculate variations
-  const calculateVariations = (content) => {
-    // Simple logic to count variations based on spinners
-    const matches = content.match(/\{[^{}]*\/[^{}]*\}/g) || [];
-    if (matches.length === 0) {
-      setTotalVariations(0);
-      return;
+    const currentContent = messageContents[activeModalMessage] || '';
+    const updatedContent = currentContent + '{option1/option2/option3}';
+    
+    setMessageContents(prev => ({...prev, [activeModalMessage]: updatedContent}));
+    
+    if (activeModalMessage === 1) {
+      calculateTotalVariations(updatedContent);
+      setFormErrors(prev => ({...prev, message1: ''}));
     }
+  };
+
+  const handleAddMergeField = () => {
+    const currentContent = messageContents[activeModalMessage] || '';
+    const updatedContent = currentContent + '{PropertyAddress}';
+    
+    setMessageContents(prev => ({...prev, [activeModalMessage]: updatedContent}));
+    
+    if (activeModalMessage === 1) {
+      calculateTotalVariations(updatedContent);
+      setFormErrors(prev => ({...prev, message1: ''}));
+    }
+  };
+
+  const calculateTotalVariations = (content) => {
+    const matches = content.match(/\{[^{}]*\/[^{}]*\}/g) || [];
     
     let totalVars = 1;
     matches.forEach(match => {
@@ -145,508 +405,288 @@ const TemplatesManagement = () => {
     setTotalVariations(totalVars);
   };
 
-  // Render active tab content
-  const renderTabContent = () => {
-    switch(activeTab) {
-      case 'initial':
-        return (
-          <>
-            <div className="filters-container">
-              <div className="search-container">
-                <input
-                  type="text"
-                  placeholder="Search initial template"
-                  className="search-input"
-                />
-                {/* <Search className="search-icon" /> */}
-              </div>
-              
-              <div className="right-filters">
-                <span className="category-label">Template category</span>
-                <div className="select-container">
-                  <select className="category-select">
-                    <option>All</option>
-                  </select>
-                  <ChevronDown className="select-icon" />
-                </div>
-                
-                <button className="create-button create-user-button" onClick={handleOpenModal}>
-                  Create New
-                </button>
-              </div>
-            </div>
-            
-            <div className="table-container">
-              <table className="templates-table">
-                <thead>
-                  <tr>
-                    <th>
-                      <div className="th-content">
-                        <span>Name</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
+  // Pagination
+  const getCurrentPageData = () => {
+    const { currentPage, entriesPerPage } = pagination;
+    const start = (currentPage - 1) * entriesPerPage;
+    return templates.slice(start, start + entriesPerPage);
+  };
+
+  const handlePageChange = (page) => {
+    setPagination(prev => ({...prev, currentPage: page}));
+  };
+
+  const handleEntriesPerPageChange = (e) => {
+    const value = parseInt(e.target.value);
+    setPagination({
+      entriesPerPage: value,
+      totalPages: Math.ceil(templates.length / value),
+      currentPage: 1
+    });
+  };
+
+  // formate date
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Render table
+  const renderTable = () => {
+    const currentTemplates = getCurrentPageData();
+    
+    if (loading) return <div className="loading-indicator">Loading templates...</div>;
+    if (error) return <div className="error-message"><AlertCircle size={20} /><span>{error}</span></div>;
+    if (currentTemplates.length === 0) return <div className="no-data-message">No templates found.</div>;
+    
+    if (activeTab === 'initial' || activeTab === 'followup') {
+      return (
+        <div className="table-wrapper">
+          <div className="table-scroll">
+            <table className="template-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Messages</th>
+                  <th>Type</th>
+                  <th>Delivery %</th>
+                  <th>Response %</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentTemplates.map((template) => (
+                  <tr key={template._id}>
+                    <td className="template-name">{template.name}</td>
+                    <td className="template-messages">
+                      <MessagePreview messages={template.messages} />
+                    </td>
+                    <td>{template.type}</td>
+                    <td>{template.delivery?.toFixed(2) || '0.00'}%</td>
+                    <td>{template.response?.toFixed(2) || '0.00'}%</td>
+                    <div className="detail-value1">{formatDate(template.created)}</div>                    
+                    <td>
+                      <div className="action-buttons">
+                      <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
+                        <span className="view-icon">👁️</span> {/* Eye emoji for view */}
+                      </button>
+                          <button className="icon-button" onClick={() => handleOpenModal(template)} title="Edit template">✏️</button>
+                        <button className="icon-button" onClick={() => handleOpenDeleteModal(template)} title="Delete template">🗑️</button>
                       </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Messages</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Type</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Delivery %</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Response %</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Date</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Action</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>                  </tr>
-                </thead>
-                <tbody>
-                  {initialTemplateData.map((template, index) => (
-                    <tr key={index}>
-                      <td className="name-cell">{template.name}</td>
-                      <td className="message-cell">
-                        <div className="message-content">
-                          <div className="message-text">{template.message}</div>
-                          <ChevronDown className="expand-icon" />
-                        </div>
-                      </td>
-                      <td>{template.type}</td>
-                      <td>{template.delivery}</td>
-                      <td>{template.response}</td>
-                      <td>{template.date}</td>
-                      <td>
-                  <div className="actions-cell">
-                    <button className="icon-button">
-                      <span className="edit-icon">✏️</span>
-                    </button>
-                    <button className="icon-button">
-                      <span className="delete-icon">🗑️</span>
-                    </button>
-                  </div>
-                </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              <div className="pagination-container">
-                <div className="total-info">
-                  Total: <span>6</span>
-                </div>
-                
-                <div className="pagination-controls">
-                  <button className="pagination-button">
-                    <ChevronsLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button active">
-                    1
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronRight className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronsRight className="pagination-icon" />
-                  </button>
-                </div>
-                
-                <div className="entries-selector">
-                  <span>Entries</span>
-                  <div className="entries-select-container">
-                    <select className="entries-select">
-                      <option>50</option>
-                    </select>
-                    <ChevronDown className="entries-select-icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-        
-      case 'quick':
-        return (
-          <>
-            <div className="filters-container">
-              <div className="search-container">
-                <input
-                  type="text"
-                  placeholder="Search quick reply"
-                  className="search-input"
-                />
-                {/* <Search className="search-icon" /> */}
-              </div>
-              
-              <div className="right-filters">
-                <span className="category-label">Template Type</span>
-                <div className="select-container">
-                  <select className="category-select">
-                    <option>My templates1</option>
-                  </select>
-                  <ChevronDown className="select-icon" />
-                </div>
-                
-                <button className="create-button" onClick={handleOpenModal}>
-                  Create New
-                </button>
-              </div>
-            </div>
-            
-            <div className="table-container">
-              <table className="templates-table quick-table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Message</th>
-                    <th>Action</th>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {quickRepliesData.map((template, index) => (
-                    <tr key={index}>
-                      <td>{template.id}</td>
-                      <td>{template.title}</td>
-                      <td>{template.category}</td>
-                      <td>{template.message}</td>
-                      <td>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    } else if (activeTab === 'quick') {
+      return (
+        <table className="templates-table quick-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Message</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentTemplates.map((template) => (
+              <tr key={template._id}>
+                <td>{template.name}</td>
+                <td>{template.category || 'My templates'}</td>
+                <td><MessagePreview messages={template.messages} /></td>
+                <td>
                   <div className="actions-cell">
-                    <button className="icon-button">
+                  <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
+                    <span className="view-icon">👁️</span> {/* Eye emoji for view */}
+                  </button>
+                    <button className="icon-button" onClick={() => handleOpenModal(template)} title="Edit template">
                       <span className="edit-icon">✏️</span>
                     </button>
-                    <button className="icon-button">
+                    <button className="icon-button" onClick={() => handleOpenDeleteModal(template)} title="Delete template">
                       <span className="delete-icon">🗑️</span>
                     </button>
                   </div>
                 </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              <div className="pagination-container">
-                <div className="total-info">
-                  Total: <span>1</span>
-                </div>
-                
-                <div className="pagination-controls">
-                  <button className="pagination-button">
-                    <ChevronsLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button active">
-                    1
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronRight className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronsRight className="pagination-icon" />
-                  </button>
-                </div>
-                
-                <div className="entries-selector">
-                  <span>Entries</span>
-                  <div className="entries-select-container">
-                    <select className="entries-select">
-                      <option>50</option>
-                    </select>
-                    <ChevronDown className="entries-select-icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-        
-      case 'followup':
-        return (
-          <>
-            <div className="filters-container">
-              <div className="search-container">
-                <input
-                  type="text"
-                  placeholder="Search follow up template"
-                  className="search-input"
-                />
-                {/* <Search className="search-icon" /> */}
-              </div>
-              
-              <div className="right-filters">
-                <span className="category-label">Template category</span>
-                <div className="select-container">
-                  <select className="category-select">
-                    <option>All (2)</option>
-                  </select>
-                  <ChevronDown className="select-icon" />
-                </div>
-                
-                <button className="create-button" onClick={handleOpenModal}>
-                  Create New
-                </button>
-              </div>
-            </div>
-            
-            <div className="table-container">
-              <table className="templates-table follow-up-table">
-                <thead>
-                  <tr>
-                    <th>
-                      <div className="th-content">
-                        <span>Name</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Messages</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Type</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Delivery %</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Response %</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th>
-                      <div className="th-content">
-                        <span>Date</span>
-                        <div className="sort-icons">
-                          <ChevronUp className="sort-icon" />
-                          <ChevronDown className="sort-icon" />
-                        </div>
-                      </div>
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {followUpData.map((template, index) => (
-                    <tr key={index}>
-                      <td className="name-cell">{template.name}</td>
-                      <td className="message-cell">
-                        <div className="message-content">
-                          <div className="message-text">{template.message}</div>
-                          <ChevronDown className="expand-icon" />
-                        </div>
-                      </td>
-                      <td>{template.type}</td>
-                      <td>{template.delivery}</td>
-                      <td>{template.response}</td>
-                      <td>{template.date}</td>
-                      <td>
-                  <div className="actions-cell">
-                    <button className="icon-button">
-                      <span className="edit-icon">✏️</span>
-                    </button>
-                    <button className="icon-button">
-                      <span className="delete-icon">🗑️</span>
-                    </button>
-                  </div>
-                </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              <div className="pagination-container">
-                <div className="total-info">
-                  Total: <span>2</span>
-                </div>
-                
-                <div className="pagination-controls">
-                  <button className="pagination-button">
-                    <ChevronsLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronLeft className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button active">
-                    1
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronRight className="pagination-icon" />
-                  </button>
-                  <button className="pagination-button">
-                    <ChevronsRight className="pagination-icon" />
-                  </button>
-                </div>
-                
-                <div className="entries-selector">
-                  <span>Entries</span>
-                  <div className="entries-select-container">
-                    <select className="entries-select">
-                      <option>50</option>
-                    </select>
-                    <ChevronDown className="entries-select-icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-      default:
-        return null;
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
     }
+    
+    return null;
   };
 
   return (
     <div className="templates-container">
-   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-  <h1 
-    className="dashboard-title" 
-    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}
-  >
-    Templates
-  </h1>
-  <div 
-    style={{ 
-      height: '4px', 
-      width: '100px', 
-      backgroundColor: '#22c55e', // Tailwind's green-500
-      borderRadius: '9999px',
-    }} 
-  />
-</div>
+      {/* Toast notification */}
+      {toast.show && <Toast message={toast.message} type={toast.type} onClose={() => setToast({...toast, show: false})} />}
+
+      {/* Delete confirmation modal */}
+      <DeleteConfirmationModal 
+        isOpen={deleteModal.isOpen}
+        templateName={deleteModal.templateName}
+        onCancel={() => setDeleteModal({isOpen: false, templateId: null, templateName: ''})}
+        onConfirm={handleConfirmDelete}
+      />
+      
+      {/* View template modal */}
+      <ViewTemplateModal
+        isOpen={viewModal.isOpen}
+        template={viewModal.template}
+        onClose={() => setViewModal({isOpen: false, template: null})}
+      />
+      
+      {/* Header */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <h1 className="dashboard-title" style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}>
+          Templates
+        </h1>
+        <div style={{ height: '4px', width: '100px', backgroundColor: '#22c55e', borderRadius: '9999px' }} />
+      </div>
 
       {/* Tabs */}
       <div className="tabs-container">
-        <button 
-          onClick={() => setActiveTab('initial')}
-          className={`tab-button ${activeTab === 'initial' ? 'active' : ''}`}
-        >
+        <button onClick={() => setActiveTab('initial')} className={`tab-button ${activeTab === 'initial' ? 'active' : ''}`}>
           Initial Messages
         </button>
-        <button 
-          onClick={() => setActiveTab('quick')}
-          className={`tab-button ${activeTab === 'quick' ? 'active' : ''}`}
-        >
+        <button onClick={() => setActiveTab('quick')} className={`tab-button ${activeTab === 'quick' ? 'active' : ''}`}>
           Quick Replies
         </button>
-        <button 
-          onClick={() => setActiveTab('followup')}
-          className={`tab-button ${activeTab === 'followup' ? 'active' : ''}`}
-        >
+        <button onClick={() => setActiveTab('followup')} className={`tab-button ${activeTab === 'followup' ? 'active' : ''}`}>
           Follow Up Messages
         </button>
       </div>
       
-      {/* Tab Content */}
-      {renderTabContent()}
+      {/* Search and Filters */}
+      <div className="filters-container">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder={`Search ${activeTab} template`}
+            className="search-input"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+        
+        <div className="right-filters">
+          <span className="category-label">Template category</span>
+          <div className="select-container">
+            <select className="category-select">
+              <option>All</option>
+              <option>My templates</option>
+            </select>
+            <ChevronDown className="select-icon" />
+          </div>
+          
+          <button className="create-button" onClick={() => handleOpenModal()}>
+            Create New
+          </button>
+        </div>
+      </div>
       
-      {/* Create Template Modal */}
+      {/* Table content */}
+      <div className="table-container">
+        {renderTable()}
+        
+        {/* Pagination */}
+        <div className="pagination-container">
+          <div className="total-info">
+            Total: <span>{templates.length}</span>
+          </div>
+          
+          <div className="pagination-controls">
+            <button className="pagination-button" onClick={() => handlePageChange(1)} disabled={pagination.currentPage === 1}>
+              <ChevronsLeft className="pagination-icon" />
+            </button>
+            <button className="pagination-button" onClick={() => handlePageChange(Math.max(1, pagination.currentPage - 1))} disabled={pagination.currentPage === 1}>
+              <ChevronLeft className="pagination-icon" />
+            </button>
+            
+            {/* Page numbers */}
+            {[...Array(Math.min(pagination.totalPages, 5))].map((_, index) => (
+              <button 
+                key={index}
+                className={`pagination-button ${pagination.currentPage === index + 1 ? 'active' : ''}`}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+            
+            <button className="pagination-button" onClick={() => handlePageChange(Math.min(pagination.totalPages, pagination.currentPage + 1))} disabled={pagination.currentPage === pagination.totalPages}>
+              <ChevronRight className="pagination-icon" />
+            </button>
+            <button className="pagination-button" onClick={() => handlePageChange(pagination.totalPages)} disabled={pagination.currentPage === pagination.totalPages}>
+              <ChevronsRight className="pagination-icon" />
+            </button>
+          </div>
+          
+          <div className="entries-selector">
+            <span>Entries</span>
+            <div className="entries-select-container">
+              <select className="entries-select" value={pagination.entriesPerPage} onChange={handleEntriesPerPageChange}>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <ChevronDown className="entries-select-icon" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Create/Edit Template Modal */}
       {isModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
             <div className="modal-header">
-              <h2>Create Initial Template</h2>
-              <button className="close-button" onClick={handleCloseModal}>
+              <h2>{isEditMode ? 'Edit' : 'Create'} {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Template</h2>
+              <button className="close-button" onClick={() => setIsModalOpen(false)}>
                 <X size={20} />
               </button>
             </div>
             
             <div className="modal-content">
               <div className="modal-form">
+                {error && (
+                  <div className="form-error">
+                    <AlertCircle size={16} />
+                    <span>{error}</span>
+                  </div>
+                )}
+                
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="templateName">
-                      Template Name <span className="info-icon">i</span>
-                    </label>
+                    <label htmlFor="templateName">Template Name</label>
                     <input 
                       type="text" 
                       id="templateName" 
                       placeholder="Enter Template Name"
                       value={templateName}
-                      onChange={(e) => setTemplateName(e.target.value)}
+                      onChange={(e) => {
+                        setTemplateName(e.target.value);
+                        setFormErrors(prev => ({...prev, templateName: !e.target.value.trim() ? 'Template name is required' : ''}));
+                      }}
+                      className={formErrors.templateName ? 'input-error' : ''}
                     />
+                    {formErrors.templateName && <div className="error-text">{formErrors.templateName}</div>}
                   </div>
                   <div className="form-group">
-                    <label htmlFor="templateType">
-                      Template Type <span className="info-icon">i</span>
-                    </label>
+                    <label htmlFor="templateType">Template Type</label>
                     <div className="select-wrapper">
-                      <select 
-                        id="templateType" 
-                        value={templateType}
-                        onChange={(e) => setTemplateType(e.target.value)}
-                      >
+                      <select id="templateType" value={templateType} onChange={(e) => setTemplateType(e.target.value)}>
                         <option value="Residential">Residential</option>
                         <option value="Commercial">Commercial</option>
                       </select>
@@ -662,104 +702,79 @@ const TemplatesManagement = () => {
                 <div className="messages-section">
                   <div className="messages-header">
                     <h3>Messages</h3>
-                    <div className="messages-help">
-                      Follow our Best Practices to build high-converting content
-                      <span className="toggle-keywords">
-                        Negative Keywords <ChevronUp />
-                      </span>
+                    <div className="message-count-info">
+                      <span>Active Messages:</span>
+                      <div className="select-wrapper active-message-count">
+                        <select value={activeMessageCount} onChange={(e) => setActiveMessageCount(parseInt(e.target.value))}>
+                          {[1, 2, 3, 4, 5].map(num => (
+                            <option key={num} value={num}>{num}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="select-icon" />
+                      </div>
                     </div>
                   </div>
                   
                   <div className="message-tabs">
-                    <div className={`message-tab ${activeModalMessage === 1 ? 'active' : ''}`}>
-                      <span className="message-number">1</span>
-                      <span className="message-label">Message 1</span>
-                    </div>
-                    {Array.from({length: 4}, (_, i) => i + 2).map(num => (
+                    {[1, 2, 3, 4, 5].map(num => (
                       <div 
                         key={num}
-                        className={`message-tab ${activeModalMessage === num ? 'active' : ''}`}
-                        onClick={() => handleMessageTabChange(num)}
+                        className={`message-tab ${activeModalMessage === num ? 'active' : ''} ${num <= activeMessageCount ? 'enabled' : 'disabled'}`}
+                        onClick={() => num <= activeMessageCount && setActiveModalMessage(num)}
                       >
                         <span className="message-number">{num}</span>
+                        {num === 1 && <span className="message-label">Message 1</span>}
+                        {num === 2 && num <= activeMessageCount && <span className="message-label">Message 2</span>}
+                        {num > 2 && num <= activeMessageCount && <span className="message-label">Msg {num}</span>}
                       </div>
                     ))}
                   </div>
                   
                   <div className="message-editor">
                     <textarea
-                      placeholder="Write your message"
-                      value={messageContent}
-                      onChange={(e) => {
-                        setMessageContent(e.target.value);
-                        calculateVariations(e.target.value);
-                      }}
+                      placeholder={`Write your message ${activeModalMessage}`}
+                      value={messageContents[activeModalMessage] || ''}
+                      onChange={handleMessageChange}
+                      disabled={activeModalMessage > activeMessageCount}
+                      className={activeModalMessage === 1 && formErrors.message1 ? 'input-error' : ''}
                     />
+                    {activeModalMessage === 1 && formErrors.message1 && (
+                      <div className="error-text">{formErrors.message1}</div>
+                    )}
                     <div className="message-footer">
-                      <div className="character-count">0 / 320</div>
+                      <div className="character-count">
+                        {(messageContents[activeModalMessage] || '').length} / 320
+                      </div>
                       <div className="message-actions">
                         <button className="emoji-button">
                           <Smile size={18} />
                         </button>
-                        <button className="text-spinner-button" onClick={handleAddTextSpinner}>
+                        <button 
+                          className="text-spinner-button" 
+                          onClick={handleAddTextSpinner}
+                          disabled={activeModalMessage > activeMessageCount}
+                        >
                           Add Text Spinner
                         </button>
-                        <button className="merge-field-button" onClick={handleAddMergeField}>
+                        <button 
+                          className="merge-field-button" 
+                          onClick={handleAddMergeField}
+                          disabled={activeModalMessage > activeMessageCount}
+                        >
                           Add Merge Field
                         </button>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* <div className="message-validation">
-                    <div className="validation-header">
-                      <h4>Message 1</h4>
-                      <div className="variations-count">Variations: {totalVariations}</div>
-                    </div>
-                    
-                    <ul className="validation-rules">
-                      <li className="rule">
-                        <span className="checkmark">✓</span>
-                        Minimum of 8 characters
-                      </li>
-                      <li className="rule">
-                        <span className="circle">○</span>
-                        At least 2 Text Spinners [0/2]
-                      </li>
-                      <li className="rule">
-                        <span className="circle">○</span>
-                        Each Text Spinner must have at least 3 elements
-                      </li>
-                      <li className="rule">
-                        <span className="circle">○</span>
-                        Must have Merge Field
-                      </li>
-                      <li className="rule">
-                        <span className="checkmark">✓</span>
-                        Must have no negative/restricted keywords
-                      </li>
-                      <li className="rule">
-                        <span className="checkmark">✓</span>
-                        All Merge Fields and Text Spinners must be valid
-                      </li>
-                    </ul>
-                    
-                    <div className="additional-messages">
-                      <div className="message-preview">Message 2</div>
-                      <div className="message-preview">Message 3</div>
-                      <div className="message-preview">Message 4</div>
-                      <div className="message-preview">Message 5</div>
-                    </div>
-                    
-                    <div className="total-variations">
-                      Total Variations: {totalVariations}
-                    </div>
-                  </div> */}
                 </div>
                 
                 <div className="modal-actions">
                   <div className="left-actions">
-                    <button className="back-button" onClick={handleBack}>
+                    <button 
+                      className="back-button" 
+                      onClick={() => setActiveModalMessage(prev => Math.max(prev - 1, 1))} 
+                      disabled={activeModalMessage === 1}
+                    >
                       Back
                     </button>
                   </div>
@@ -769,7 +784,17 @@ const TemplatesManagement = () => {
                   </div>
                   
                   <div className="right-actions">
-                    <button className="next-message-button" onClick={handleNextMessage}>
+                    <button 
+                      className="next-message-button" 
+                      onClick={() => {
+                        const nextMessage = Math.min(activeModalMessage + 1, 5);
+                        setActiveModalMessage(nextMessage);
+                        if (nextMessage > activeMessageCount) {
+                          setActiveMessageCount(nextMessage);
+                        }
+                      }}
+                      disabled={activeModalMessage === 5 || activeModalMessage >= activeMessageCount}
+                    >
                       Next Message
                     </button>
                   </div>
@@ -778,11 +803,15 @@ const TemplatesManagement = () => {
             </div>
             
             <div className="modal-footer">
-              <button className="cancel-button" onClick={handleCloseModal}>
+              <button className="cancel-button" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </button>
-              <button className="save-button1" onClick={handleCreateTemplate}>
-                Save Template
+              <button 
+                className="save-button1" 
+                onClick={handleSaveTemplate}
+                disabled={!templateName || !messageContents[1]}
+              >
+                Save
               </button>
             </div>
           </div>

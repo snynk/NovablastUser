@@ -171,7 +171,6 @@ const DlcFormModal = ({ isOpen, onClose }) => {
     </Modal>
   );
 };
-
 const SettingsScreen = () => {
   const [activeTab, setActiveTab] = useState('markets');
   const [isMarketModalOpen, setIsMarketModalOpen] = useState(false);
@@ -196,6 +195,10 @@ const SettingsScreen = () => {
         return <DoNotCallsTabContent />;
       case 'tags':
         return <TagsTabContent />;
+      case 'export':
+        return <ComingSoonTabContent feature="Export Prospects" />;
+      case 'integrations':
+        return <ComingSoonTabContent feature="Integrations" />;
       default:
         return <div className="tab-content-placeholder"></div>;
     }
@@ -203,22 +206,21 @@ const SettingsScreen = () => {
   
   return (
     <div className="settings-container">
- <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-  <h1 
-    className="dashboard-title" 
-    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}
-  >
-    Settings
-  </h1>
-  <div 
-   style={{ 
-    height: '4px', 
-    width: '6%',  // Adjust to span the full width of the container or as required
-    backgroundColor: '#22c55e', // Green color
-   
-  }} 
-  />
-</div>      
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <h1 
+          className="dashboard-title" 
+          style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 10px 0' }}
+        >
+          Settings
+        </h1>
+        <div 
+          style={{ 
+            height: '4px', 
+            width: '6%',
+            backgroundColor: '#22c55e', // Green color
+          }} 
+        />
+      </div>      
       <div className="tabs-container">
         {tabs.map(tab => (
           <button
@@ -243,6 +245,23 @@ const SettingsScreen = () => {
         isOpen={isDlcFormOpen} 
         onClose={() => setIsDlcFormOpen(false)} 
       />
+    </div>
+  );
+};
+
+// Coming Soon Tab Content Component
+const ComingSoonTabContent = ({ feature }) => {
+  return (
+    <div className="tab-content" style={{ textAlign: 'center', padding: '80px 0' }}>
+      <div className="coming-soon-container">
+        <div style={{ fontSize: '72px', marginBottom: '20px' }}>🚧</div>
+        <h2 style={{ fontSize: '2rem', fontWeight: '600', marginBottom: '20px', color: '#333' }}>
+          {feature} Coming Soon
+        </h2>
+        <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
+          We're working hard to bring you this feature. Stay tuned for updates!
+        </p>
+      </div>
     </div>
   );
 };
@@ -409,7 +428,14 @@ const DoNotCallsTabContent = () => {
                   <span className="permanent-badge">{entry.permanent}</span>
                 </td>
                 <td>
-                  <div className="actions-cell"></div>
+                  <div className="actions-cell">
+                    <button className="icon-button">
+                      <span className="edit-icon">✏️</span>
+                    </button>
+                    <button className="icon-button">
+                      <span className="delete-icon">🗑️</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -418,17 +444,11 @@ const DoNotCallsTabContent = () => {
       </div>
       
       <div className="pagination-container">
-        <div className="pagination-info">Total: 126</div>
+        <div className="pagination-info">Total: 2</div>
         <div className="pagination-controls">
           <button className="pagination-button">«</button>
           <button className="pagination-button">‹</button>
           <button className="pagination-button active">1</button>
-          <button className="pagination-button">2</button>
-          <button className="pagination-button">3</button>
-          <button className="pagination-button">4</button>
-          <button className="pagination-button">5</button>
-          <button className="pagination-button">...</button>
-          <button className="pagination-button">13</button>
           <button className="pagination-button">›</button>
           <button className="pagination-button">»</button>
         </div>
