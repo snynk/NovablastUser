@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Content from "@/layout/content/Content";
 import { Card } from "reactstrap";
 import Head from "@/layout/head/Head";
-import DatePicker from "react-datepicker";
 import { Modal, ModalBody } from "reactstrap";
 import {
   Block,
@@ -16,45 +15,63 @@ import {
   Button,
   RSelect,
 } from "@/components/Component";
-import { countryOptions, userData } from "./UserData";
-import { getDateStructured } from "@/utils/Utils";
+import { countryOptions } from "./UserData";
 import UserProfileAside from "./UserProfileAside";
 
 const UserProfileRegularPage = () => {
-  const user = JSON.parse(localStorage.getItem("user")) || {}; // Retrieve the logged-in user object with fallback
-  const loggedInCustomerId = user && user.id ? user.id : null; // Extract the customer ID
-
   const [sm, updateSm] = useState(false);
   const [mobileView, setMobileView] = useState(false);
   const [modalTab, setModalTab] = useState("1");
-  const [customerData, setCustomerData] = useState({}); // Initialize with empty object instead of null
-  const [formData, setFormData] = useState({}); // Used for editing in the modal
+  const [customerData, setCustomerData] = useState({});
+  const [formData, setFormData] = useState({});
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Get the logged-in user from localStorage
+  const getLoggedInUser = () => {
+    try {
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user) : {};
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error);
+      return {};
+    }
+  };
+
+  const loggedInCustomerId = getLoggedInUser().id || null;
 
   const fetchCustomerData = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       if (!loggedInCustomerId) {
         console.error("No logged-in customer ID found");
+        setError("You must be logged in to view profile data");
         setLoading(false);
         return;
       }
 
       const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`);
-      if (!response.ok) throw new Error("Failed to fetch customer data");
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch customer data: ${response.status}`);
+      }
 
       const customer = await response.json();
-      setCustomerData(customer); // Update state with fetched data
-      setLoading(false);
+      setCustomerData(customer);
     } catch (error) {
-      console.error(error.message);
+      console.error("Error fetching customer data:", error.message);
+      setError(error.message);
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCustomerData(); // Fetch data on page load
+    fetchCustomerData();
 
     // Handle mobile view logic
     const viewChange = () => {
@@ -69,12 +86,22 @@ const UserProfileRegularPage = () => {
     viewChange();
     window.addEventListener("load", viewChange);
     window.addEventListener("resize", viewChange);
-    document.getElementsByClassName("nk-header")[0]?.addEventListener("click", function () {
-      updateSm(false);
-    });
+    
+    const headerElement = document.getElementsByClassName("nk-header")[0];
+    if (headerElement) {
+      headerElement.addEventListener("click", function () {
+        updateSm(false);
+      });
+    }
+    
     return () => {
       window.removeEventListener("resize", viewChange);
       window.removeEventListener("load", viewChange);
+      if (headerElement) {
+        headerElement.removeEventListener("click", function () {
+          updateSm(false);
+        });
+      }
     };
   }, [loggedInCustomerId]);
 
@@ -102,6 +129,12 @@ const UserProfileRegularPage = () => {
         return;
       }
 
+      // Validate required fields
+      if (!formData.name) {
+        alert("Name is required");
+        return;
+      }
+
       const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`, {
         method: "PUT",
         headers: {
@@ -110,25 +143,51 @@ const UserProfileRegularPage = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to update customer data");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to update profile: ${response.status}`);
+      }
 
       const updatedCustomer = await response.json();
+      setCustomerData(updatedCustomer);
       alert("Profile updated successfully!");
-      setCustomerData(updatedCustomer); // Refresh state with latest data
-      setModal(false); // Close modal
+      setModal(false);
     } catch (error) {
       console.error("Error updating profile:", error.message);
-      alert("Failed to update profile. Please try again.");
+      alert(`Failed to update profile: ${error.message}`);
     }
   };
   
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <React.Fragment>
+        <Head title="User Profile"></Head>
+        <Content>
+          <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </Content>
+      </React.Fragment>
+    );
+  }
+
+  if (error) {
+    return (
+      <React.Fragment>
+        <Head title="User Profile"></Head>
+        <Content>
+          <div className="alert alert-danger" role="alert">
+            {error}
+            <div className="mt-3">
+              <Button color="primary" onClick={fetchCustomerData}>
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </Content>
+      </React.Fragment>
     );
   }
   
@@ -151,6 +210,9 @@ const UserProfileRegularPage = () => {
                 <BlockBetween>
                   <BlockHeadContent>
                     <BlockTitle tag="h4">Personal Information</BlockTitle>
+                    <div className="nk-block-des">
+                      <p>Your basic account information</p>
+                    </div>
                   </BlockHeadContent>
                   <BlockHeadContent className="align-self-start d-lg-none">
                     <Button
@@ -168,7 +230,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item" onClick={openModal}>
                     <div className="data-col">
                       <span className="data-label">Full Name</span>
-                      <span className="data-value">{customerData.name || "N/A"}</span>
+                      <span className="data-value">{customerData.name || "Not set"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
@@ -179,7 +241,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item">
                     <div className="data-col">
                       <span className="data-label">Email</span>
-                      <span className="data-value">{customerData.email || "N/A"}</span>
+                      <span className="data-value">{customerData.email || "Not set"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more disable">
@@ -190,7 +252,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item" onClick={openModal}>
                     <div className="data-col">
                       <span className="data-label">Phone Number</span>
-                      <span className="data-value text-soft">{customerData.phone || "N/A"}</span>
+                      <span className="data-value text-soft">{customerData.phone || "Not set"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
@@ -202,9 +264,18 @@ const UserProfileRegularPage = () => {
                     <div className="data-col">
                       <span className="data-label">Address</span>
                       <span className="data-value">
-                        {customerData.address || "N/A"}
-                        {customerData.address && <br />}
-                        {customerData.state && `${customerData.state}, `}{customerData.country || ""}
+                        {customerData.address ? (
+                          <>
+                            {customerData.address}
+                            {customerData.address2 && <br />}
+                            {customerData.address2}
+                            {(customerData.state || customerData.country) && <br />}
+                            {customerData.state && `${customerData.state}, `}
+                            {customerData.country || ""}
+                          </>
+                        ) : (
+                          "Not set"
+                        )}
                       </span>
                     </div>
                     <div className="data-col data-col-end">
@@ -262,7 +333,7 @@ const UserProfileRegularPage = () => {
                           <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="full-name">
-                                Full Name
+                                Full Name <span className="text-danger">*</span>
                               </label>
                               <input
                                 type="text"
@@ -272,6 +343,7 @@ const UserProfileRegularPage = () => {
                                 onChange={onInputChange}
                                 value={formData.name || ""}
                                 placeholder="Enter Full name"
+                                required
                               />
                             </div>
                           </Col>
@@ -335,6 +407,7 @@ const UserProfileRegularPage = () => {
                                 onChange={onInputChange}
                                 value={formData.address || ""}
                                 className="form-control"
+                                placeholder="e.g. 1234 Main St"
                               />
                             </div>
                           </Col>
@@ -350,6 +423,7 @@ const UserProfileRegularPage = () => {
                                 onChange={onInputChange}
                                 value={formData.address2 || ""}
                                 className="form-control"
+                                placeholder="e.g. Apartment, suite, unit"
                               />
                             </div>
                           </Col>
@@ -365,6 +439,7 @@ const UserProfileRegularPage = () => {
                                 onChange={onInputChange}
                                 value={formData.state || ""}
                                 className="form-control"
+                                placeholder="Enter your state"
                               />
                             </div>
                           </Col>
@@ -374,13 +449,20 @@ const UserProfileRegularPage = () => {
                                 Country
                               </label>
                               <RSelect
+                                id="address-county"
                                 options={countryOptions}
                                 placeholder="Select a country"
-                                value={formData.country ? {
-                                  value: formData.country,
-                                  label: formData.country,
-                                } : null}
-                                onChange={(e) => setFormData({ ...formData, country: e.value })}
+                                value={
+                                  formData.country
+                                    ? {
+                                        value: formData.country,
+                                        label: formData.country,
+                                      }
+                                    : null
+                                }
+                                onChange={(selectedOption) => 
+                                  setFormData({ ...formData, country: selectedOption ? selectedOption.value : "" })
+                                }
                               />
                             </div>
                           </Col>

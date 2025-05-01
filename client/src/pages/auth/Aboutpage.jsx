@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube, FaArrowUp,FaChevronUp } from 'react-icons/fa';
 import "@/assets/css/aboutpage.css";
 
 function AboutPage() {
@@ -12,8 +12,17 @@ function AboutPage() {
   const testimonialsRef = useRef(null);
   const storyRef = useRef(null);
   
-  // State for mobile menu
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  // State for mobile menu and back to top button
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Handle scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     // Initial animations for sections
@@ -34,8 +43,16 @@ function AboutPage() {
       }
     });
 
-    // Enhanced scroll animation function with smoother reveal
+    // Enhanced scroll animation function with Bootstrap-like fade effects
     const handleScroll = () => {
+      // Show/hide back to top button
+      if (window.pageYOffset > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+      
+      // Handle fade animations
       const scrollElements = document.querySelectorAll('.scroll-reveal');
       
       scrollElements.forEach(element => {
@@ -43,14 +60,33 @@ function AboutPage() {
         const elementBottom = element.getBoundingClientRect().bottom;
         const isVisible = (elementTop < window.innerHeight * 0.85) && (elementBottom > 0);
         
-        // Calculate how far into the viewport the element is
-        const distanceFromTop = window.innerHeight - elementTop;
-        const percentVisible = Math.min(Math.max(distanceFromTop / (window.innerHeight * 0.3), 0), 1);
+        // Get animation direction from data attribute
+        const fadeDirection = element.getAttribute('data-fade') || 'up';
         
         if (isVisible) {
-          // Apply opacity based on scroll position for a smoother effect
+          // Calculate how far into the viewport the element is
+          const distanceFromTop = window.innerHeight - elementTop;
+          const percentVisible = Math.min(Math.max(distanceFromTop / (window.innerHeight * 0.3), 0), 1);
+          
+          // Apply different transform based on direction
           element.style.opacity = percentVisible;
-          element.style.transform = `translateY(${(1 - percentVisible) * 20}px)`;
+          
+          switch(fadeDirection) {
+            case 'left':
+              element.style.transform = `translateX(${(1 - percentVisible) * -30}px)`;
+              break;
+            case 'right':
+              element.style.transform = `translateX(${(1 - percentVisible) * 30}px)`;
+              break;
+            case 'up':
+              element.style.transform = `translateY(${(1 - percentVisible) * 20}px)`;
+              break;
+            case 'down':
+              element.style.transform = `translateY(${(1 - percentVisible) * -20}px)`;
+              break;
+            default:
+              element.style.transform = `translateY(${(1 - percentVisible) * 20}px)`;
+          }
           
           // Add class when fully visible
           if (percentVisible >= 0.8) {
@@ -59,7 +95,25 @@ function AboutPage() {
         } else if (elementTop > window.innerHeight) {
           // Reset elements that are below viewport
           element.style.opacity = 0;
-          element.style.transform = 'translateY(20px)';
+          
+          // Reset transform based on direction
+          switch(fadeDirection) {
+            case 'left':
+              element.style.transform = 'translateX(-30px)';
+              break;
+            case 'right':
+              element.style.transform = 'translateX(30px)';
+              break;
+            case 'up':
+              element.style.transform = 'translateY(20px)';
+              break;
+            case 'down':
+              element.style.transform = 'translateY(-20px)';
+              break;
+            default:
+              element.style.transform = 'translateY(20px)';
+          }
+          
           element.classList.remove('revealed');
         }
       });
@@ -84,14 +138,14 @@ function AboutPage() {
             <span className="flag">🚩</span> started as just $99/month.
           </div>
           <div className="top-nav">
-            <div className="dropdown">
+            {/* <div className="dropdown">
               <span>Real Estate Education</span>
               <span className="dropdown-arrow">▼</span>
-            </div>
-            <Link to="/about">About us</Link>
-            <Link to="/contact">Contact Us</Link>
-            <Link to="/auth-login">Login</Link>
-            <Link to="/auth-mainpage">Home</Link>
+            </div> */}
+          <Link to="/about" className="arrow-button">About us <span className="arrow-icon"></span></Link>
+          <Link to="/contact" className="arrow-button">Contact Us <span className="arrow-icon"></span></Link>
+          <Link to="/auth-login" className="arrow-button">Login <span className="arrow-icon"></span></Link>
+            <Link to="/auth-mainpage" className="arrow-button">Home <span className="arrow-icon"></span></Link>
           </div>
         </div>
       </div>
@@ -155,8 +209,8 @@ function AboutPage() {
       </div>
 
       {/* About Hero Section */}
-      <div className="about-hero-section7 scroll-reveal">
-        <div className="container2 about-hero-container2" ref={headerRef}>
+      <div className="sms-leader-banner about-hero-section7 scroll-reveal" data-fade="down" ref={headerRef}>
+        <div className="container2 about-hero-container2">
           <h1 className="about-hero-title">About NovaBlast</h1>
           <p className="about-hero-subtitle2">
             Empowering Real Estate Professionals with Cutting-Edge SMS Lead Generation
@@ -167,10 +221,10 @@ function AboutPage() {
       {/* Our Story Section */}
       <div className="about-story-section">
         <div className="container about-section-container">
-          <div className="about-section-content scroll-reveal" ref={storyRef}>
+          <div className="about-section-content scroll-reveal" data-fade="up" ref={storyRef}>
             <h2 className="section-title2">Our Story</h2>
             <div className="about-story-content">
-              <div className="about-story-text">
+              <div className="about-story-text scroll-reveal" data-fade="left">
                 <p>
                   NovaBlast was born from a simple observation: real estate professionals needed better tools to connect with potential clients. 
                   Founded in 2020 by a team of real estate veterans and tech innovators, we set out to create a platform that would revolutionize 
@@ -186,7 +240,7 @@ function AboutPage() {
                   with industry-specific expertise to deliver unparalleled results for our clients.
                 </p>
               </div>
-              <div className="about-story-image2 scroll-reveal">
+              <div className="about-story-image2 scroll-reveal" data-fade="right">
                 <img src="images\accelerate.png" alt="NovaBlast story" />
               </div>
             </div>
@@ -197,9 +251,9 @@ function AboutPage() {
       {/* Mission Section */}
       <div className="about-mission-section2">
         <div className="container2 about-section-container2">
-          <div className="about-section-content scroll-reveal" ref={missionRef}>
+          <div className="about-section-content scroll-reveal" data-fade="up" ref={missionRef}>
             <h2 className="section-title2">Our Mission</h2>
-            <div className="mission-statement2">
+            <div className="mission-statement2 scroll-reveal" data-fade="up">
               <p>
                 At NovaBlast, our mission is to empower real estate professionals with the most reliable, effective, and compliant 
                 lead generation tools in the industry. We believe that by streamlining communication and enhancing client engagement, 
@@ -207,17 +261,17 @@ function AboutPage() {
               </p>
             </div>
             <div className="mission-highlights2">
-              <div className="mission-highlight-item2">
+              <div className="mission-highlight-item2 scroll-reveal" data-fade="left">
                 <div className="highlight-icon2">💼</div>
                 <h3>Empower Professionals</h3>
                 <p>Providing tools that give real estate professionals a competitive edge in their markets</p>
               </div>
-              <div className="mission-highlight-item2">
+              <div className="mission-highlight-item2 scroll-reveal" data-fade="up">
                 <div className="highlight-icon2">🚀</div>
                 <h3>Drive Growth</h3>
                 <p>Helping our clients scale their businesses through effective lead generation and conversion</p>
               </div>
-              <div className="mission-highlight-item2">
+              <div className="mission-highlight-item2 scroll-reveal" data-fade="right">
                 <div className="highlight-icon2">🤝</div>
                 <h3>Build Relationships</h3>
                 <p>Facilitating meaningful connections between real estate professionals and their clients</p>
@@ -230,35 +284,35 @@ function AboutPage() {
       {/* Core Values Section */}
       <div className="about-values-section2">
         <div className="container about-section-container2">
-          <div className="about-section-content scroll-reveal" ref={valuesRef}>
+          <div className="about-section-content scroll-reveal" data-fade="up" ref={valuesRef}>
             <h2 className="section-title2">Our Core Values</h2>
             <div className="values-grid2">
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="left">
                 <div className="value-icon2">⚡</div>
                 <h3>Innovation</h3>
                 <p>Constantly pushing the boundaries of what's possible in real estate technology</p>
               </div>
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="up">
                 <div className="value-icon2">🔍</div>
                 <h3>Transparency</h3>
                 <p>Building trust through honest communication and clear metrics</p>
               </div>
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="right">
                 <div className="value-icon2">🔄</div>
                 <h3>Reliability</h3>
                 <p>Delivering consistent, dependable service that our clients can count on</p>
               </div>
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="left">
                 <div className="value-icon2">📈</div>
                 <h3>Results-Driven</h3>
                 <p>Focusing on outcomes that directly impact our clients' success</p>
               </div>
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="up">
                 <div className="value-icon2">🛡️</div>
                 <h3>Compliance</h3>
                 <p>Ensuring all our services meet the highest regulatory standards</p>
               </div>
-              <div className="value-item2">
+              <div className="value-item2 scroll-reveal" data-fade="right">
                 <div className="value-icon">🌱</div>
                 <h3>Growth Mindset</h3>
                 <p>Embracing challenges and continuously learning to better serve our clients</p>
@@ -271,10 +325,10 @@ function AboutPage() {
       {/* Leadership Team Section */}
       <div className="about-team-section2">
         <div className="container2 about-section-container2">
-          <div className="about-section-content scroll-reveal" ref={teamRef}>
+          <div className="about-section-content scroll-reveal" data-fade="up" ref={teamRef}>
             <h2 className="section-title2">Our Leadership Team</h2>
             <div className="team-grid2">
-              <div className="team-member2">
+              <div className="team-member2 scroll-reveal" data-fade="left">
                 <div className="team-member-image2">
                   <img src="images\accelerate.png" alt="Team Member" />
                 </div>
@@ -282,7 +336,7 @@ function AboutPage() {
                 <p className="team-title2">CEO & Co-Founder</p>
                 <p className="team-bio">Former real estate broker with 15+ years of industry experience and a passion for technology solutions.</p>
               </div>
-              <div className="team-member">
+              <div className="team-member scroll-reveal" data-fade="up">
                 <div className="team-member-image">
                   <img src="images\accelerate.png" alt="Team Member" />
                 </div>
@@ -290,7 +344,7 @@ function AboutPage() {
                 <p className="team-title">CTO & Co-Founder</p>
                 <p className="team-bio">Tech innovator with extensive experience in developing communication platforms and mobile solutions.</p>
               </div>
-              <div className="team-member">
+              <div className="team-member scroll-reveal" data-fade="up">
                 <div className="team-member-image">
                   <img src="images\accelerate.png" alt="Team Member" />
                 </div>
@@ -298,7 +352,7 @@ function AboutPage() {
                 <p className="team-title">Devloper</p>
                 <p className="team-bio">Operations expert with a background in scaling technology companies and optimizing customer experience.</p>
               </div>
-              <div className="team-member">
+              <div className="team-member scroll-reveal" data-fade="right">
                 <div className="team-member-image">
                   <img src="images\accelerate.png" alt="Team Member" />
                 </div>
@@ -314,10 +368,10 @@ function AboutPage() {
       {/* Client Testimonials */}
       <div className="about-testimonials-section">
         <div className="container about-section-container">
-          <div className="about-section-content scroll-reveal" ref={testimonialsRef}>
+          <div className="about-section-content scroll-reveal" data-fade="up" ref={testimonialsRef}>
             <h2 className="section-title">What Our Clients Say</h2>
             <div className="testimonials-grid">
-              <div className="testimonial-item">
+              <div className="testimonial-item scroll-reveal" data-fade="left">
                 <div className="testimonial-quote">"NovaBlast completely transformed my real estate business. The lead generation capabilities are unlike anything I've experienced before."</div>
                 <div className="testimonial-author">
                   <img src="images\accelerate.png" alt="Testimonial Author" />
@@ -327,7 +381,7 @@ function AboutPage() {
                   </div>
                 </div>
               </div>
-              <div className="testimonial-item">
+              <div className="testimonial-item scroll-reveal" data-fade="up">
                 <div className="testimonial-quote">"The reliability of NovaBlast's platform has been a game-changer for our agency. We've seen a 200% increase in qualified leads since implementing their system."</div>
                 <div className="testimonial-author">
                   <img src="images\accelerate.png" alt="Testimonial Author" />
@@ -337,7 +391,7 @@ function AboutPage() {
                   </div>
                 </div>
               </div>
-              <div className="testimonial-item">
+              <div className="testimonial-item scroll-reveal" data-fade="right">
                 <div className="testimonial-quote">"What sets NovaBlast apart is their understanding of the real estate industry. Their platform addresses the specific challenges we face every day."</div>
                 <div className="testimonial-author">
                   <img src="images\accelerate.png" alt="Testimonial Author" />
@@ -354,18 +408,18 @@ function AboutPage() {
 
       {/* CTA Section */}
       <div className="about-cta-section">
-        <div className="container about-cta-container scroll-reveal">
+        <div className="container about-cta-container scroll-reveal" data-fade="up">
           <h2>Ready to Transform Your Real Estate Business?</h2>
           <p>Join thousands of successful real estate professionals who trust NovaBlast for their lead generation needs.</p>
           <div className="cta-buttons">
-            <Link to="/pricing" className="cta-button primary">View Pricing</Link>
+            <Link to="/auth-mainpage" className="cta-button primary">View Pricing</Link>
             <Link to="/contact" className="cta-button secondary">Contact Us</Link>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="footer scroll-reveal">
+      <footer className="footer scroll-reveal" data-fade="up">
         <div className="footer-container">
           <div className="footer-grid">
             {/* Column 1: Company Info and Social */}
@@ -449,6 +503,17 @@ function AboutPage() {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button 
+          className="back-to-top" 
+          onClick={scrollToTop}
+          aria-label="Back to top"
+        >
+          <FaChevronUp />
+        </button>
+      )}
     </>
   );
 }

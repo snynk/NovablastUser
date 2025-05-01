@@ -1,7 +1,46 @@
 import { Link } from "react-router-dom";
 import "@/assets/css/Mainpage.css";
 import React, { useEffect, useRef, useState } from 'react'; 
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube, FaApple, FaGooglePlay } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube, FaApple, FaGooglePlay, FaChevronUp } from 'react-icons/fa';
+
+// Back to Top Button Component
+function BackToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Show button when page is scrolled down
+  const toggleVisibility = () => {
+    if (window.pageYOffset > 300) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  return (
+    <div className={`back-to-top-container ${isVisible ? 'visible' : ''}`}>
+      <button 
+        className="back-to-top-btn"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+      >
+        <FaChevronUp />
+      </button>
+    </div>
+  );
+}
 
 function HeroSection() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -93,22 +132,23 @@ function HeroSection() {
     <>
       {/* Header Section */}
       <div className="top-bar">
-        <div className="container top-container">
-          <div className="promo-text">
-            <span className="flag">🚩</span> started as just $99/month .
-          </div>
-          <div className="top-nav">
-            <div className="dropdown">
-              <span>Real Estate Education</span>
-              <span className="dropdown-arrow">▼</span>
-            </div>
-            <Link to="/about">About us</Link>
-            <Link to="/contact">Contact Us</Link>
-            <Link to="/auth-login">Login</Link>
-          </div>
+      <div className="container top-container">
+        <div className="promo-text">
+          <span className="flag">🚩</span> started as just $99/month.
+        </div>
+        <div className="top-nav">
+          {/* <div className="dropdown">
+            <span>Real Estate Education</span>
+          </div> */}
+          <Link to="/about" className="arrow-button">About us <span className="arrow-icon"></span></Link>
+          <Link to="/contact" className="arrow-button">Contact Us <span className="arrow-icon"></span></Link>
+          <Link to="/auth-login" className="arrow-button">Login <span className="arrow-icon"></span></Link>
+          {/* <button className="arrow-button">
+            Get Started <span className="arrow-icon"></span>
+          </button> */}
         </div>
       </div>
-
+    </div>
       <div className="main-nav">
         <div className="container main-nav-container">
           <div className="logo">
@@ -167,11 +207,11 @@ function HeroSection() {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="hero-section">
+         {/* Hero Section */}
+         <div className="hero-section">
         <div className="container hero-container">
           <h1 className="hero-title" ref={titleRef}>
-            Generate More Leads &<br /> Close More Deals
+            Generate More Leads & Close More Deals
           </h1>
           <p className="hero-subtitle" ref={subtitleRef}>
             Create Opportunities with Us! Become a Novablast Partner<br />
@@ -333,15 +373,17 @@ function HeroSection() {
               <div className="plan-card dark scroll-reveal">
                 <h3 className="plan-title">I'm Serious</h3>
                 <p className="plan-desc white">Commit to success with our 'I'm Serious' Plan, packed with advanced tools and dedicated support for real estate professionals ready to get started.</p>
-                <div className="plan-price">$495<span className="per-month">/month</span></div>
-                <button className="subscribe-btn green">Subscribe</button>
+                <div className="plan-price">$95<span className="per-month">/month</span></div>
+                {/* <a className="subscribe-btn green">Subscribe</a> */}
+                <a href="auth-login" className="subscribe-btn green">Subscribe</a>
+
                 <ul className="plan-features">
                   <li className="plan-desc1">Send up to 15,000 Initial Outbound Messages</li>
                   <li className="plan-desc1">Unlimited drip campaigns</li>
                   <li className="plan-desc1">Free unlimited inbound & outbound active conversations</li>
                   <li className="plan-desc1">Guaranteed Highest Delivery & Response</li>
                 </ul>
-                <a href="a" className="learn-more-link green">Learn More →</a>
+                <a href="about" className="learn-more-link blue">Learn More →</a>
               </div>
 
               {/* Plan 2 */}
@@ -351,30 +393,30 @@ function HeroSection() {
                   <span className="most-popular">most popular</span>
                 </div>
                 <p className="plan-desc white">Expand your outreach with the 'Time to Scale' Plan, designed to help ambitious professionals grow their real estate business and dominate their market.</p>
-                <div className="plan-price">$795<span className="per-month">/month</span></div>
-                <button className="subscribe-btn blue">Subscribe</button>
+                <div className="plan-price">$195<span className="per-month">/month</span></div>
+                <a href="auth-login" className="subscribe-btn blue">Subscribe</a>
                 <ul className="plan-features">
                   <li className="plan-desc1">Send up to 30,000 initial outbound messages</li>
                   <li className="plan-desc1">3 licensed account users (agents)</li>
                   <li className="plan-desc1">Advanced area code monitoring for highest deliverability</li>
                   <li className="plan-desc1">Built-in 10DLC compliance feature</li>
                 </ul>
-                <a href="b" className="learn-more-link blue">Learn More →</a>
+                <a href="about" className="learn-more-link blue">Learn More →</a>
               </div>
 
               {/* Plan 3 */}
               <div className="plan-card dark scroll-reveal">
                 <h3 className="plan-title">Market Dominator</h3>
                 <p className="plan-desc white">Ready to dominate the market? The 'Market Dominator' Plan is designed for top-tier professionals with a full-scale operation, offering wide resources.</p>
-                <div className="plan-price white">$1495<span className="per-month">/month</span></div>
-                <button className="subscribe-btn white">Subscribe</button>
+                <div className="plan-price white">$595<span className="per-month">/month</span></div>
+                <a href="auth-login" className="subscribe-btn green">Subscribe</a>
                 <ul className="plan-features white">
                   <li className="plan-desc1">Send up to 65,000 initial outbound messages</li>
                   <li className="plan-desc1">Dedicated account manager</li>
                   <li className="plan-desc1">Customized strategy sessions and personalized support</li>
                   <li className="plan-desc1">Built-in 10DLC compliance feature</li>
                 </ul>
-                <a href="c" className="learn-more-link white">Learn More →</a>
+                <a href="about" className="learn-more-link blue">Learn More →</a>
               </div>
             </div>
           </div>
@@ -385,7 +427,7 @@ function HeroSection() {
                 <h2 className="section-title">Unlock Powerful Lead Generation Tools and Exclusive Education to Skyrocket Your Success</h2>
                 
                 <div className="price-box">
-                  <div className="price">$495</div>
+                  <div className="price">$95</div>
                   <div className="period">/month</div>
                 </div>
                 
@@ -396,8 +438,8 @@ function HeroSection() {
                 </p>
                 
                 <div className="cta-buttons">
-                  <a href="#" className="btn get-started-btn btn-secondary">Get Started</a>
-                  <a href="#" className="btn get-started-btn btn-secondary">Learn More</a>
+                  <a href="auth-login" className="btn get-started-btn btn-secondary">Get Started</a>
+                  <a href="about" className="btn get-started-btn btn-secondary">Learn More</a>
                 </div>
               </div>
               
@@ -638,6 +680,9 @@ function HeroSection() {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      <BackToTopButton />
     </>
   );
 }
