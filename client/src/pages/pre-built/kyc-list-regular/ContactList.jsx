@@ -110,26 +110,15 @@ const ContactList = () => {
                     <td>{group.duplicates}</td>
                     <td>{formatDate(group.created)}</td>
                     <td>
-                      <div className="table-actions flex gap-2">
-                        <button
-                          className="edit-button action-btn"
-                          onClick={() => console.log("Edit clicked")}
-                          aria-label="Edit"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          className="delete-button action-btn"
-                          onClick={() => handleDelete(group.sampleName)}
-                          aria-label="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                        <button className="action-btn more-options-button" aria-label="More options">
-                          <MoreVertical size={18} />
-                        </button>
-                      </div>
-                    </td>
+                  <div className="actions-cell">
+                    <button className="icon-button">
+                      <span className="edit-icon">✏️</span>
+                    </button>
+                    <button className="icon-button">
+                      <span className="delete-icon">🗑️</span>
+                    </button>
+                  </div>
+                </td>
                   </tr>
                 ))}
             </tbody>
