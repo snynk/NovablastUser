@@ -136,10 +136,15 @@ const CampaignManagement = () => {
                   <td>{campaign.response}</td>
                   <td className={campaign.id === 2 ? 'date' : ''}>{campaign.created}</td>
                   <td>
-                    <button className="action-button">
-                      <MoreVertical size={18} />
+                  <div className="actions-cell">
+                    <button className="icon-button">
+                      <span className="edit-icon">✏️</span>
                     </button>
-                  </td>
+                    <button className="icon-button">
+                      <span className="delete-icon">🗑️</span>
+                    </button>
+                  </div>
+                </td>
                 </tr>
               ))}
             </tbody>

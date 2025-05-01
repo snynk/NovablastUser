@@ -6,7 +6,9 @@ import DatePicker from "react-datepicker";
 import { Modal, ModalBody } from "reactstrap";
 import {
   Block,
-  BlockBetween, 
+
+  BlockBetween,
+
   BlockHead,
   BlockHeadContent,
   BlockTitle,

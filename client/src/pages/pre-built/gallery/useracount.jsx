@@ -275,18 +275,15 @@ const filteredUsers = Array.isArray(users) ? users.filter(user => {
                 </td>
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td>
-        <div className="table-actions">
-          <button className="edit-button action-btn" onClick={() => handleEditUser(user)} aria-label="Edit">
-            <Edit size={18} />
-          </button>
-          <button className="delete-button action-btn" onClick={() => handleDeleteUser(user._id)} aria-label="Delete">
-            <Trash2 size={18} />
-          </button>
-          <button className="action-btn more-options-button" aria-label="More options">
-            <MoreVertical size={18} />
-          </button>
-        </div>
-      </td>
+                  <div className="actions-cell">
+                    <button className="icon-button">
+                      <span className="edit-icon">✏️</span>
+                    </button>
+                    <button className="icon-button">
+                      <span className="delete-icon">🗑️</span>
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -111,7 +111,7 @@ const BatchesDataTable = () => {
     }} 
   />
 </div>
-        <button className="create-batch-btn">Create New Batches</button>
+        <button className="create-button create-user-button">Create New Batches</button>
       </div>
 
       <div className="batches-content">
