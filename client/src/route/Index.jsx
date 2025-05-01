@@ -128,6 +128,9 @@ import Register from "@/pages/auth/Register";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import Success from "@/pages/auth/Success";
 import Mainpage from "@/pages/auth/Mainpage";
+import Aboutpage from "@/pages/auth/Aboutpage";
+import Contactpage from "@/pages/auth/Contactpage";
+
 
 
 import Layout from "@/layout/Index";
@@ -329,6 +332,8 @@ const Router = () => {
                 <Route path="auth-register" element={<Register />}></Route>
                 <Route path="auth-login" element={ <PublicRoute><Login /></PublicRoute>}></Route>
                 <Route path="auth-Mainpage" element={ <PublicRoute><Mainpage /></PublicRoute>}></Route>
+                <Route path="about" element={ <PublicRoute><Aboutpage /></PublicRoute>}></Route>
+                <Route path="contact" element={ <PublicRoute><Contactpage /></PublicRoute>}></Route>
 
                 <Route path="errors">
                   <Route path="404-modern" element={<Error404Modern />}></Route>

@@ -13,7 +13,7 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
 const subUserRoutes = require("./routes/subUserRoutes");
-const templateRoutes = require("./routes/templateRoutes"); // 👈 Added template routes
+const templateRoutes = require("./routes/templateRoutes"); 
 
 // Init express
 const app = express();
