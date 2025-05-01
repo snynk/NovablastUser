@@ -18,29 +18,61 @@ import UserProfileAside from "./UserProfileAside";
 const UserProfileActivityPage = () => {
   const [sm, updateSm] = useState(false);
   const [mobileView , setMobileView] = useState(false);
+  const [loginLogs, setLoginLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // function to change the design view under 990 px
-  const viewChange = () => {
-    if (window.innerWidth < 990) {
-      setMobileView(true);
-    } else {
-      setMobileView(false);
-      updateSm(false);
-    }
-  };
-
-  useEffect(() => {
-    viewChange();
-    window.addEventListener("load", viewChange);
-    window.addEventListener("resize", viewChange);
-    document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
-      updateSm(false);
-    });
-    return () => {
-      window.removeEventListener("resize", viewChange);
-      window.removeEventListener("load", viewChange);
+    // ✅ Retrieve logged-in user ID
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const loggedInCustomerId = user?.id || null;
+  
+    // ✅ Fetch login activity dynamically
+    const fetchLoginActivity = async () => {
+      try {
+        setLoading(true);
+        if (!loggedInCustomerId) {
+          console.error("No logged-in customer ID found");
+          setLoading(false);
+          return;
+        }
+  
+        const response = await fetch(`http://localhost:3000/api/login-activity/${loggedInCustomerId}`);
+        if (!response.ok) throw new Error("Failed to fetch login activity");
+  
+        const logs = await response.json();
+        setLoginLogs(logs.slice(0, 20)); // ✅ Show only the last 20 login records
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching login activity:", error.message);
+        setLoginLogs([]);
+        setLoading(false);
+      }
     };
-  }, []);
+
+    useEffect(() => {
+      fetchLoginActivity();
+  
+      // ✅ Handle mobile view logic
+      const viewChange = () => {
+        if (window.innerWidth < 990) {
+          setMobileView(true);
+        } else {
+          setMobileView(false);
+          updateSm(false);
+        }
+      };
+  
+      viewChange();
+      window.addEventListener("load", viewChange);
+      window.addEventListener("resize", viewChange);
+      document.getElementsByClassName("nk-header")[0]?.addEventListener("click", function () {
+        updateSm(false);
+      });
+  
+      return () => {
+        window.removeEventListener("resize", viewChange);
+        window.removeEventListener("load", viewChange);
+      };
+    }, [loggedInCustomerId]);
   
   return (
     <React.Fragment>
@@ -80,7 +112,33 @@ const UserProfileActivityPage = () => {
                   </BlockHeadContent>
                 </BlockBetween>
               </BlockHead>
-              <LoginLogTable />
+               {/* ✅ Show loading state if data is not yet available */}
+               {loading ? (
+                <p>Loading login activity...</p>
+              ) : loginLogs.length > 0 ? (
+                <Table bordered>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Login Time</th>
+                      <th>IP Address</th>
+                      <th>Device Info</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loginLogs.map((log, index) => (
+                      <tr key={log._id}>
+                        <td>{index + 1}</td>
+                        <td>{new Date(log.loginTime).toLocaleString()}</td>
+                        <td>{log.ipAddress || "Unknown"}</td>
+                        <td>{log.deviceInfo || "Unknown"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <p>No login activity found.</p>
+              )}
             </div>
           </div>
         </Card>
