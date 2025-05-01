@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { getCustomerData, updateCustomerData } = require("../controllers/ProfileController");
 
-// Route to get customer data
+// ✅ Get customer data
 router.get("/:customerId", getCustomerData);
 
-// Route to update customer data
+// ✅ Update customer data dynamically
 router.put("/:customerId", updateCustomerData);
 
 module.exports = router;

@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 
-const CustomerSchema = new mongoose.Schema(
+const ProfileSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    passcode: { type: String, required: true },
     phone: { type: String },
-    dob: { type: Date }, // Date of Birth
+    status: { type: String, default: "Active" },
     address: { type: String },
-    address2: { type: String },
-    state: { type: String },
-    country: { type: String },
+    additionalFields: { type: Object }, // ✅ Allows dynamic fields
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("customers", CustomerSchema);
+// ✅ Fix: Prevent overwriting the model
+const Profile = mongoose.models.customers || mongoose.model("customers", ProfileSchema);
+module.exports = Profile;

@@ -1,10 +1,10 @@
-const Customer = require("../models/ProfileModel");
+const Profile = require("../models/ProfileModel");
 
 // ✅ Get customer data by ID
 exports.getCustomerData = async (req, res) => {
   try {
     const customerId = req.params.customerId; // Customer ID from the route
-    const customer = await Customer.findById(customerId);
+    const customer = await Profile.find(customerId);
 
     if (!customer) {
       return res.status(404).json({ error: "Customer not found." });
@@ -17,13 +17,31 @@ exports.getCustomerData = async (req, res) => {
   }
 };
 
-// ✅ Update customer data
+// ✅ Update customer data (Handles dynamic fields)
 exports.updateCustomerData = async (req, res) => {
   try {
-    const customerId = req.params.customerId; // Customer ID from the route
+    const customerId = req.params.customerId;
     const updatedData = req.body;
 
-    const updatedCustomer = await Customer.findByIdAndUpdate(customerId, updatedData, { new: true });
+    // Extract standard fields
+    const standardFields = {
+      name: updatedData.name,
+      email: updatedData.email,
+      phone: updatedData.phone,
+      status: updatedData.status,
+      address: updatedData.address,
+    };
+
+    // Extract additional fields
+    const additionalFields = { ...updatedData };
+    Object.keys(standardFields).forEach((key) => delete additionalFields[key]);
+
+    // Update profile
+    const updatedCustomer = await Profile.findByIdAndUpdate(
+      customerId,
+      { ...standardFields, $set: { additionalFields } }, // ✅ Adds dynamic fields
+      { new: true, upsert: true } // ✅ Ensures new fields are added dynamically
+    );
 
     if (!updatedCustomer) {
       return res.status(404).json({ error: "Customer not found." });

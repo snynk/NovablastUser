@@ -14,6 +14,7 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
 const subUserRoutes = require("./routes/subUserRoutes");
+const profileRouter = require("./routes/ProfileRoutes");
 
 // Init express
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes); // Example endpoint: /contacts/import
 app.use("/api/groupedContacts", groupedContactRoutes);
 app.use("/api/subusers", subUserRoutes);
+app.use("/api/customers", profileRouter);
 
 // Default route
 app.get('/', (req, res) => {
