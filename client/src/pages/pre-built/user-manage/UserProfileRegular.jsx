@@ -6,8 +6,9 @@ import DatePicker from "react-datepicker";
 import { Modal, ModalBody } from "reactstrap";
 import {
   Block,
+
   BlockBetween,
-  BlockDes,
+
   BlockHead,
   BlockHeadContent,
   BlockTitle,
@@ -15,43 +16,41 @@ import {
   Row,
   Col,
   Button,
-  RSelect
+  RSelect,
 } from "@/components/Component";
 import { countryOptions, userData } from "./UserData";
 import { getDateStructured } from "@/utils/Utils";
 import UserProfileAside from "./UserProfileAside";
 
 const UserProfileRegularPage = () => {
-  const [sm, updateSm] = useState(false);
-  const [mobileView , setMobileView] = useState(false);
-  
-  const [modalTab, setModalTab] = useState("1");
-  const [userInfo, setUserInfo] = useState(userData[0]);
-  const [formData, setFormData] = useState({
-    name: "Abu Bin Ishtiak",
-    displayName: "Ishtiak",
-    phone: "818474958",
-    dob: "1980-08-10",
-    address: "2337 Kildeer Drive",
-    address2: "",
-    state: "Kentucky",
-    country: "Canada",
-  });
-  const [modal, setModal] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user")); // Retrieve the logged-in user object
+const loggedInCustomerId = user && user.id ? user.id : null; // Extract the customer ID
 
-  const onInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+const [sm, updateSm] = useState(false);
+const [mobileView, setMobileView] = useState(false);
+const [modalTab, setModalTab] = useState("1");
+const [customerData, setCustomerData] = useState(null); // Data fetched for logged-in customer
+const [formData, setFormData] = useState({}); // Used for editing in the modal
+const [modal, setModal] = useState(false);
 
-  const submitForm = () => {
-    let submitData = {
-      ...formData,
-    };
-    setUserInfo(submitData);
-    setModal(false);
-  };
+const fetchCustomerData = async () => {
+  try {
+    if (!loggedInCustomerId) throw new Error("No logged-in customer ID found");
 
-  // function to change the design view under 990 px
+    const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`);
+    if (!response.ok) throw new Error("Failed to fetch customer data");
+
+    const customer = await response.json();
+    setCustomerData(customer); // Update state with fetched data
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+useEffect(() => {
+  fetchCustomerData(); // Fetch data on page load
+
+  // Handle mobile view logic
   const viewChange = () => {
     if (window.innerWidth < 990) {
       setMobileView(true);
@@ -61,18 +60,42 @@ const UserProfileRegularPage = () => {
     }
   };
 
-  useEffect(() => {
-    viewChange();
-    window.addEventListener("load", viewChange);
-    window.addEventListener("resize", viewChange);
-    document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
-      updateSm(false);
+  viewChange();
+  window.addEventListener("load", viewChange);
+  window.addEventListener("resize", viewChange);
+  document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
+    updateSm(false);
+  });
+  return () => {
+    window.removeEventListener("resize", viewChange);
+    window.removeEventListener("load", viewChange);
+  };
+}, [loggedInCustomerId]);
+
+const onInputChange = (e) => {
+  setFormData({ ...formData, [e.target.name]: e.target.value });
+};
+
+const handleSaveUpdates = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
-    return () => {
-      window.removeEventListener("resize", viewChange);
-      window.removeEventListener("load", viewChange);
-    };
-  }, []);
+
+    if (!response.ok) throw new Error("Failed to update customer data");
+
+    const updatedCustomer = await response.json();
+    alert("Customer data updated successfully!");
+    setCustomerData(updatedCustomer); // Refresh state with latest data
+    setModal(false); // Close modal
+  } catch (error) {
+    console.error(error.message);
+  }
+};
   
   return (
     <React.Fragment>
@@ -112,7 +135,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Full Name</span>
-                      <span className="data-value">{userInfo.name}</span>
+                      <span className="data-value">{customerData.name || "N/A"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
@@ -120,21 +143,21 @@ const UserProfileRegularPage = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="data-item" onClick={() => setModal(true)}>
+                  {/* <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Display Name</span>
-                      <span className="data-value">{userInfo.displayName}</span>
+                      <span className="data-value">{customerData.displayName}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
                         <Icon name="forward-ios"></Icon>
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="data-item">
                     <div className="data-col">
                       <span className="data-label">Email</span>
-                      <span className="data-value">info@softnio.com</span>
+                      <span className="data-value">{customerData.email || "N/A"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more disable">
@@ -145,7 +168,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Phone Number</span>
-                      <span className="data-value text-soft">{userInfo.phone}</span>
+                      <span className="data-value text-soft">{customerData.phone || "N/A"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
@@ -153,24 +176,24 @@ const UserProfileRegularPage = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="data-item" onClick={() => setModal(true)}>
+                  {/* <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Date of Birth</span>
-                      <span className="data-value">{userInfo.dob}</span>
+                      <span className="data-value">{customerData.dob || "N/A"}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more">
                         <Icon name="forward-ios"></Icon>
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Address</span>
                       <span className="data-value">
-                        {userInfo.address},
+                        {customerData.address || "N/A"},
                         <br />
-                        {userInfo.state}, {userInfo.country}
+                        {customerData.state || "N/A"}, {customerData.country || "N/A"}
                       </span>
                     </div>
                     <div className="data-col data-col-end">
@@ -236,12 +259,12 @@ const UserProfileRegularPage = () => {
                                 className="form-control"
                                 name="name"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.name}
+                                defaultValue={formData.name || customerData.name || ""}
                                 placeholder="Enter Full name"
                               />
                             </div>
                           </Col>
-                          <Col md="6">
+                          {/* <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="display-name">
                                 Display Name
@@ -256,7 +279,7 @@ const UserProfileRegularPage = () => {
                                 placeholder="Enter display name"
                               />
                             </div>
-                          </Col>
+                          </Col> */}
                           <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="phone-no">
@@ -268,12 +291,12 @@ const UserProfileRegularPage = () => {
                                 className="form-control"
                                 name="phone"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.phone}
+                                defaultValue={formData.phone|| customerData.phone || ""}
                                 placeholder="Phone Number"
                               />
                             </div>
                           </Col>
-                          <Col md="6">
+                          {/* <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="birth-day">
                                 Date of Birth
@@ -285,15 +308,15 @@ const UserProfileRegularPage = () => {
                                 maxDate={new Date()}
                               />
                             </div>
-                          </Col>
-                          <Col size="12">
+                          </Col> */}
+                          {/* <Col size="12">
                             <div className="custom-control custom-switch">
                               <input type="checkbox" className="custom-control-input" id="latest-sale" />
                               <label className="custom-control-label" htmlFor="latest-sale">
                                 Use full name to display{" "}
                               </label>
                             </div>
-                          </Col>
+                          </Col> */}
                           <Col size="12">
                             <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                               <li>
