@@ -16,6 +16,8 @@
     background-image: linear-gradient(rgba(16, 47, 71, 0.9), rgba(16, 47, 71, 0.9)), url('/images/hero-bg.jpg');
     background-size: cover;
     background-position: center;
+    margin-left: 15px;
+      
   }
   
   .about-hero-title {
@@ -456,7 +458,7 @@
   }
   
   .form-title, .info-title {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
     color: #102f47;
   }
   
@@ -502,6 +504,10 @@
   
   .form-group input.error, .form-group textarea.error {
     border-color: #e74c3c;
+  }
+
+  textarea{
+    height: 70px;
   }
   
   .error-message {
@@ -670,6 +676,7 @@
     color: #666666;
   }
   
+  
   /* ===== Media Queries for Responsive Design ===== */
   @media (max-width: 1200px) {
     .footer-grid {
@@ -766,5 +773,75 @@
       padding: 1.5rem;
     }
   }
+/* Add this to your aboutpage.css file */
 
-  
+/* Back to Top Button Styles */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #102f47;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 999;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.back-to-top:hover {
+  background-color: #00a269;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Pulse animation for back to top button */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 185, 119, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 185, 119, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 185, 119, 0);
+  }
+}
+
+  /* ----- Card Animation Styles ----- */
+.card-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.card-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Enhanced scroll reveal animations */
+.scroll-reveal {
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.revealed {
+  opacity: 1;
+  transform: translateY(0) !important;
+}
+
+/* Staggered animation for FAQ items */
+.faq-grid .card-fade:nth-child(1) { transition-delay: 0.1s; }
+.faq-grid .card-fade:nth-child(2) { transition-delay: 0.2s; }
+.faq-grid .card-fade:nth-child(3) { transition-delay: 0.3s; }
+.faq-grid .card-fade:nth-child(4) { transition-delay: 0.4s; }
+.faq-grid .card-fade:nth-child(5) { transition-delay: 0.5s; }
+.faq-grid .card-fade:nth-child(6) { transition-delay: 0.6s; }

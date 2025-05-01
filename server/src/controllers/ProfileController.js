@@ -4,7 +4,7 @@ const Profile = require("../models/ProfileModel");
 exports.getCustomerData = async (req, res) => {
   try {
     const customerId = req.params.customerId; // Customer ID from the route
-    const customer = await Profile.find(customerId);
+    const customer = await Profile.findById(customerId); // Fixed: using findById instead of find
 
     if (!customer) {
       return res.status(404).json({ error: "Customer not found." });
@@ -30,7 +30,15 @@ exports.updateCustomerData = async (req, res) => {
       phone: updatedData.phone,
       status: updatedData.status,
       address: updatedData.address,
+      address2: updatedData.address2,
+      state: updatedData.state,
+      country: updatedData.country
     };
+
+    // Filter out undefined values
+    Object.keys(standardFields).forEach(key => 
+      standardFields[key] === undefined && delete standardFields[key]
+    );
 
     // Extract additional fields
     const additionalFields = { ...updatedData };
@@ -39,8 +47,11 @@ exports.updateCustomerData = async (req, res) => {
     // Update profile
     const updatedCustomer = await Profile.findByIdAndUpdate(
       customerId,
-      { ...standardFields, $set: { additionalFields } }, // ✅ Adds dynamic fields
-      { new: true, upsert: true } // ✅ Ensures new fields are added dynamically
+      { 
+        ...standardFields, 
+        ...(Object.keys(additionalFields).length > 0 && { additionalFields }) 
+      },
+      { new: true, runValidators: true }
     );
 
     if (!updatedCustomer) {
