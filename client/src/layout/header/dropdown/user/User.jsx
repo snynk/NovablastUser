@@ -32,7 +32,7 @@ const User = () => {
     e.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/auth-login", { replace: true });
+    navigate("/auth-Mainpage", { replace: true });
   };
 
   return (

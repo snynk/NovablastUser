@@ -5,6 +5,8 @@ import { Container, Row, Col, Card, Form, FormGroup, Input, Button, Spinner, Ale
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import "@/assets/css/login.css";
+import { ArrowLeft } from 'lucide-react'; // or any icon library you like
+import { Link } from 'react-router-dom'; // assuming you're using React Router
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: "", passcode: "" });
@@ -152,6 +154,13 @@ const AdminLogin = () => {
                 </div>
               ) : "Sign In"}
             </button>
+            <div className="flex justify-center items-center h-screen">
+      <Link to="/auth-Mainpage" className="flex items-center space-x-2 text-blue-600 hover:underline">
+        <ArrowLeft size={24} />
+        <span>Back to Main Page</span>
+      </Link>
+    </div>
+
           </Form>
           
           {/* <div className="sign-up-link">
