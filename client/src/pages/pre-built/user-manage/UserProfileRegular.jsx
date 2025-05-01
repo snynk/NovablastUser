@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Content from "@/layout/content/Content";
-import { Card} from "reactstrap";
+import { Card } from "reactstrap";
 import Head from "@/layout/head/Head";
 import DatePicker from "react-datepicker";
 import { Modal, ModalBody } from "reactstrap";
 import {
   Block,
-
   BlockBetween,
 
   BlockHead,
@@ -18,39 +17,75 @@ import {
   Button,
   RSelect,
 } from "@/components/Component";
-import { countryOptions, userData } from "./UserData";
+
 import { getDateStructured } from "@/utils/Utils";
 import UserProfileAside from "./UserProfileAside";
+const countryOptions = [
+  { value: "USA", label: "United States" },
+  { value: "Canada", label: "Canada" },
+  { value: "UK", label: "United Kingdom" },
+  { value: "India", label: "India" },
+  { value: "Australia", label: "Australia" },
+  { value: "Germany", label: "Germany" },
+  { value: "France", label: "France" },
+  { value: "Japan", label: "Japan" },
+  { value: "China", label: "China" },
+  { value: "Brazil", label: "Brazil" },
+];
+
+
 
 const UserProfileRegularPage = () => {
-  const user = JSON.parse(localStorage.getItem("user")); // Retrieve the logged-in user object
-const loggedInCustomerId = user && user.id ? user.id : null; // Extract the customer ID
+  const user = JSON.parse(localStorage.getItem("user")); // ✅ Retrieve logged-in user object
+  const loggedInCustomerId = user && user.id ? user.id : null; // ✅ Extract the customer ID
 
-const [sm, updateSm] = useState(false);
-const [mobileView, setMobileView] = useState(false);
-const [modalTab, setModalTab] = useState("1");
-const [customerData, setCustomerData] = useState(null); // Data fetched for logged-in customer
-const [formData, setFormData] = useState({}); // Used for editing in the modal
-const [modal, setModal] = useState(false);
+  const [sm, updateSm] = useState(false);
+  const [mobileView, setMobileView] = useState(false);
+  const [modalTab, setModalTab] = useState("1");
+  const [customerData, setCustomerData] = useState(null); // ✅ Data fetched for logged-in customer
+  const [formData, setFormData] = useState({}); // ✅ Used for editing in the modal
+  const [modal, setModal] = useState(false);
 
+  // ✅ Fetch customer data dynamically
 const fetchCustomerData = async () => {
   try {
+    console.log("Logged-in Customer ID:", loggedInCustomerId);
+
     if (!loggedInCustomerId) throw new Error("No logged-in customer ID found");
 
     const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`);
     if (!response.ok) throw new Error("Failed to fetch customer data");
 
     const customer = await response.json();
-    setCustomerData(customer); // Update state with fetched data
+    console.log("Fetched Customer Response:", customer); // ✅ Log raw response
+
+    if (!customer) throw new Error("Customer data is null");
+
+    // ✅ Ensure missing fields show "N/A" rather than causing errors
+    const formattedCustomerData = {
+      _id: customer._id || "",
+      name: customer.name || "N/A",
+      email: customer.email || "N/A",
+      phone: customer.phone || "N/A",
+      status: customer.status || "N/A",
+      address: customer.address || "N/A",
+      createdAt: customer.createdAt || "",
+      updatedAt: customer.updatedAt || "",
+      additionalFields: customer.additionalFields || {},
+    };
+
+    console.log("Fetched Customer Data:", formattedCustomerData); // ✅ Debugging check
+    setCustomerData(formattedCustomerData); // ✅ Set updated state
   } catch (error) {
-    console.error(error.message);
+    console.error("Error fetching customer data:", error.message);
   }
 };
 
+// ✅ Fetch customer data on page load
 useEffect(() => {
-  fetchCustomerData(); // Fetch data on page load
+  fetchCustomerData();
 
-  // Handle mobile view logic
+  // ✅ Handle mobile view logic
   const viewChange = () => {
     if (window.innerWidth < 990) {
       setMobileView(true);
@@ -66,36 +101,43 @@ useEffect(() => {
   document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
     updateSm(false);
   });
+
   return () => {
     window.removeEventListener("resize", viewChange);
     window.removeEventListener("load", viewChange);
   };
 }, [loggedInCustomerId]);
 
-const onInputChange = (e) => {
-  setFormData({ ...formData, [e.target.name]: e.target.value });
-};
 
-const handleSaveUpdates = async () => {
-  try {
-    const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+  // ✅ Handle input changes (including additional fields)
+  const onInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    if (!response.ok) throw new Error("Failed to update customer data");
+  // ✅ Handle saving updates dynamically
+  const handleSaveUpdates = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const updatedCustomer = await response.json();
-    alert("Customer data updated successfully!");
-    setCustomerData(updatedCustomer); // Refresh state with latest data
-    setModal(false); // Close modal
-  } catch (error) {
-    console.error(error.message);
-  }
-};
+      if (!response.ok) throw new Error("Failed to update customer data");
+
+      const updatedCustomer = await response.json();
+      alert("Customer data updated successfully!");
+
+      // ✅ Refresh state with latest data (including newly added fields)
+      setCustomerData(updatedCustomer);
+      setModal(false); // ✅ Close modal
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   
   return (
     <React.Fragment>
@@ -143,17 +185,7 @@ const handleSaveUpdates = async () => {
                       </span>
                     </div>
                   </div>
-                  {/* <div className="data-item" onClick={() => setModal(true)}>
-                    <div className="data-col">
-                      <span className="data-label">Display Name</span>
-                      <span className="data-value">{customerData.displayName}</span>
-                    </div>
-                    <div className="data-col data-col-end">
-                      <span className="data-more">
-                        <Icon name="forward-ios"></Icon>
-                      </span>
-                    </div>
-                  </div> */}
+                 
                   <div className="data-item">
                     <div className="data-col">
                       <span className="data-label">Email</span>
@@ -176,17 +208,7 @@ const handleSaveUpdates = async () => {
                       </span>
                     </div>
                   </div>
-                  {/* <div className="data-item" onClick={() => setModal(true)}>
-                    <div className="data-col">
-                      <span className="data-label">Date of Birth</span>
-                      <span className="data-value">{customerData.dob || "N/A"}</span>
-                    </div>
-                    <div className="data-col data-col-end">
-                      <span className="data-more">
-                        <Icon name="forward-ios"></Icon>
-                      </span>
-                    </div>
-                  </div> */}
+                
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Address</span>
@@ -264,22 +286,7 @@ const handleSaveUpdates = async () => {
                               />
                             </div>
                           </Col>
-                          {/* <Col md="6">
-                            <div className="form-group">
-                              <label className="form-label" htmlFor="display-name">
-                                Display Name
-                              </label>
-                              <input
-                                type="text"
-                                id="display-name"
-                                className="form-control"
-                                name="displayName"
-                                onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.displayName}
-                                placeholder="Enter display name"
-                              />
-                            </div>
-                          </Col> */}
+                         
                           <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="phone-no">
@@ -296,27 +303,7 @@ const handleSaveUpdates = async () => {
                               />
                             </div>
                           </Col>
-                          {/* <Col md="6">
-                            <div className="form-group">
-                              <label className="form-label" htmlFor="birth-day">
-                                Date of Birth
-                              </label>
-                              <DatePicker
-                                selected={new Date(formData.dob)}
-                                className="form-control"
-                                onChange={(date) => setFormData({ ...formData, dob: getDateStructured(date) })}
-                                maxDate={new Date()}
-                              />
-                            </div>
-                          </Col> */}
-                          {/* <Col size="12">
-                            <div className="custom-control custom-switch">
-                              <input type="checkbox" className="custom-control-input" id="latest-sale" />
-                              <label className="custom-control-label" htmlFor="latest-sale">
-                                Use full name to display{" "}
-                              </label>
-                            </div>
-                          </Col> */}
+                         
                           <Col size="12">
                             <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                               <li>
@@ -359,7 +346,7 @@ const handleSaveUpdates = async () => {
                                 id="address-l1"
                                 name="address"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.address}
+                                value={formData.address || customerData.address || ""}
                                 className="form-control"
                               />
                             </div>
@@ -374,7 +361,7 @@ const handleSaveUpdates = async () => {
                                 id="address-l2"
                                 name="address2"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.address2}
+                                defaultValue={formData.address2 || customerData.address2 || ""}
                                 className="form-control"
                               />
                             </div>
@@ -389,7 +376,7 @@ const handleSaveUpdates = async () => {
                                 id="address-st"
                                 name="state"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.state}
+                                defaultValue={formData.state || customerData.state || ""}
                                 className="form-control"
                               />
                             </div>
@@ -404,8 +391,8 @@ const handleSaveUpdates = async () => {
                                 placeholder="Select a country"
                                 defaultValue={[
                                   {
-                                    value: formData.country,
-                                    label: formData.country,
+                                    value: formData.country || customerData.country || "",
+                                    label: formData.country || customerData.country || "Select a country",
                                   },
                                 ]}
                                 onChange={(e) => setFormData({ ...formData, country: e.value })}

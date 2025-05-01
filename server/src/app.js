@@ -13,7 +13,6 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
 const subUserRoutes = require("./routes/subUserRoutes");
-const templateRoutes = require("./routes/templateRoutes"); 
 
 // Init express
 const app = express();
@@ -44,7 +43,7 @@ app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/groupedContacts", groupedContactRoutes);
 app.use("/api/subusers", subUserRoutes);
-app.use("/api/templates", templateRoutes); 
+
 
 // Default route
 app.get('/', (req, res) => {
