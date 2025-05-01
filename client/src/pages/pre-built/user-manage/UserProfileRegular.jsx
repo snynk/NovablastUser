@@ -7,7 +7,6 @@ import { Modal, ModalBody } from "reactstrap";
 import {
   Block,
   BlockBetween,
-
   BlockHead,
   BlockHeadContent,
   BlockTitle,
@@ -17,106 +16,92 @@ import {
   Button,
   RSelect,
 } from "@/components/Component";
-
+import { countryOptions, userData } from "./UserData";
 import { getDateStructured } from "@/utils/Utils";
 import UserProfileAside from "./UserProfileAside";
-const countryOptions = [
-  { value: "USA", label: "United States" },
-  { value: "Canada", label: "Canada" },
-  { value: "UK", label: "United Kingdom" },
-  { value: "India", label: "India" },
-  { value: "Australia", label: "Australia" },
-  { value: "Germany", label: "Germany" },
-  { value: "France", label: "France" },
-  { value: "Japan", label: "Japan" },
-  { value: "China", label: "China" },
-  { value: "Brazil", label: "Brazil" },
-];
-
-
 
 const UserProfileRegularPage = () => {
-  const user = JSON.parse(localStorage.getItem("user")); // ✅ Retrieve logged-in user object
-  const loggedInCustomerId = user && user.id ? user.id : null; // ✅ Extract the customer ID
+  const user = JSON.parse(localStorage.getItem("user")) || {}; // Retrieve the logged-in user object with fallback
+  const loggedInCustomerId = user && user.id ? user.id : null; // Extract the customer ID
 
   const [sm, updateSm] = useState(false);
   const [mobileView, setMobileView] = useState(false);
   const [modalTab, setModalTab] = useState("1");
-  const [customerData, setCustomerData] = useState(null); // ✅ Data fetched for logged-in customer
-  const [formData, setFormData] = useState({}); // ✅ Used for editing in the modal
+  const [customerData, setCustomerData] = useState({}); // Initialize with empty object instead of null
+  const [formData, setFormData] = useState({}); // Used for editing in the modal
   const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch customer data dynamically
-const fetchCustomerData = async () => {
-  try {
-    console.log("Logged-in Customer ID:", loggedInCustomerId);
+  const fetchCustomerData = async () => {
+    try {
+      setLoading(true);
+      if (!loggedInCustomerId) {
+        console.error("No logged-in customer ID found");
+        setLoading(false);
+        return;
+      }
 
-    if (!loggedInCustomerId) throw new Error("No logged-in customer ID found");
+      const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`);
+      if (!response.ok) throw new Error("Failed to fetch customer data");
 
-    const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`);
-    if (!response.ok) throw new Error("Failed to fetch customer data");
-
-    const customer = await response.json();
-    console.log("Fetched Customer Response:", customer); // ✅ Log raw response
-
-    if (!customer) throw new Error("Customer data is null");
-
-    // ✅ Ensure missing fields show "N/A" rather than causing errors
-    const formattedCustomerData = {
-      _id: customer._id || "",
-      name: customer.name || "N/A",
-      email: customer.email || "N/A",
-      phone: customer.phone || "N/A",
-      status: customer.status || "N/A",
-      address: customer.address || "N/A",
-      createdAt: customer.createdAt || "",
-      updatedAt: customer.updatedAt || "",
-      additionalFields: customer.additionalFields || {},
-    };
-
-    console.log("Fetched Customer Data:", formattedCustomerData); // ✅ Debugging check
-    setCustomerData(formattedCustomerData); // ✅ Set updated state
-  } catch (error) {
-    console.error("Error fetching customer data:", error.message);
-  }
-};
-
-// ✅ Fetch customer data on page load
-useEffect(() => {
-  fetchCustomerData();
-
-  // ✅ Handle mobile view logic
-  const viewChange = () => {
-    if (window.innerWidth < 990) {
-      setMobileView(true);
-    } else {
-      setMobileView(false);
-      updateSm(false);
+      const customer = await response.json();
+      setCustomerData(customer); // Update state with fetched data
+      setLoading(false);
+    } catch (error) {
+      console.error(error.message);
+      setLoading(false);
     }
   };
 
-  viewChange();
-  window.addEventListener("load", viewChange);
-  window.addEventListener("resize", viewChange);
-  document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
-    updateSm(false);
-  });
+  useEffect(() => {
+    fetchCustomerData(); // Fetch data on page load
 
-  return () => {
-    window.removeEventListener("resize", viewChange);
-    window.removeEventListener("load", viewChange);
+    // Handle mobile view logic
+    const viewChange = () => {
+      if (window.innerWidth < 990) {
+        setMobileView(true);
+      } else {
+        setMobileView(false);
+        updateSm(false);
+      }
+    };
+
+    viewChange();
+    window.addEventListener("load", viewChange);
+    window.addEventListener("resize", viewChange);
+    document.getElementsByClassName("nk-header")[0]?.addEventListener("click", function () {
+      updateSm(false);
+    });
+    return () => {
+      window.removeEventListener("resize", viewChange);
+      window.removeEventListener("load", viewChange);
+    };
+  }, [loggedInCustomerId]);
+
+  // Initialize form data when modal opens
+  const openModal = () => {
+    setFormData({
+      name: customerData.name || "",
+      phone: customerData.phone || "",
+      address: customerData.address || "",
+      address2: customerData.address2 || "",
+      state: customerData.state || "",
+      country: customerData.country || "",
+    });
+    setModal(true);
   };
-}, [loggedInCustomerId]);
 
-
-  // ✅ Handle input changes (including additional fields)
   const onInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle saving updates dynamically
-  const handleSaveUpdates = async () => {
+  const submitForm = async () => {
     try {
+      if (!loggedInCustomerId) {
+        alert("No customer ID found. Please log in again.");
+        return;
+      }
+
       const response = await fetch(`http://localhost:3000/api/customers/${loggedInCustomerId}`, {
         method: "PUT",
         headers: {
@@ -128,20 +113,28 @@ useEffect(() => {
       if (!response.ok) throw new Error("Failed to update customer data");
 
       const updatedCustomer = await response.json();
-      alert("Customer data updated successfully!");
-
-      // ✅ Refresh state with latest data (including newly added fields)
-      setCustomerData(updatedCustomer);
-      setModal(false); // ✅ Close modal
+      alert("Profile updated successfully!");
+      setCustomerData(updatedCustomer); // Refresh state with latest data
+      setModal(false); // Close modal
     } catch (error) {
-      console.error(error.message);
+      console.error("Error updating profile:", error.message);
+      alert("Failed to update profile. Please try again.");
     }
   };
-
+  
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <React.Fragment>
-      <Head title="User List - Profile"></Head>
+      <Head title="User Profile"></Head>
       <Content>
         <Card className="card-bordered">
           <div className="card-aside-wrap">
@@ -158,7 +151,6 @@ useEffect(() => {
                 <BlockBetween>
                   <BlockHeadContent>
                     <BlockTitle tag="h4">Personal Information</BlockTitle>
-                  
                   </BlockHeadContent>
                   <BlockHeadContent className="align-self-start d-lg-none">
                     <Button
@@ -173,8 +165,7 @@ useEffect(() => {
 
               <Block>
                 <div className="nk-data data-list">
-
-                  <div className="data-item" onClick={() => setModal(true)}>
+                  <div className="data-item" onClick={openModal}>
                     <div className="data-col">
                       <span className="data-label">Full Name</span>
                       <span className="data-value">{customerData.name || "N/A"}</span>
@@ -185,7 +176,6 @@ useEffect(() => {
                       </span>
                     </div>
                   </div>
-                 
                   <div className="data-item">
                     <div className="data-col">
                       <span className="data-label">Email</span>
@@ -197,7 +187,7 @@ useEffect(() => {
                       </span>
                     </div>
                   </div>
-                  <div className="data-item" onClick={() => setModal(true)}>
+                  <div className="data-item" onClick={openModal}>
                     <div className="data-col">
                       <span className="data-label">Phone Number</span>
                       <span className="data-value text-soft">{customerData.phone || "N/A"}</span>
@@ -208,14 +198,13 @@ useEffect(() => {
                       </span>
                     </div>
                   </div>
-                
-                  <div className="data-item" onClick={() => setModal(true)}>
+                  <div className="data-item" onClick={openModal}>
                     <div className="data-col">
                       <span className="data-label">Address</span>
                       <span className="data-value">
-                        {customerData.address || "N/A"},
-                        <br />
-                        {customerData.state || "N/A"}, {customerData.country || "N/A"}
+                        {customerData.address || "N/A"}
+                        {customerData.address && <br />}
+                        {customerData.state && `${customerData.state}, `}{customerData.country || ""}
                       </span>
                     </div>
                     <div className="data-col data-col-end">
@@ -228,16 +217,16 @@ useEffect(() => {
               </Block>
 
               <Modal isOpen={modal} className="modal-dialog-centered" size="lg" toggle={() => setModal(false)}>
-                  <a
-                    href="#dropdownitem"
-                    onClick={(ev) => {
-                      ev.preventDefault();
-                      setModal(false);
-                    }}
-                    className="close"
-                  >
-                    <Icon name="cross-sm"></Icon>
-                  </a>
+                <a
+                  href="#close"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    setModal(false);
+                  }}
+                  className="close"
+                >
+                  <Icon name="cross-sm"></Icon>
+                </a>
                 <ModalBody>
                   <div className="p-2">
                     <h5 className="title">Update Profile</h5>
@@ -280,30 +269,28 @@ useEffect(() => {
                                 id="full-name"
                                 className="form-control"
                                 name="name"
-                                onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.name || customerData.name || ""}
+                                onChange={onInputChange}
+                                value={formData.name || ""}
                                 placeholder="Enter Full name"
                               />
                             </div>
                           </Col>
-                         
                           <Col md="6">
                             <div className="form-group">
                               <label className="form-label" htmlFor="phone-no">
                                 Phone Number
                               </label>
                               <input
-                                type="number"
+                                type="text"
                                 id="phone-no"
                                 className="form-control"
                                 name="phone"
-                                onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.phone|| customerData.phone || ""}
+                                onChange={onInputChange}
+                                value={formData.phone || ""}
                                 placeholder="Phone Number"
                               />
                             </div>
                           </Col>
-                         
                           <Col size="12">
                             <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                               <li>
@@ -320,7 +307,7 @@ useEffect(() => {
                               </li>
                               <li>
                                 <a
-                                  href="#dropdownitem"
+                                  href="#cancel"
                                   onClick={(ev) => {
                                     ev.preventDefault();
                                     setModal(false);
@@ -345,8 +332,8 @@ useEffect(() => {
                                 type="text"
                                 id="address-l1"
                                 name="address"
-                                onChange={(e) => onInputChange(e)}
-                                value={formData.address || customerData.address || ""}
+                                onChange={onInputChange}
+                                value={formData.address || ""}
                                 className="form-control"
                               />
                             </div>
@@ -360,8 +347,8 @@ useEffect(() => {
                                 type="text"
                                 id="address-l2"
                                 name="address2"
-                                onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.address2 || customerData.address2 || ""}
+                                onChange={onInputChange}
+                                value={formData.address2 || ""}
                                 className="form-control"
                               />
                             </div>
@@ -375,8 +362,8 @@ useEffect(() => {
                                 type="text"
                                 id="address-st"
                                 name="state"
-                                onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.state || customerData.state || ""}
+                                onChange={onInputChange}
+                                value={formData.state || ""}
                                 className="form-control"
                               />
                             </div>
@@ -389,12 +376,10 @@ useEffect(() => {
                               <RSelect
                                 options={countryOptions}
                                 placeholder="Select a country"
-                                defaultValue={[
-                                  {
-                                    value: formData.country || customerData.country || "",
-                                    label: formData.country || customerData.country || "Select a country",
-                                  },
-                                ]}
+                                value={formData.country ? {
+                                  value: formData.country,
+                                  label: formData.country,
+                                } : null}
                                 onChange={(e) => setFormData({ ...formData, country: e.value })}
                               />
                             </div>
@@ -402,13 +387,13 @@ useEffect(() => {
                           <Col size="12">
                             <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                               <li>
-                                <Button color="primary" size="lg" onClick={() => submitForm()}>
+                                <Button color="primary" size="lg" onClick={submitForm}>
                                   Update Address
                                 </Button>
                               </li>
                               <li>
                                 <a
-                                  href="#dropdownitem"
+                                  href="#cancel"
                                   onClick={(ev) => {
                                     ev.preventDefault();
                                     setModal(false);
