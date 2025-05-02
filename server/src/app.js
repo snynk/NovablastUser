@@ -13,8 +13,13 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
 const subUserRoutes = require("./routes/subUserRoutes");
+
 const profileRouter = require("./routes/ProfileRoutes");
 const loginActivityRouter = require("./routes/LoginActivityRoutes");
+
+const templateRoutes = require("./routes/templateRoutes");
+const profileRoutes = require("./routes/profileRoutes"); // Added profile routes
+
 
 // Init express
 const app = express();
@@ -45,8 +50,11 @@ app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/groupedContacts", groupedContactRoutes);
 app.use("/api/subusers", subUserRoutes);
+
 app.use("/api/customers", profileRouter);
 app.use("/api/login-activity", loginActivityRouter);
+
+app.use("/api/templates", templateRoutes);
 
 
 // Default route

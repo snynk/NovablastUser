@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube } from 'react-icons/fa';
-import { FaLocationDot, FaPhone, FaEnvelope, FaClock } from 'react-icons/fa6';
+import { FaLocationDot, FaPhone, FaEnvelope, FaClock, FaArrowUp,FaChevronUp } from 'react-icons/fa6';
 import "@/assets/css/aboutpage.css";
 
 function ContactPage() {
@@ -13,6 +13,9 @@ function ContactPage() {
   
   // State for mobile menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // State for back to top button visibility
+  const [showBackToTop, setShowBackToTop] = useState(false);
   
   // State for form validation
   const [formData, setFormData] = useState({
@@ -100,6 +103,14 @@ function ContactPage() {
       setFormErrors(errors);
     }
   };
+  
+  // Handle scroll to top functionality
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     // Initial animations for sections
@@ -118,7 +129,7 @@ function ContactPage() {
       }
     });
 
-    // Enhanced scroll animation function with smoother reveal
+    // Enhanced scroll animation function with smoother reveal and fade effects
     const handleScroll = () => {
       const scrollElements = document.querySelectorAll('.scroll-reveal');
       
@@ -139,14 +150,35 @@ function ContactPage() {
           // Add class when fully visible
           if (percentVisible >= 0.8) {
             element.classList.add('revealed');
+            
+            // Add fade-in effect to child elements with staggered timing
+            const cards = element.querySelectorAll('.card-fade');
+            cards.forEach((card, index) => {
+              setTimeout(() => {
+                card.classList.add('card-revealed');
+              }, index * 150); // Stagger the animations
+            });
           }
         } else if (elementTop > window.innerHeight) {
           // Reset elements that are below viewport
           element.style.opacity = 0;
           element.style.transform = 'translateY(20px)';
           element.classList.remove('revealed');
+          
+          // Reset card animations
+          const cards = element.querySelectorAll('.card-fade');
+          cards.forEach(card => {
+            card.classList.remove('card-revealed');
+          });
         }
       });
+      
+      // Toggle back to top button visibility
+      if (window.pageYOffset > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
     };
 
     // Run once to set initial state
@@ -168,14 +200,14 @@ function ContactPage() {
             <span className="flag">🚩</span> started as just $99/month.
           </div>
           <div className="top-nav">
-            <div className="dropdown">
+            {/* <div className="dropdown">
               <span>Real Estate Education</span>
               <span className="dropdown-arrow">▼</span>
-            </div>
-            <Link to="/about">About us</Link>
-            <Link to="/contact">Contact Us</Link>
-            <Link to="/auth-login">Login</Link>
-            <Link to="/auth-mainpage">Home</Link>
+            </div> */}
+          <Link to="/about" className="arrow-button">About us <span className="arrow-icon"></span></Link>
+          <Link to="/contact" className="arrow-button">Contact Us <span className="arrow-icon"></span></Link>
+          <Link to="/auth-login" className="arrow-button">Login <span className="arrow-icon"></span></Link>
+            <Link to="/auth-mainpage" className="arrow-button">Home <span className="arrow-icon"></span></Link>
           </div>
         </div>
       </div>
@@ -239,7 +271,7 @@ function ContactPage() {
       </div>
 
       {/* Contact Hero Section */}
-      <div className="contact-hero-section">
+      <div className="sms-leader-banner about-hero-section7 scroll-reveal">
         <div className="container contact-hero-container" ref={headerRef}>
           <h1 className="contact-hero-title">Contact Us</h1>
           <p className="contact-hero-subtitle">
@@ -254,8 +286,8 @@ function ContactPage() {
           <div className="contact-grid">
             {/* Contact Form */}
             <div className="contact-form-wrapper scroll-reveal" ref={formRef}>
-              <div className="contact-form-card">
-                <h2 className="form-title">Send Us a Message</h2>
+              <div className="contact-form-card card-fade">
+                <h3 className="form-title">Send Us a Message</h3>
                 <p className="form-subtitle">Fill out the form below and we'll get back to you as soon as possible.</p>
                 
                 {formSubmitted ? (
@@ -341,8 +373,8 @@ function ContactPage() {
             
             {/* Contact Info */}
             <div className="contact-info-wrapper scroll-reveal" ref={infoRef}>
-              <div className="contact-info-card">
-                <h2 className="info-title">Contact Information</h2>
+              <div className="contact-info-card card-fade">
+                <h3 className="info-title">Contact Information</h3>
                 <p className="info-subtitle">Connect with us directly or visit our office.</p>
                 
                 <div className="contact-info-items">
@@ -404,56 +436,55 @@ function ContactPage() {
 
       {/* Map Section */}
       <div className="contact-map-section scroll-reveal">
-  <div className="container">
-    <div className="map-wrapper">
-      <div className="map-placeholder">
-        <div className="map-overlay">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d235003.9883581473!2d72.5680128!3d23.0260736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1746026890382!5m2!1sen!2sin"
-            style={{ border: 0, width: '100%', height: '100%' }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Google Map"
-          ></iframe>
+        <div className="container">
+          <div className="map-wrapper card-fade">
+            <div className="map-placeholder">
+              <div className="map-overlay">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d235003.9883581473!2d72.5680128!3d23.0260736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1746026890382!5m2!1sen!2sin"
+                  style={{ border: 0, width: '100%', height: '100%' }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Google Map"
+                ></iframe>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
 
       {/* FAQ Section */}
       <div className="contact-faq-section">
         <div className="container contact-faq-container scroll-reveal" ref={faqRef}>
           <h2 className="section-title">Frequently Asked Questions</h2>
           <div className="faq-grid">
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">How quickly can I get set up with NovaBlast?</h3>
               <p className="faq-answer">Most clients are up and running within 24 hours of signing up. Our onboarding team will guide you through the process to ensure a smooth transition.</p>
             </div>
             
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">Do you offer custom solutions for real estate teams?</h3>
               <p className="faq-answer">Yes! We offer specialized packages for real estate teams of all sizes. Contact our sales team to discuss your specific requirements.</p>
             </div>
             
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">Is NovaBlast compliant with SMS marketing regulations?</h3>
               <p className="faq-answer">Absolutely. Our platform is built with compliance in mind, including TCPA regulations. We provide all the necessary tools to maintain compliance.</p>
             </div>
             
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">Can I integrate NovaBlast with my existing CRM?</h3>
               <p className="faq-answer">Yes, we offer integrations with most popular real estate CRMs. Our team can help you set up the integration for seamless operation.</p>
             </div>
             
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">What kind of support do you offer?</h3>
               <p className="faq-answer">We provide comprehensive support including live chat, email, and phone support. Our team is available Monday through Friday, with limited weekend hours.</p>
             </div>
             
-            <div className="faq-item">
+            <div className="faq-item card-fade">
               <h3 className="faq-question">Is there a long-term contract required?</h3>
               <p className="faq-answer">No, we offer month-to-month subscriptions with no long-term commitment required. However, we do offer discounts for annual subscriptions.</p>
             </div>
@@ -462,13 +493,13 @@ function ContactPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="contact-cta-section">
+      <div className="sms-leader-banner about-hero-section7 scroll-reveal">
         <div className="container contact-cta-container scroll-reveal">
-          <h2>Ready to Get Started with NovaBlast?</h2>
+          <h1 className='about-hero-title'>Ready to Get Started with NovaBlast?</h1>
           <p>Join thousands of successful real estate professionals who are growing their business with our platform.</p>
           <div className="cta-buttons">
-            <Link to="/pricing" className="cta-button primary">View Pricing</Link>
-            <Link to="/signup" className="cta-button secondary">Sign Up Now</Link>
+            <Link to="/auth-mainpage" className="cta-button primary">View Pricing</Link>
+            <Link to="/" className="cta-button secondary">Sign Up Now</Link>
           </div>
         </div>
       </div>
@@ -558,6 +589,15 @@ function ContactPage() {
           </div>
         </div>
       </footer>
+      
+      {/* Back to Top Button */}
+      <button 
+        className={`back-to-top ${showBackToTop ? 'visible' : ''}`}
+        onClick={scrollToTop}
+        aria-label="Back to top"
+      >
+        <FaChevronUp />
+      </button>
     </>
   );
 }
