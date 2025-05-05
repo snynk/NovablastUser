@@ -1,7 +1,15 @@
 /* dripauto.css - Complete Styling for Drip Automation Component */
 
 
-
+.overflow-x-auto {
+  overflow-x: auto;
+  max-height: 500px; 
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+  }
 .min-h-screen {
   min-height: 100vh;
   width: 100%;
@@ -1057,10 +1065,7 @@
     color: #6b7280;
   }
   
-  .automation-table th:first-child {
-    display: flex;
-    align-items: center;
-  }
+
   
   .automation-table .chevron-icon {
     margin-left: 0.25rem;
@@ -1117,10 +1122,11 @@
   }
   
   .automation-table .day-badge {
-    background-color: #e5e7eb;
+    background-color: #0095ff53;
     padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
     margin-right: 0.75rem;
+    height: 34px;
   }
   
   .automation-table .message-content {
@@ -1220,3 +1226,193 @@
   line-height: 1.2;
   position: relative; 
 }
+
+
+/* Container for the whole modal */
+.modal-content8 {
+  overflow-y: auto;           
+  /* margin: auto;            */
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+/* Section headers */
+.section-title8 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #eaeaea;
+  color: #222;
+}
+
+/* Info sections */
+.info-section8 {
+  margin-bottom: 2rem;
+}
+
+/* Grid layout for basic info */
+.info-grid8 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item8 {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width8 {
+  grid-column: 1 / -1;
+}
+
+/* Labels and values */
+.info-label8 {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+.info-value8 {
+  color: #222;
+  font-size: 1rem;
+}
+
+/* Status badge styles */
+.status-badge1 {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #000000;
+  width: 80px;
+}
+
+.status-badge1.active {
+  background-color: #28a74684;
+}
+
+.status-badge1.inactive {
+  background-color: #dc354661;
+}
+
+.status-badge1.paused {
+  background-color: #ffc10759;
+}
+
+/* Messages timeline layout */
+.messages-timeline8 {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-item8 {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Circle for day number */
+.day-circle8 {
+  width: 60px;
+  height: 60px;
+  background-color: #007bff4b;
+  color: #000000;
+  font-weight: bold;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* Message card box */
+.message-card8 {
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Header for subject/type */
+.message-header8 {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.message-subject8,
+.message-type8 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.message-label8 {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.type-badge8 {
+  background-color: #17a2b8;
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+/* Message content/body */
+.message-body8 {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+/* Empty message notice */
+.empty-messages {
+  padding: 1rem;
+  background-color: #f2f2f2;
+  font-style: italic;
+  color: #888;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Tags section */
+.tags-container8 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-badge {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.modal-overlay3 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: for a dark overlay effect */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+

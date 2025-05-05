@@ -1,302 +1,466 @@
-/* DripAutomation Modal Styles */
+/* dripAutomation.css */
 
-.drip-automation-modal .modal-dialog {
-    max-width: 60%;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    margin-right: 200px;
+/* Modal base styling */
+.drip-automation-modal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  /* Removed fixed margin to make it center on mobile */
+  margin: 0 auto;
+  width: 95%;
+  max-width: 800px;
+}
+
+.drip-modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaeaea;
+  padding: 16px 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.drip-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.drip-modal-body {
+  padding: 24px 16px; /* Reduced side padding for mobile */
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Info bar styling */
+.drip-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 12px;
+}
+
+.drip-message-counter {
+  display: flex;
+  align-items: center;
+}
+
+.drip-counter-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #3498db;
+  margin-right: 8px;
+}
+
+.drip-counter-label {
+  font-size: 16px;
+  color: #7f8c8d;
+}
+
+.drip-message-limit-selector {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 8px;
+}
+
+.drip-limit-label {
+  margin-bottom: 0;
+  margin-right: 10px;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.drip-limit-dropdown .dropdown-toggle {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  font-weight: 500;
+  padding: 6px 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.drip-limit-menu {
+  min-width: 60px;
+}
+
+/* Name container styling */
+.drip-name-container {
+  margin-bottom: 24px;
+}
+
+.drip-name-label-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 8px;
+}
+
+.drip-name-label {
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 0;
+  margin-right: 8px;
+  color: #2c3e50;
+}
+
+.drip-info-icon {
+  color: #95a5a6;
+  cursor: help;
+}
+
+.drip-name-input {
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%; /* Full width on mobile */
+}
+
+.drip-error-input {
+  border-color: #e74c3c;
+}
+
+.drip-error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+/* Message cards styling */
+.drip-messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.drip-message-card {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #eaeaea;
+  padding: 15px; /* Reduced padding for mobile */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.drip-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.drip-message-number {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.drip-icon-button {
+  color: #7f8c8d;
+  padding: 4px;
+}
+
+.drip-delete-button:hover {
+  color: #e74c3c;
+}
+
+/* Day selector styling */
+.drip-day-selector-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.drip-day-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-right: 10px;
+}
+
+.drip-day-counter {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.drip-counter-button {
+  width: 36px; /* Increased for better touch target */
+  height: 36px; /* Increased for better touch target */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: none;
+  font-size: 18px;
+  color: #2c3e50;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.2s;
+}
+
+.drip-counter-button-left {
+  border-right: 1px solid #ddd;
+}
+
+.drip-counter-button-right {
+  border-left: 1px solid #ddd;
+}
+
+.drip-counter-button:hover {
+  background-color: #eaeaea;
+}
+
+.drip-counter-button:disabled {
+  color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.drip-day-display {
+  width: 40px; /* Slightly increased */
+  text-align: center;
+  font-weight: 500;
+}
+
+.drip-day-info {
+  font-size: 13px;
+  color: #7f8c8d;
+  font-style: italic;
+  width: 100%; /* Full width on small screens */
+  margin-top: 8px;
+}
+
+/* Message content styling */
+.drip-message-content-container {
+  margin-bottom: 16px;
+}
+
+.drip-message-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-size: 15px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.drip-message-textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Message actions styling */
+.drip-message-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.drip-action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  transition: all 0.2s;
+} 
+
+/* Spinners and merge fields styling */
+.drip-spinners-container,
+.drip-merge-fields-container {
+  margin-bottom: 16px;
+}
+
+.drip-section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.drip-badges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drip-custom-badge {
+  display: inline-block;
+  padding: 8px 12px; /* Increased for better touch target */
+  font-size: 13px;
+  border-radius: 15px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.drip-spinner-badge {
+  background-color: #edf7ff;
+  color: #3498db;
+  border: 1px solid #d4ebff;
+}
+
+.drip-field-badge {
+  background-color: #f0f9eb;
+  color: #67c23a;
+  border: 1px solid #e1f3d8;
+}
+
+/* Add message button styling */
+.drip-add-message-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.drip-add-message-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #3498db;
+  font-weight: 500;
+  padding: 10px 16px; /* Increased vertical padding */
+  border: 1px dashed #3498db;
+  border-radius: 6px;
+  background-color: #edf7ff;
+  transition: all 0.2s;
+  width: 100%; /* Full width on mobile */
+  max-width: 300px;
+}
+
+.drip-add-message-button:hover {
+  background-color: #d4ebff;
+  text-decoration: none;
+}
+
+.drip-plus-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Save container styling */
+.drip-save-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eaeaea;
+}
+
+.drip-cancel-button {
+  padding: 8px 20px;
+  font-weight: 500;
+}
+
+.drip-save-button {
+  padding: 8px 20px;
+  font-weight: 500;
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+.drip-save-button:hover {
+  background-color: #219653;
+  border-color: #219653;
+}
+
+/* Enhanced Responsive fixes */
+@media (max-width: 768px) {
+  .drip-modal-body {
+    padding: 16px 12px; /* Further reduced padding */
+    max-height: 80vh; /* Taller on mobile */
   }
   
-  .drip-automation-modal .modal-content {
-    border-radius: 8px;
-    border: none;
-  }
-  
-  .drip-automation-modal .modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    border-radius: 8px 8px 0 0;
-    padding: 1rem 1.5rem;
-  }
-  
-  .drip-automation-modal .modal-title {
-    font-weight: 600;
-    color: #343a40;
-  }
-  
-  .drip-automation-modal .modal-body {
-    padding: 1.5rem;
-  }
-  
-  /* Message counter */
-  .message-counter {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 1rem;
-    background-color: #f8f9fa;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    display: inline-block;
-  }
-  
-  /* Name input container */
-  .name-container {
-    margin-bottom: 1.5rem;
-  }
-  
-  .name-label-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .name-label {
-    font-weight: 500;
-    margin-bottom: 0;
-  }
-  
-  .info-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #6c757d;
-  }
-  
-  .error-input {
-    border-color: #dc3545 !important;
-  }
-  
-  .error-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-  }
-  
-  /* Message card styles */
-  .message-card {
-    margin-bottom: 1.5rem;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  }
-  
-  .message-header {
-    text-align: center;
-    background-color: #f8f9fa;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
-    font-weight: 500;
-  }
-  
-  /* Day selector */
-  .day-selector-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .day-label {
-    font-weight: 500;
-  }
-  
-  .day-counter {
-    display: flex;
-    align-items: center;
-  }
-  
-  .counter-button {
-    padding: 0.25rem 0.5rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    line-height: 1;
-  }
-  
-  .counter-button-left {
-    border-radius: 0.25rem 0 0 0.25rem;
-  }
-  
-  .counter-button-right {
-    border-radius: 0 0.25rem 0.25rem 0;
-  }
-  
-  .day-display {
-    padding: 0 1rem;
-    height: 100%;
-    border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    align-items: center;
-    min-width: 2.5rem;
-    justify-content: center;
-  }
-  
-  .day-info {
-    color: #6c757d;
-    font-size: 0.875rem;
-  }
-  
-  /* Message textarea */
-  .message-textarea {
-    width: 100%;
-    height: 8rem !important;
-    resize: none;
-    margin-bottom: 1rem;
-    border-color: #dee2e6;
-  }
-  
-  /* Message actions */
-  .message-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-  
-  .action-button {
-    display: flex !important;
-    align-items: center;
-    background-color: #f8f9fa !important;
-    border: 1px solid #dee2e6 !important;
-  }
-  
-  .action-button:hover {
-    background-color: #e9ecef !important;
-  }
-  
-  .button-icon {
-    margin-right: 0.25rem;
-  }
-  
-  .spacer {
-    flex-grow: 1;
-  }
-  
-  .icon-button {
-    padding: 0.25rem !important;
-    border: none !important;
-    background: transparent !important;
-    line-height: 1;
-  }
-  
-  .delete-button {
-    color: #dc3545 !important;
-  }
-  
-  .delete-button:hover {
-    color: #bd2130 !important;
-  }
-  
-  .check-button {
-    color: #28a745 !important;
-  }
-  
-  .check-button:hover {
-    color: #218838 !important;
-  }
-  
-  /* Add message container */
-  .add-message-container {
-    border: 1px dashed #dee2e6;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .add-message-button {
-    color: #6c757d !important;
-    display: flex;
-    align-items: center;
-    text-decoration: none !important;
-  }
-  
-  .add-message-button:hover {
-    color: #5a6268 !important;
-  }
-  
-  .plus-icon {
-    font-size: 1.25rem;
-    margin-right: 0.5rem;
-  }
-  
-  /* Save button container */
-  .save-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .save-button {
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
-    font-weight: 500;
-  }
-  
-  /* Validation sidebar */
-  .validation-sidebar {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.5rem;
-  }
-  
-  .validation-title {
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-  }
-  
-  .validation-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .validation-item {
-    display: flex;
+  .drip-info-bar {
+    flex-direction: column;
+    gap: 12px;
     align-items: flex-start;
-    margin-bottom: 0.5rem;
   }
   
-  .validation-item:last-child {
-    margin-bottom: 0;
+  .drip-message-counter,
+  .drip-message-limit-selector {
+    width: 100%;
   }
   
-  .validation-pending {
-    color: #6c757d;
-    margin-right: 0.5rem;
+  .drip-day-selector-container {
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-  .validation-success {
-    color: #28a745;
-    margin-right: 0.5rem;
+  .drip-save-container {
+    flex-direction: column;
+    gap: 12px;
   }
   
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .drip-automation-modal .modal-dialog {
-      max-width: 95%;
-      margin: 0.5rem auto;
-    }
-    
-    .day-selector-container {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .day-info {
-      margin-left: 0;
-      margin-top: 0.5rem;
-    }
-    
-    .message-actions {
-      flex-wrap: wrap;
-    }
+  .drip-cancel-button, 
+  .drip-save-button {
+    width: 100%;
   }
+  
+  .drip-message-actions {
+    justify-content: center;
+  }
+  
+  /* Center buttons on very small screens */
+  .drip-action-button {
+    min-width: 45%;
+  }
+  
+  /* Make message cards more compact */
+  .drip-message-card {
+    padding: 12px 10px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .drip-modal-title {
+    font-size: 18px;
+  }
+  
+  .drip-modal-header {
+    padding: 12px 16px;
+  }
+  
+  .drip-counter-value {
+    font-size: 20px;
+  }
+  
+  .drip-counter-label {
+    font-size: 14px;
+  }
+  
+  /* Stack buttons vertically */
+  .drip-action-button {
+    min-width: 100%;
+  }
+  
+  /* Make badges more compact */
+  .drip-custom-badge {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

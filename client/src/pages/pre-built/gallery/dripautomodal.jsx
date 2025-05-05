@@ -1,28 +1,171 @@
-import React, { useState } from "react";
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Dropdown } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { X, Plus, Trash2, Info } from 'lucide-react';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "@/assets/css/dripautomodal.css";
 
-export default function DripAutomationModal({ isOpen, onClose, onSave }) {
+export default function DripAutomationModal({ isOpen, onClose, onSave, automationData }) {
   const [automationName, setAutomationName] = useState("");
   const [messages, setMessages] = useState([
     { id: 1, day: 1, content: "", textSpinners: [], mergeFields: [] }
   ]);
   const [nameError, setNameError] = useState(false);
+  const [messageErrors, setMessageErrors] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [messageLimit, setMessageLimit] = useState(1);
+
+  // Initialize form with existing data if editing
+  useEffect(() => {
+    if (automationData) {
+      setIsEditing(true);
+      setAutomationName(automationData.name || "");
+      
+      if (automationData.messages && automationData.messages.length > 0) {
+        // Map backend messages to our component's format
+        const formattedMessages = automationData.messages.map((msg, index) => ({
+          id: index + 1,
+          day: msg.day || 1,
+          content: msg.content || "",
+          textSpinners: Array.isArray(msg.textSpinners) ? msg.textSpinners : [],
+          mergeFields: Array.isArray(msg.mergeFields) ? msg.mergeFields : []
+        }));
+        setMessages(formattedMessages);
+        setMessageLimit(formattedMessages.length);
+      } else {
+        // Reset to default if no messages
+        setMessages([
+          { id: 1, day: 1, content: "", textSpinners: [], mergeFields: [] }
+        ]);
+        setMessageLimit(1);
+      }
+    } else {
+      // Reset form for new automation
+      setIsEditing(false);
+      setAutomationName("");
+      setMessages([
+        { id: 1, day: 1, content: "", textSpinners: [], mergeFields: [] }
+      ]);
+      setMessageLimit(1);
+    }
+    
+    // Clear validation errors
+    setNameError(false);
+    setMessageErrors({});
+  }, [automationData, isOpen]);
+
+  // Handle message limit change
+  const handleMessageLimitChange = (limit) => {
+    const newLimit = parseInt(limit, 10);
+    setMessageLimit(newLimit);
+    
+    // If increasing limit, add new messages
+    if (newLimit > messages.length) {
+      let highestDay = messages.length > 0
+        ? Math.max(...messages.map(msg => msg.day))
+        : 0;
+      
+      const newMessages = [...messages];
+      
+      for (let i = messages.length; i < newLimit; i++) {
+        highestDay += 1;
+        newMessages.push({
+          id: Date.now() + i, // Ensure unique ID
+          day: highestDay,
+          content: "",
+          textSpinners: [],
+          mergeFields: []
+        });
+      }
+      
+      setMessages(newMessages);
+    } 
+    // If decreasing limit, remove excess messages
+    else if (newLimit < messages.length) {
+      const trimmedMessages = messages.slice(0, newLimit);
+      setMessages(trimmedMessages);
+      
+      // Clear errors for removed messages
+      const newErrors = { ...messageErrors };
+      messages.slice(newLimit).forEach(msg => {
+        delete newErrors[msg.id];
+      });
+      setMessageErrors(newErrors);
+    }
+  };
 
   const handleAddMessage = () => {
-    const newId = messages.length + 1;
-    setMessages([...messages, { id: newId, day: 1, content: "", textSpinners: [], mergeFields: [] }]);
+    const newId = Date.now();
+    
+    // Find the highest day number to suggest the next day
+    const highestDay = messages.length > 0
+      ? Math.max(...messages.map(msg => msg.day))
+      : 0;
+    
+    setMessages([
+      ...messages, 
+      { 
+        id: newId, 
+        day: highestDay + 1, 
+        content: "", 
+        textSpinners: [], 
+        mergeFields: [] 
+      }
+    ]);
+    
+    // Update message limit to match current message count
+    setMessageLimit(messages.length + 1);
+  };
+
+  const validateMessages = () => {
+    const errors = {};
+    let isValid = true;
+    
+    messages.forEach(msg => {
+      if (!msg.content.trim()) {
+        errors[msg.id] = "Message content is required";
+        isValid = false;
+      }
+    });
+    
+    setMessageErrors(errors);
+    return isValid;
   };
 
   const handleSave = () => {
+    // Validate name
     if (!automationName.trim()) {
       setNameError(true);
+      toast.error("Automation name is required");
       return;
     }
-    onSave({ name: automationName, messages });
-    onClose();
+
+    // Validate messages
+    if (!validateMessages()) {
+      toast.error("Please fill in all message contents");
+      return;
+    }
+
+    // Prepare data for the API
+    const formattedData = {
+      name: automationName.trim(),
+      messages: messages.map(msg => ({
+        day: parseInt(msg.day, 10) || 1,
+        content: msg.content.trim(),
+        textSpinners: msg.textSpinners || [],
+        mergeFields: msg.mergeFields || []
+      }))
+    };
+
+    onSave(formattedData);
+    
+    // Show success toast
+    if (isEditing) {
+      toast.success("Drip automation updated successfully");
+    } else {
+      toast.success("Drip automation created successfully");
+    }
   };
 
   const updateMessage = (id, field, value) => {
@@ -30,6 +173,13 @@ export default function DripAutomationModal({ isOpen, onClose, onSave }) {
       msg.id === id ? { ...msg, [field]: value } : msg
     );
     setMessages(newMessages);
+    
+    // Clear error for this message if it exists
+    if (messageErrors[id] && field === 'content' && value.trim()) {
+      const newErrors = { ...messageErrors };
+      delete newErrors[id];
+      setMessageErrors(newErrors);
+    }
   };
 
   const decrementDay = (id) => {
@@ -51,7 +201,10 @@ export default function DripAutomationModal({ isOpen, onClose, onSave }) {
       if (msg.id === messageId) {
         return {
           ...msg,
-          textSpinners: [...msg.textSpinners, { id: Date.now(), options: ["Option 1", "Option 2", "Option 3"] }]
+          textSpinners: [
+            ...msg.textSpinners,
+            { id: Date.now(), options: ["Option 1", "Option 2", "Option 3"] }
+          ]
         };
       }
       return msg;
@@ -64,7 +217,10 @@ export default function DripAutomationModal({ isOpen, onClose, onSave }) {
       if (msg.id === messageId) {
         return {
           ...msg,
-          mergeFields: [...msg.mergeFields, { id: Date.now(), field: "{{name}}" }]
+          mergeFields: [
+            ...msg.mergeFields, 
+            { id: Date.now(), field: "{{name}}" }
+          ]
         };
       }
       return msg;
@@ -73,150 +229,222 @@ export default function DripAutomationModal({ isOpen, onClose, onSave }) {
   };
 
   const deleteMessage = (messageId) => {
+    // Prevent deleting the last message
+    if (messages.length <= 1) {
+      toast.warning("You must have at least one message");
+      return;
+    }
+    
     const newMessages = messages.filter(msg => msg.id !== messageId);
     setMessages(newMessages);
+    
+    // Update message limit to match current message count
+    setMessageLimit(newMessages.length);
+    
+    // Clear error for this message if it exists
+    if (messageErrors[messageId]) {
+      const newErrors = { ...messageErrors };
+      delete newErrors[messageId];
+      setMessageErrors(newErrors);
+    }
   };
 
   return (
-    <Modal show={isOpen} onHide={onClose} size="xl" centered backdrop="static" className="drip-automation-modal">
-      <Modal.Header closeButton>
-        <Modal.Title>Add Drip Automation</Modal.Title>
+    <Modal 
+      show={isOpen} 
+      onHide={onClose} 
+      size="xl" 
+      centered 
+      backdrop="static" 
+      className="drip-automation-modal"
+    >
+      <Modal.Header closeButton className="drip-modal-header">
+        <Modal.Title className="drip-modal-title">
+          {isEditing ? 'Edit Drip Automation' : 'Create Drip Automation'}
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <div className="message-counter">Message count: {messages.length} Message{messages.length !== 1 ? 's' : ''}</div>
+      <Modal.Body className="drip-modal-body">
+        <div className="drip-info-bar">
+          <div className="drip-message-counter">
+            <span className="drip-counter-value">{messages.length}</span> 
+            <span className="drip-counter-label">Message{messages.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div className="drip-message-limit-selector">
+            <label htmlFor="messageLimit" className="drip-limit-label">Message Limit:</label>
+            <Dropdown className="drip-limit-dropdown">
+              <Dropdown.Toggle variant="light" id="dropdown-basic" className="drip-limit-toggle">
+                {messageLimit}
+              </Dropdown.Toggle>
 
-        <div className="name-container">
-          <div className="name-label-container">
-            <Form.Label className="name-label">Name Drip Automation</Form.Label>
-            <div className="info-icon">
-              <svg fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-              </svg>
+              <Dropdown.Menu className="drip-limit-menu">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                  <Dropdown.Item 
+                    key={num} 
+                    onClick={() => handleMessageLimitChange(num)}
+                    active={messageLimit === num}
+                  >
+                    {num}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div className="drip-name-container">
+          <div className="drip-name-label-container">
+            <Form.Label className="drip-name-label">Name Drip Automation <span style={{ color: 'red' }}>*</span></Form.Label>
+            <div className="drip-info-icon" title="Give your automation a descriptive name">
+              <Info size={16} />
             </div>
           </div>
           <Form.Control
             type="text"
-            placeholder="Enter Drip Automation"
+            placeholder="Enter Drip Automation Name"
             value={automationName}
             onChange={(e) => {
               setAutomationName(e.target.value);
-              setNameError(false);
+              if (e.target.value.trim()) {
+                setNameError(false);
+              }
             }}
-            className={nameError ? 'error-input' : ''}
+            className={`drip-name-input ${nameError ? 'drip-error-input' : ''}`}
           />
-          {nameError && <p className="error-message">Name is required</p>}
+          {nameError && <p className="drip-error-message">Name is required</p>}
         </div>
 
-        {messages.map((msg, index) => (
-          <div key={msg.id} className="message-card">
-            <div className="message-header">Message {index + 1}</div>
-            
-            <div className="day-selector-container">
-              <span className="day-label">Send on Day</span>
-              <div className="day-counter">
-                <button
-                  onClick={() => decrementDay(msg.id)}
-                  className="counter-button counter-button-left"
+        <div className="drip-messages-container">
+          {messages.map((msg, index) => (
+            <div key={msg.id} className="drip-message-card">
+              <div className="drip-message-header">
+                <span className="drip-message-number">Message {index + 1}</span>
+                <Button 
+                  variant="link"
+                  className="drip-icon-button drip-delete-button"
+                  onClick={() => deleteMessage(msg.id)}
+                  disabled={messages.length <= 1}
+                  title="Delete message"
                 >
-                  <span>-</span>
-                </button>
-                <span className="day-display">{msg.day}</span>
-                <button
-                  onClick={() => incrementDay(msg.id)}
-                  className="counter-button counter-button-right"
-                >
-                  <span>+</span>
-                </button>
+                  <Trash2 size={18} />
+                </Button>
               </div>
-              <span className="day-info">After prospect has been added to the Drip Automation</span>
+              
+              <div className="drip-day-selector-container">
+                <span className="drip-day-label">Send on Day</span>
+                <div className="drip-day-counter">
+                  <button
+                    type="button"
+                    onClick={() => decrementDay(msg.id)}
+                    className="drip-counter-button drip-counter-button-left"
+                    disabled={msg.day <= 1}
+                  >
+                    <span>-</span>
+                  </button>
+                  <span className="drip-day-display">{msg.day}</span>
+                  <button
+                    type="button"
+                    onClick={() => incrementDay(msg.id)}
+                    className="drip-counter-button drip-counter-button-right"
+                  >
+                    <span>+</span>
+                  </button>
+                </div>
+                <span className="drip-day-info">After prospect has been added to the Drip Automation</span>
+              </div>
+              
+              <div className="drip-message-content-container">
+                <Form.Control
+                  as="textarea"
+                  placeholder="Write your message here..."
+                  value={msg.content}
+                  onChange={(e) => updateMessage(msg.id, "content", e.target.value)}
+                  className={`drip-message-textarea ${messageErrors[msg.id] ? 'drip-error-input' : ''}`}
+                  rows={4}
+                />
+                {messageErrors[msg.id] && (
+                  <p className="drip-error-message">{messageErrors[msg.id]}</p>
+                )}
+              </div>
+              
+              <div className="drip-message-actions">
+                {/* <Button 
+                  variant="light"
+                  size="sm"
+                  onClick={() => addTextSpinner(msg.id)}
+                  className="drip-action-button"
+                >
+                  <span className="drip-button-icon">🔄</span> Add Text Spinner
+                </Button> */}
+                <Button 
+                  variant="light"
+                  size="sm"
+                  onClick={() => addMergeField(msg.id)}
+                  className="drip-action-button"
+                >
+                  <span className="drip-button-icon">🔀</span> Add Merge Field
+                </Button>
+              </div>
+              
+              {/* Display Text Spinners */}
+              {msg.textSpinners && msg.textSpinners.length > 0 && (
+                <div className="drip-spinners-container">
+                  <h6 className="drip-section-title">Text Spinners:</h6>
+                  <div className="drip-badges-container">
+                    {msg.textSpinners.map((spinner, idx) => (
+                      <span key={idx} className="drip-custom-badge drip-spinner-badge">
+                        {spinner.options ? spinner.options.join(' / ') : 'Text Spinner'}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Display Merge Fields */}
+              {msg.mergeFields && msg.mergeFields.length > 0 && (
+                <div className="drip-merge-fields-container">
+                  <h6 className="drip-section-title">Merge Fields:</h6>
+                  <div className="drip-badges-container">
+                    {msg.mergeFields.map((field, idx) => (
+                      <span key={idx} className="drip-custom-badge drip-field-badge">
+                        {field.field || '{{field}}'}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            
-            <Form.Control
-              as="textarea"
-              placeholder="Write Message"
-              value={msg.content}
-              onChange={(e) => updateMessage(msg.id, "content", e.target.value)}
-              className="message-textarea"
-            />
-            
-            <div className="message-actions">
-            
-              <Button 
-                variant="light"
-                size="sm"
-                onClick={() => addMergeField(msg.id)}
-                className="action-button"
-              >
-                <span className="button-icon">🔀</span> Add Merge Field
-              </Button>
-              <div className="spacer"></div>
-              <Button 
-                variant="link"
-                className="icon-button delete-button"
-                onClick={() => deleteMessage(msg.id)}
-              >
-                <span>🗑️</span>
-              </Button>
-              <Button 
-                variant="link"
-                className="icon-button check-button"
-              >
-                <span>✓</span>
-              </Button>
-            </div>
-          </div>
-        ))}
-
-        <div className="add-message-container">
-          <Button
-            variant="link"
-            className="add-message-button"
-            onClick={handleAddMessage}
-          >
-            <span className="plus-icon">+</span> Add message {messages.length + 1}
-          </Button>
+          ))}
         </div>
 
-        <div className="save-container">
+        {messages.length < 10 && (
+          <div className="drip-add-message-container">
+            <Button
+              variant="link"
+              className="drip-add-message-button"
+              onClick={handleAddMessage}
+            >
+              <span className="drip-plus-icon"><Plus size={18} /></span> 
+              <span className="drip-button-text">Add message {messages.length + 1}</span>
+            </Button>
+          </div>
+        )}
+
+        <div className="drip-save-container">
+          <Button
+            variant="light"
+            onClick={onClose}
+            className="drip-cancel-button"
+          >
+            Cancel
+          </Button>
           <Button
             variant="dark"
             onClick={handleSave}
             className="save-button"
           >
-            Save Drip Automation
+            {isEditing ? 'Update' : 'Save'} 
           </Button>
         </div>
-
-        {/* Validation sidebar */}
-        {/* <div className="validation-sidebar">
-          <h5 className="validation-title">Messages</h5>
-          <ul className="validation-list">
-            <li className="validation-item">
-              <span className="validation-pending">○</span>
-              <span>Minimum of 8 characters</span>
-            </li>
-            <li className="validation-item">
-              <span className="validation-pending">○</span>
-              <span>At least 2 Text Spinners [0/2]</span>
-            </li>
-            <li className="validation-item">
-              <span className="validation-pending">○</span>
-              <span>Each Text Spinner must have at least 3 elements</span>
-            </li>
-            <li className="validation-item">
-              <span className="validation-pending">○</span>
-              <span>Must have Merge Field</span>
-            </li>
-            <li className="validation-item">
-              <span className="validation-success">✓</span>
-              <span>Must have no negative/restricted keywords</span>
-            </li>
-            <li className="validation-item">
-              <span className="validation-success">✓</span>
-              <span>All Merge Fields and Text Spinners must be valid</span>
-            </li>
-          </ul>
-        </div> */}
       </Modal.Body>
     </Modal>
   );

@@ -7,38 +7,71 @@ import "@/assets/css/template.css";
 import { 
   getTemplates, createTemplate, updateTemplate, deleteTemplate, searchTemplates 
 } from '../services/templateService';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Toast notification component
-const Toast = ({ message, type, onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-  
-  const icons = {
-    success: <Smile className="toast-icon" />,
-    error: <AlertCircle className="toast-icon" />,
-  };
-  
-  return (
-    <div className={`toast-notification ${type}`}>
-      {icons[type]}
-      <span className="toast-message">{message}</span>
-      <button className="toast-close" onClick={onClose}><X size={16} /></button>
-    </div>
-  );
-};
 
 // DeleteConfirmationModal component
 const DeleteConfirmationModal = ({ isOpen, templateName, onCancel, onConfirm }) => {
+  // Prevent scrolling of background when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.keyCode === 27 && isOpen) {
+        onCancel();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEsc);
+    
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [isOpen, onCancel]);
+
+  // Close modal when clicking outside
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   if (!isOpen) return null;
-  
+
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlaydelete" onClick={handleOverlayClick}>
       <div className="delete-modal">
-        <h3>Delete Template</h3>
-        <p>Are you sure you want to delete <strong>"{templateName}"</strong>?</p>
-        <p>This action cannot be undone.</p>
+        <div className="delete-modal-header">
+          <h3>Delete Template</h3>
+          <button className="close-button" onClick={onCancel}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="delete-modal-body">
+          <div className="warning-icon">
+            <AlertCircle size={48} />
+          </div>
+          <h4>Delete Template?</h4>
+          <p className="modal-text">
+            Are you sure you want to delete <strong>"{templateName}"</strong>?
+          </p>
+          <p className="modal-subtext">
+            This action cannot be undone.
+          </p>
+        </div>
         <div className="delete-modal-actions">
           <button className="cancel-button" onClick={onCancel}>Cancel</button>
           <button className="delete-button" onClick={onConfirm}>Delete</button>
@@ -48,73 +81,73 @@ const DeleteConfirmationModal = ({ isOpen, templateName, onCancel, onConfirm }) 
   );
 };
 
-  // View Template Modal Component
-  const ViewTemplateModal = ({ isOpen, template, onClose }) => {
-    if (!isOpen || !template) return null;
-    
-    return (
-      <div className="modal-overlay5 view-modal-overlay5">
-        <div className="view-modal1">
-          <div className="view-modal-header1">
-            <h5>View Template</h5>
-            <button className="close-button" onClick={onClose}><X size={18} /></button>
-          </div>
-          
-          <div className="view-modal-content1">
-            <div className="view-template-details1">
-              <div className="detail-row1">
-                <div className="detail-label1">Template Name:</div>
-                <div className="detail-value1">{template.name}</div>
-              </div>
-              
-              <div className="detail-row1">
-                <div className="detail-label1">Template Type:</div>
-                <div className="detail-value1">{template.type}</div>
-              </div>
-              
-              <div className="detail-row1">
-                <div className="detail-label1">Template ID:</div>
-                <div className="detail-value1">{template._id}</div>
-              </div>
-              
-              <div className="detail-row">
-                <div className="detail-label1">Created Date:</div>
-                <div className="detail-value1">{new Date(template.created).toLocaleDateString()}</div>
-              </div>
-              
-              <div className="detail-row1">
-                <div className="detail-label1">Performance:</div>
-                <div className="detail-value1">
-                  <span className="performance-stat1">Delivery: {template.delivery?.toFixed(2) || '0.00'}%</span>
-                  <span className="performance-stat1">Response: {template.response?.toFixed(2) || '0.00'}%</span>
-                </div>
-              </div>
+// View Template Modal Component
+const ViewTemplateModal = ({ isOpen, template, onClose }) => {
+  if (!isOpen || !template) return null;
+  
+  return (
+    <div className="modal-overlay5 view-modal-overlay5">
+      <div className="view-modal1">
+        <div className="view-modal-header1">
+          <h5>View Template</h5>
+          <button className="close-button" onClick={onClose}><X size={18} /></button>
+        </div>
+        
+        <div className="view-modal-content1">
+          <div className="view-template-details1">
+            <div className="detail-row1">
+              <div className="detail-label1">Template Name:</div>
+              <div className="detail-value1">{template.name}</div>
             </div>
             
-            {template.messages && template.messages.length > 0 && (
-              <div className="view-template-messages1">
-                <h4>Messages</h4>
-                <div className="message-list1">
-                  {template.messages.map((message, index) => (
-                    <div key={index} className="message-item1">
-                      <div className="message-header1">
-                        <div className="message-number1">Message {message.messageNumber}</div>
-                      </div>
-                      <div className="message-body1">{message.content}</div>
-                    </div>
-                  ))}
-                </div>
+            <div className="detail-row1">
+              <div className="detail-label1">Template Type:</div>
+              <div className="detail-value1">{template.type}</div>
+            </div>
+            
+            <div className="detail-row1">
+              <div className="detail-label1">Template ID:</div>
+              <div className="detail-value1">{template._id}</div>
+            </div>
+            
+            <div className="detail-row">
+              <div className="detail-label1">Created Date:</div>
+              <div className="detail-value1">{new Date(template.created).toLocaleDateString()}</div>
+            </div>
+            
+            <div className="detail-row1">
+              <div className="detail-label1">Performance:</div>
+              <div className="detail-value1">
+                <span className="performance-stat1">Delivery: {template.delivery?.toFixed(2) || '0.00'}%</span>
+                <span className="performance-stat1">Response: {template.response?.toFixed(2) || '0.00'}%</span>
               </div>
-            )}
+            </div>
           </div>
           
-          <div className="view-modal-footer1">
-            <button className="close-view-button1" onClick={onClose}>Close</button>
-          </div>
+          {template.messages && template.messages.length > 0 && (
+            <div className="view-template-messages1">
+              <h4>Messages</h4>
+              <div className="message-list1">
+                {template.messages.map((message, index) => (
+                  <div key={index} className="message-item1">
+                    <div className="message-header1">
+                      <div className="message-number1">Message {message.messageNumber}</div>
+                    </div>
+                    <div className="message-body1">{message.content}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="view-modal-footer1">
+          <button className="close-view-button1" onClick={onClose}>Close</button>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 // Message Preview Component
 const MessagePreview = ({ messages }) => {
@@ -132,19 +165,6 @@ const MessagePreview = ({ messages }) => {
           {expanded ? <ChevronUp className="expand-icon" /> : <ChevronDown className="expand-icon" />}
         </button>
       </div>
-
-      {/* dropdown message show */}
-      
-      {/* {expanded && messages.length > 1 && (
-        <div className="additional-messages">
-          {messages.slice(1).map((msg, index) => (
-            <div key={index} className="additional-message">
-              <div className="message-number">Message {msg.messageNumber}:</div>
-              <div className="message-text">{msg.content}</div>
-            </div>
-          ))}
-        </div>
-      )} */}
       
       {!expanded && messages.length > 1 && (
         <div className="message-count1">
@@ -177,7 +197,6 @@ const TemplatesManagement = () => {
     totalPages: 1,
     entriesPerPage: 50
   });
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     templateId: null,
@@ -199,11 +218,6 @@ const TemplatesManagement = () => {
     fetchTemplates();
   }, [activeTab]);
 
-  // Toast handler
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-  };
-
   // Fetch templates
   const fetchTemplates = async () => {
     try {
@@ -218,7 +232,9 @@ const TemplatesManagement = () => {
       }));
     } catch (err) {
       setError('Failed to fetch templates');
-      showToast('Failed to fetch templates', 'error');
+      toast.error('Failed to fetch templates. Please check your connection and try again.', {
+        toastId: 'fetch-error'
+      });
     } finally {
       setLoading(false);
     }
@@ -245,7 +261,9 @@ const TemplatesManagement = () => {
         fetchTemplates();
       }
     } catch (err) {
-      showToast('Search failed. Please try again.', 'error');
+      toast.error('Search failed. Please try again.', {
+        toastId: 'search-error'
+      });
     }
   };
 
@@ -323,17 +341,23 @@ const TemplatesManagement = () => {
       
       if (isEditMode) {
         await updateTemplate(editTemplateId, templateData);
-        showToast(`Template "${templateName}" updated successfully`);
+        toast.success(`"${templateName}" template updated successfully`, {
+          toastId: `update-${editTemplateId}`
+        });
       } else {
         await createTemplate(templateData);
-        showToast(`Template "${templateName}" created successfully`);
+        toast.success(`"${templateName}" template created successfully`, {
+          toastId: `create-${Date.now()}`
+        });
       }
       
       fetchTemplates();
       setIsModalOpen(false);
     } catch (err) {
       setError(err.toString());
-      showToast(`Failed to ${isEditMode ? 'update' : 'create'} template`, 'error');
+      toast.error(`Failed to ${isEditMode ? 'update' : 'create'} template`, {
+        toastId: `error-${isEditMode ? 'update' : 'create'}-${Date.now()}`
+      });
     }
   };
 
@@ -349,10 +373,14 @@ const TemplatesManagement = () => {
   const handleConfirmDelete = async () => {
     try {
       await deleteTemplate(deleteModal.templateId);
-      showToast(`Template "${deleteModal.templateName}" deleted successfully`, 'success');
+      toast.success(`"${deleteModal.templateName}" template deleted successfully`, {
+        toastId: `delete-${deleteModal.templateId}`
+      });
       fetchTemplates();
     } catch (err) {
-      showToast('Failed to delete template', 'error');
+      toast.error('Failed to delete template', {
+        toastId: `error-delete-${Date.now()}`
+      });
     } finally {
       setDeleteModal({ isOpen: false, templateId: null, templateName: '' });
     }
@@ -425,8 +453,7 @@ const TemplatesManagement = () => {
     });
   };
 
-  // formate date
-
+  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -469,13 +496,13 @@ const TemplatesManagement = () => {
                     <td>{template.type}</td>
                     <td>{template.delivery?.toFixed(2) || '0.00'}%</td>
                     <td>{template.response?.toFixed(2) || '0.00'}%</td>
-                    <div className="detail-value1">{formatDate(template.created)}</div>                    
+                    <td>{formatDate(template.created)}</td>
                     <td>
                       <div className="action-buttons">
-                      <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
-                        <span className="view-icon">👁️</span> {/* Eye emoji for view */}
-                      </button>
-                          <button className="icon-button" onClick={() => handleOpenModal(template)} title="Edit template">✏️</button>
+                        <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
+                          <span className="view-icon">👁️</span>
+                        </button>
+                        <button className="icon-button" onClick={() => handleOpenModal(template)} title="Edit template">✏️</button>
                         <button className="icon-button" onClick={() => handleOpenDeleteModal(template)} title="Delete template">🗑️</button>
                       </div>
                     </td>
@@ -505,9 +532,9 @@ const TemplatesManagement = () => {
                 <td><MessagePreview messages={template.messages} /></td>
                 <td>
                   <div className="actions-cell">
-                  <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
-                    <span className="view-icon">👁️</span> {/* Eye emoji for view */}
-                  </button>
+                    <button className="icon-button" onClick={() => handleOpenViewModal(template)} title="View template">
+                      <span className="view-icon">👁️</span>
+                    </button>
                     <button className="icon-button" onClick={() => handleOpenModal(template)} title="Edit template">
                       <span className="edit-icon">✏️</span>
                     </button>
@@ -528,8 +555,16 @@ const TemplatesManagement = () => {
 
   return (
     <div className="templates-container">
-      {/* Toast notification */}
-      {toast.show && <Toast message={toast.message} type={toast.type} onClose={() => setToast({...toast, show: false})} />}
+      {/* Toast Container - Configure with preventDuplicates */}
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false} 
+        closeOnClick 
+        pauseOnHover 
+        limit={1} 
+        preventDuplicates
+      />
 
       {/* Delete confirmation modal */}
       <DeleteConfirmationModal 
@@ -589,7 +624,7 @@ const TemplatesManagement = () => {
             <ChevronDown className="select-icon" />
           </div>
           
-          <button className="create-button" onClick={() => handleOpenModal()}>
+          <button className="create-user-button create-button" onClick={() => handleOpenModal()}>
             Create New
           </button>
         </div>
@@ -658,7 +693,7 @@ const TemplatesManagement = () => {
               </button>
             </div>
             
-            <div className="modal-content">
+            <div className="modal-content9">
               <div className="modal-form">
                 {error && (
                   <div className="form-error">
@@ -669,7 +704,7 @@ const TemplatesManagement = () => {
                 
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="templateName">Template Name</label>
+                    <label htmlFor="templateName">Template Name <span style={{ color: 'red' }}>*</span></label>
                     <input 
                       type="text" 
                       id="templateName" 
@@ -684,7 +719,7 @@ const TemplatesManagement = () => {
                     {formErrors.templateName && <div className="error-text">{formErrors.templateName}</div>}
                   </div>
                   <div className="form-group">
-                    <label htmlFor="templateType">Template Type</label>
+                    <label htmlFor="templateType">Template Type <span style={{ color: 'red' }}>*</span></label>
                     <div className="select-wrapper">
                       <select id="templateType" value={templateType} onChange={(e) => setTemplateType(e.target.value)}>
                         <option value="Residential">Residential</option>
@@ -695,13 +730,9 @@ const TemplatesManagement = () => {
                   </div>
                 </div>
                 
-                <div className="template-description">
-                  Kickstart conversations with a variety of motivated sellers
-                </div>
-                
                 <div className="messages-section">
                   <div className="messages-header">
-                    <h3>Messages</h3>
+                    <h3>Messages <span style={{ color: 'red' }}>*</span></h3>
                     <div className="message-count-info">
                       <span>Active Messages:</span>
                       <div className="select-wrapper active-message-count">
@@ -807,7 +838,7 @@ const TemplatesManagement = () => {
                 Cancel
               </button>
               <button 
-                className="save-button1" 
+                className="save-button" 
                 onClick={handleSaveTemplate}
                 disabled={!templateName || !messageContents[1]}
               >
