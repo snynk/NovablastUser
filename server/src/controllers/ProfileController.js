@@ -15,7 +15,7 @@ exports.getCustomerData = async (req, res) => {
 
     const customer = await Profile.findById(new mongoose.Types.ObjectId(customerId));
 
-    const customerId = req.params.customerId; // Customer ID from the route
+    // const customerId = req.params.customerId; // Customer ID from the route
 //     const customer = await Profile.findById(customerId); // Fixed: using findById instead of find
 
 
