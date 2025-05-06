@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import "@/assets/css/settings.css";
 
 // Modal Base Component
@@ -20,157 +21,134 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   );
 };
 
-// Request New Market Modal Component
-const RequestNewMarketModal = ({ isOpen, onClose }) => {
+
+// **Market Management Component**
+const MarketsTab = () => {
+  const [markets, setMarkets] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingMarket, setEditingMarket] = useState(null);
+  const [formData, setFormData] = useState({ name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' });
+
+  useEffect(() => {
+    fetchMarkets();
+  }, []);
+
+  const fetchMarkets = async () => {
+    try {
+      const { data } = await axios.get('/api/markets/all');
+      setMarkets(data);
+    } catch (error) {
+      console.error("Error fetching markets:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingMarket) {
+        await axios.put(`/api/markets/${editingMarket._id}`, formData);
+      } else {
+        await axios.post('/api/markets/create', formData);
+      }
+      fetchMarkets();
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error saving market:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/markets/${id}`);
+      fetchMarkets();
+    } catch (error) {
+      console.error("Error deleting market:", error);
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Request New Market" className="modal-5">
-      {/* <div className="info-banner">
-        <span className="info-icon">ℹ️</span>
-        <p>Please note that this number/user will be charged according to your current subscription</p>
-        <button className="accept-button">Accept</button>
-      </div> */}
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Market Name <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter Name" />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Call Forwarding Number <span className="required">*</span></label>
-          <div className="phone-input">
-            <div className="country-code">
-              {/* <span className="flag">🇺🇸</span>
-              <span>+1</span> */}
-            </div>
-            <input type="text" className="form-input" />
-          </div>
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Area Code <span className="required">*</span></label>
-          <div className="select-container">
-            <input type="text" className="form-input" placeholder="Search..." />
-            {/* <span className="dropdown-icon">▼</span> */}
-          </div>
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Time Zone</label>
-          <input type="text" className="form-input" disabled />
-        </div>
-      </div>
-      
-      <div className="modal-footer">
-        <button className="cancel-button" onClick={onClose}>Cancel</button>
-        <button className="save-button">Save</button>
-      </div>
+    <div className="tab-content">
+      <button className="create-button" onClick={() => { setEditingMarket(null); setModalOpen(true); }}>+ Add Market</button>
+
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Market Name</th>
+            <th>Call Forwarding Number</th>
+            <th>Area Code</th>
+            <th>Time Zone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {markets.map(market => (
+            <tr key={market._id}>
+              <td>{market.name}</td>
+              <td>{market.callForwardingNumber}</td>
+              <td>{market.areaCode}</td>
+              <td>{market.timeZone}</td>
+              <td>{market.status}</td>
+              <td>
+                <button onClick={() => { setEditingMarket(market); setModalOpen(true); }}>Edit</button>
+                <button onClick={() => handleDelete(market._id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {modalOpen && (
+        <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingMarket ? "Edit Market" : "Add Market"}>
+          <input type="text" placeholder="Market Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+          <input type="text" placeholder="Call Forwarding Number" value={formData.callForwardingNumber} onChange={(e) => setFormData({ ...formData, callForwardingNumber: e.target.value })} />
+          <input type="text" placeholder="Area Code" value={formData.areaCode} onChange={(e) => setFormData({ ...formData, areaCode: e.target.value })} />
+          <input type="text" placeholder="Time Zone" value={formData.timeZone} onChange={(e) => setFormData({ ...formData, timeZone: e.target.value })} />
+          <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+            <option value="Pending">Pending</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+          <button onClick={handleSave}>Save</button>
+        </Modal>
+      )}
+    </div>
+  );
+};
+
+// **10DLC Form Component**
+const DlcFormModal = ({ isOpen, onClose }) => {
+  const [formData, setFormData] = useState({
+    businessType: '', taxId: '', websiteUrl: '', brandName: '', email: '',
+    firstName: '', lastName: '', verticalType: '', zip: '', phoneNumber: '', state: ''
+  });
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post('/api/tendlc/register', formData);
+      onClose();
+    } catch (error) {
+      console.error("Error submitting 10DLC form:", error);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="10DLC Registration">
+      <input type="text" placeholder="Business Type" value={formData.businessType} onChange={(e) => setFormData({ ...formData, businessType: e.target.value })} />
+      <input type="text" placeholder="Tax ID / EIN" value={formData.taxId} onChange={(e) => setFormData({ ...formData, taxId: e.target.value })} />
+      <input type="text" placeholder="Website URL" value={formData.websiteUrl} onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })} />
+      <input type="text" placeholder="Brand Name" value={formData.brandName} onChange={(e) => setFormData({ ...formData, brandName: e.target.value })} />
+      <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+      <input type="text" placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
+      <input type="text" placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+      <input type="text" placeholder="Vertical Type" value={formData.verticalType} onChange={(e) => setFormData({ ...formData, verticalType: e.target.value })} />
+      <input type="text" placeholder="ZIP Code" value={formData.zip} onChange={(e) => setFormData({ ...formData, zip: e.target.value })} />
+      <input type="text" placeholder="Phone Number" value={formData.phoneNumber} onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })} />
+      <input type="text" placeholder="State" value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} />
+      <button onClick={handleSubmit}>Submit</button>
     </Modal>
   );
 };
 
-// 10 DLC Form Modal Component
-const DlcFormModal = ({ isOpen, onClose }) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Registration Info" className="modal-6">
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Market Name <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter Market Name" />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">What Type of legal form is the org? <span className="required">*</span></label>
-          <div className="select-container">
-            <input type="text" className="form-input" placeholder="Sole proprietorship:" readOnly />
-            {/* <span className="dropdown-icon">▼</span> */}
-          </div>
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Tax Number / ID / EIN <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter Ein" />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Website URL <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter URL" />
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">First Name <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter First Name" />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Last Name <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter Last Name" />
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">DBA or Brand Name <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter Name" />
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">Email <span className="required">*</span></label>
-          <input type="email" className="form-input" placeholder="Enter Email" />
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Vertical type</label>
-          <div className="select-container">
-            <input type="text" className="form-input" placeholder="Select" readOnly />
-            {/* <span className="dropdown-icon">▼</span> */}
-          </div>
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">ZIP <span className="required">*</span></label>
-          <input type="text" className="form-input" placeholder="Enter ZIP" />
-        </div>
-      </div>
-      
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">Phone Number <span className="required">*</span></label>
-          <div className="phone-input">
-            <div className="country-code">
-              <span className="flag">🇺🇸</span>
-              <span>+1</span>
-            </div>
-            <input type="text" className="form-input" />
-          </div>
-        </div>
-        
-        <div className="form-group">
-          <label className="form-label">State <span className="required">*</span></label>
-          <div className="phone-input">
-            <div className="country-code">
-              <span className="flag">🇺🇸</span>
-            </div>
-            <input type="text" className="form-input" placeholder="Enter State" />
-          </div>
-        </div>
-      </div>
-      
-      <div className="modal-footer">
-        <button className="cancel-button" onClick={onClose}>Cancel</button>
-        <button className="submit-button">Submit</button>
-      </div>
-    </Modal>
-  );
-};
 const SettingsScreen = () => {
   const [activeTab, setActiveTab] = useState('markets');
   const [isMarketModalOpen, setIsMarketModalOpen] = useState(false);

@@ -18,7 +18,9 @@ const profileRouter = require("./routes/ProfileRoutes");
 const loginActivityRouter = require("./routes/LoginActivityRoutes");
 
 const templateRoutes = require("./routes/templateRoutes");
-const profileRoutes = require("./routes/profileRoutes"); // Added profile routes
+const markets =require('./routes/marketRoutes');
+const blocked = require('./routes/blockedRoutes');
+const tags =require('./routes/tagRoutes');
 
 
 // Init express
@@ -55,6 +57,10 @@ app.use("/api/customers", profileRouter);
 app.use("/api/login-activity", loginActivityRouter);
 
 app.use("/api/templates", templateRoutes);
+app.use('/api/markets', markets);
+app.use('/api/tags', tags);
+app.use('/api/blocked', blocked);
+
 
 
 // Default route
