@@ -12,8 +12,8 @@ exports.getMarkets = async (req, res) => {
 
 exports.createMarket = async (req, res) => {
   try {
-    const { name, callForwardingNumber, status } = req.body;
-    const newMarket = await Market.create({ name, callForwardingNumber, status });
+    const { name, callForwardingNumber, areaCode, timeZone, status } = req.body;
+    const newMarket = await Market.create({  name, callForwardingNumber, areaCode, timeZone, status });
     res.status(201).json(newMarket);
   } catch (error) {
     res.status(400).json({ error: error.message });
