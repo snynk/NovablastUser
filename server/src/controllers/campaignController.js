@@ -1,4 +1,6 @@
 const Campaign = require("../models/campaignModel");
+const Contact = require("../models/contactModel");
+const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 // Load environment variables
@@ -7,30 +9,40 @@ dotenv.config();
 // Create a new campaign
 exports.createCampaign = async (req, res) => {
   try {
-    const { name, market, callForwardingNumber } = req.body;
+    const { name, market, callForwardingNumber, contactListId } = req.body;
 
     // Validate required fields
-    if (!name || !market || !callForwardingNumber) {
+    if (!name || !market || !callForwardingNumber || !contactListId) {
       return res.status(400).json({ 
-        error: "Missing required fields. Name, market, and callForwardingNumber are required." 
+        error: "Missing required fields. Name, market, callForwardingNumber, and contactListId are required." 
       });
+    }
+
+    // Find contacts by SampleName instead of _id
+    const contactList = await Contact.findOne({ SampleName: contactListId });
+    if (!contactList) {
+      return res.status(404).json({ error: "Selected contact list not found." });
     }
 
     // Add userId if authentication is implemented
     const userId = req.user ? req.user._id : null;
     
+    // Calculate total contacts with the same SampleName
+    const totalContacts = await Contact.countDocuments({ SampleName: contactListId });
+    
     const campaign = new Campaign({
       name,
       market,
       callForwardingNumber,
+      contactListId: contactListId, // Store the SampleName as string
       userId,
-      // Default values will be set by the model
-      sent: Math.floor(Math.random() * 5000), // Mock data for demonstration
-      remaining: Math.floor(Math.random() * 3000), // Mock data for demonstration
-      hot: Math.floor(Math.random() * 100), // Mock data for demonstration
+      // Set values based on the contact list size
+      sent: 0,
+      remaining: totalContacts,
+      hot: 0,
       drip: 0,
-      deliverability: (90 + Math.random() * 10).toFixed(2) + "%", // Mock data (90-100%)
-      response: (5 + Math.random() * 25).toFixed(2) + "%" // Mock data (5-30%)
+      deliverability: "98.5%", // Default starting value
+      response: "0%" // Will be updated as responses come in
     });
 
     const savedCampaign = await campaign.save();
@@ -44,39 +56,53 @@ exports.createCampaign = async (req, res) => {
 // Create a follow-up campaign
 exports.createFollowUpCampaign = async (req, res) => {
   try {
-    const { campaign: parentCampaignId, market, month, title } = req.body;
+    const { campaign: parentCampaignId, market, month, title, contactListId } = req.body;
 
     // Validate required fields
-    if (!parentCampaignId || !market || !month || !title) {
+    if (!parentCampaignId || !market || !month || !title || !contactListId) {
       return res.status(400).json({ 
-        error: "Missing required fields. Parent campaign, market, month, and title are required." 
+        error: "Missing required fields. Parent campaign, market, month, title, and contactListId are required." 
       });
     }
 
-    // Check if parent campaign exists
+    // Check if parent campaign exists - this requires a valid ObjectID
+    if (!mongoose.Types.ObjectId.isValid(parentCampaignId)) {
+      return res.status(400).json({ error: "Invalid parent campaign ID format." });
+    }
+    
     const parentCampaign = await Campaign.findById(parentCampaignId);
     if (!parentCampaign) {
       return res.status(404).json({ error: "Parent campaign not found." });
     }
 
+    // Find contacts by SampleName instead of _id
+    const contactList = await Contact.findOne({ SampleName: contactListId });
+    if (!contactList) {
+      return res.status(404).json({ error: "Selected contact list not found." });
+    }
+
     // Add userId if authentication is implemented
     const userId = req.user ? req.user._id : null;
+    
+    // Calculate total contacts with the same SampleName
+    const totalContacts = await Contact.countDocuments({ SampleName: contactListId });
     
     const followUpCampaign = new Campaign({
       name: title,
       market,
       callForwardingNumber: parentCampaign.callForwardingNumber,
+      contactListId: contactListId, // Store the SampleName as string
       userId,
       isFollowUp: true,
       parentCampaign: parentCampaignId,
       monthWithoutResponse: month,
-      // Default values will be set by the model
-      sent: Math.floor(Math.random() * 2000), // Mock data for demonstration
-      remaining: Math.floor(Math.random() * 1000), // Mock data for demonstration
-      hot: Math.floor(Math.random() * 50), // Mock data for demonstration
+      // Set values based on the contact list size
+      sent: 0,
+      remaining: totalContacts,
+      hot: 0,
       drip: 0,
-      deliverability: (90 + Math.random() * 10).toFixed(2) + "%", // Mock data (90-100%)
-      response: (5 + Math.random() * 25).toFixed(2) + "%" // Mock data (5-30%)
+      deliverability: "98.5%", // Default starting value
+      response: "0%" // Will be updated as responses come in
     });
 
     const savedCampaign = await followUpCampaign.save();
@@ -102,7 +128,9 @@ exports.getCampaigns = async (req, res) => {
     // Add user filter if authentication is implemented
     if (req.user) filter.userId = req.user._id;
     
-    const campaigns = await Campaign.find(filter).sort({ created: -1 });
+    const campaigns = await Campaign.find(filter)
+      .sort({ created: -1 });
+      
     return res.status(200).json(campaigns);
   } catch (error) {
     console.error("Error fetching campaigns:", error);
@@ -110,10 +138,32 @@ exports.getCampaigns = async (req, res) => {
   }
 };
 
+// Get all contact lists (Sample Names) for dropdown selection
+exports.getContactLists = async (req, res) => {
+  try {
+    // Get distinct sample names
+    const contactLists = await Contact.aggregate([
+      { $group: { _id: "$SampleName", count: { $sum: 1 } } },
+      { $project: { _id: 0, id: "$_id", name: "$_id", count: 1 } },
+      { $sort: { name: 1 } }
+    ]);
+    
+    return res.status(200).json(contactLists);
+  } catch (error) {
+    console.error("Error fetching contact lists:", error);
+    return res.status(500).json({ error: "Failed to retrieve contact lists." });
+  }
+};
+
 // Get a single campaign by ID
 exports.getCampaignById = async (req, res) => {
   try {
     const { campaignId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(campaignId)) {
+      return res.status(400).json({ error: "Invalid campaign ID format." });
+    }
+    
     const campaign = await Campaign.findById(campaignId);
     
     if (!campaign) {
@@ -131,7 +181,20 @@ exports.getCampaignById = async (req, res) => {
 exports.updateCampaign = async (req, res) => {
   try {
     const { campaignId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(campaignId)) {
+      return res.status(400).json({ error: "Invalid campaign ID format." });
+    }
+    
     const updateData = { ...req.body, updated: Date.now() };
+    
+    // If contactListId is being updated, verify it exists as a SampleName
+    if (updateData.contactListId) {
+      const contactList = await Contact.findOne({ SampleName: updateData.contactListId });
+      if (!contactList) {
+        return res.status(404).json({ error: "Selected contact list not found." });
+      }
+    }
     
     const updatedCampaign = await Campaign.findByIdAndUpdate(
       campaignId, 
@@ -154,6 +217,11 @@ exports.updateCampaign = async (req, res) => {
 exports.deleteCampaign = async (req, res) => {
   try {
     const { campaignId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(campaignId)) {
+      return res.status(400).json({ error: "Invalid campaign ID format." });
+    }
+    
     const deletedCampaign = await Campaign.findByIdAndDelete(campaignId);
     
     if (!deletedCampaign) {
@@ -189,7 +257,9 @@ exports.searchCampaigns = async (req, res) => {
       filter.userId = req.user._id;
     }
     
-    const campaigns = await Campaign.find(filter).sort({ created: -1 });
+    const campaigns = await Campaign.find(filter)
+      .sort({ created: -1 });
+      
     return res.status(200).json(campaigns);
   } catch (error) {
     console.error("Error searching campaigns:", error);
@@ -207,7 +277,9 @@ exports.getParentCampaigns = async (req, res) => {
     // Add user filter if authentication is implemented
     if (req.user) filter.userId = req.user._id;
     
-    const campaigns = await Campaign.find(filter).sort({ created: -1 });
+    const campaigns = await Campaign.find(filter)
+      .sort({ created: -1 });
+      
     return res.status(200).json(campaigns);
   } catch (error) {
     console.error("Error fetching parent campaigns:", error);

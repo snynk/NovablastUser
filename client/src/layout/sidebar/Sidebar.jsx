@@ -32,21 +32,31 @@ const Sidebar = ({ fixed, className, menuData, ...props }) => {
   return (
     <>
       <div className={classes} style={{ borderTopRightRadius: "30px",borderBottomRightRadius: "30px" }}>
-        <div className="nk-sidebar-element nk-sidebar-head" >
-          <div className="nk-menu-trigger">
-            <Toggle className="nk-nav-toggle nk-quick-nav-icon d-xl-none me-n2" icon="arrow-left" click={themeUpdate.sidebarVisibility} />
-            <Toggle
-              className={`nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex ${
-                theme.sidebarCompact ? "compact-active" : ""
-              }`}
-              click={themeUpdate.sidebarCompact}
-              icon="menu"
-            />
-          </div>
-          {/* <div className="nk-sidebar-brand">
-            <Logo />
-          </div> */}
-        </div>
+      <div className="nk-sidebar-element nk-sidebar-head">
+  <div className="nk-menu-trigger">
+    <Toggle 
+      className="nk-nav-toggle nk-quick-nav-icon d-xl-none me-n2" 
+      icon="arrow-left" 
+      click={themeUpdate.sidebarVisibility} 
+    />
+    <Toggle
+      className={`nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex ${
+        theme.sidebarCompact ? "compact-active" : ""
+      }`}
+      click={themeUpdate.sidebarCompact}
+      icon="menu"
+    />
+  </div>
+  <div className="nk-sidebar-brand" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <div style={{ display: "flex", alignItems: "center" }}>
+    <Logo />
+    </div>
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <span style={{ fontWeight: "600", fontSize: "20px", color: "#ffffff" }}>Nova</span>
+      <span style={{ fontWeight: "600", fontSize: "20px", color: "#0084FF" }}>Blast</span>
+    </div>
+  </div>
+</div>
         <div className="nk-sidebar-content" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <SimpleBar className="nk-sidebar-menu">
             <Menu data={menuData} />

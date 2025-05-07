@@ -349,69 +349,71 @@ const CampaignManagement = () => {
             <div className="loading">Loading campaigns...</div>
           ) : (
             <table className="campaigns-table">
-              <thead>
-                <tr>
-                  <th className="campaign-name" style={{ textAlign: 'center' }}>Campaign Name</th>
-                  <th style={{ textAlign: 'center' }}>Market</th>
-                  <th style={{ textAlign: 'center' }}>Sent</th>
-                  <th style={{ textAlign: 'center' }}>Remaining</th>
-                  <th style={{ textAlign: 'center' }}>Hot</th>
-                  <th style={{ textAlign: 'center' }}>Drip</th>
-                  <th style={{ textAlign: 'center' }}>Deliverability</th>
-                  <th style={{ textAlign: 'center' }}>Response</th>
-                  <th style={{ textAlign: 'center' }}>Created</th>
-                  <th style={{ textAlign: 'center' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedCampaigns.length > 0 ? (
-                  displayedCampaigns.map((campaign) => (
-                    <tr key={campaign._id}>
-                      <td style={{ textAlign: 'center' }}>{campaign.name}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.market}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.sent}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.remaining}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.hot}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.drip}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.deliverability}</td>
-                      <td style={{ textAlign: 'center' }}>{campaign.response}</td>
-                      <td style={{ textAlign: 'center' }}>{formatDate(campaign.created)}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <div className="actions-cell">
-                          <button 
-                            className="icon-button" 
-                            title="View campaign"
-                            onClick={() => openViewModal(campaign)}
-                          >
-                            <span className="view-icon">👁️</span>
-                          </button>
-                          <button 
-                            className="icon-button"
-                            title="Edit campaign"
-                            onClick={() => openEditModal(campaign)}
-                          >
-                            <span className="edit-icon">✏️</span>
-                          </button>
-                          <button
-                            className="icon-button"
-                            title="Delete campaign"
-                            onClick={() => openDeleteModal(campaign)}
-                          >
-                            <span className="delete-icon">🗑️</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="10" className="no-data">
-                      No campaigns found.
+            <thead>
+              <tr>
+                <th className="campaign-name" style={{ textAlign: 'center' }}>Campaign Name</th>
+                <th style={{ textAlign: 'center' }}>Market</th>
+                <th style={{ textAlign: 'center' }}>Contact List</th>
+                <th style={{ textAlign: 'center' }}>Sent</th>
+                <th style={{ textAlign: 'center' }}>Remaining</th>
+                <th style={{ textAlign: 'center' }}>Hot</th>
+                <th style={{ textAlign: 'center' }}>Drip</th>
+                <th style={{ textAlign: 'center' }}>Deliverability</th>
+                <th style={{ textAlign: 'center' }}>Response</th>
+                <th style={{ textAlign: 'center' }}>Created</th>
+                <th style={{ textAlign: 'center' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayedCampaigns.length > 0 ? (
+                displayedCampaigns.map((campaign) => (
+                  <tr key={campaign._id}>
+                    <td style={{ textAlign: 'center' }}>{campaign.name}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.market}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.contactListId || '-'}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.sent}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.remaining}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.hot}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.drip}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.deliverability}</td>
+                    <td style={{ textAlign: 'center' }}>{campaign.response}</td>
+                    <td style={{ textAlign: 'center' }}>{formatDate(campaign.created)}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <div className="actions-cell">
+                        <button 
+                          className="icon-button" 
+                          title="View campaign"
+                          onClick={() => openViewModal(campaign)}
+                        >
+                          <span className="view-icon">👁️</span>
+                        </button>
+                        <button 
+                          className="icon-button"
+                          title="Edit campaign"
+                          onClick={() => openEditModal(campaign)}
+                        >
+                          <span className="edit-icon">✏️</span>
+                        </button>
+                        <button
+                          className="icon-button"
+                          title="Delete campaign"
+                          onClick={() => openDeleteModal(campaign)}
+                        >
+                          <span className="delete-icon">🗑️</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="11" className="no-data">
+                    No campaigns found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
           )}
         </div>
 

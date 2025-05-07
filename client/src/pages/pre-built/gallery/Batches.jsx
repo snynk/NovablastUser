@@ -1,63 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Info, Check, MoreVertical, Search, Filter } from 'lucide-react';
+import BatchBuilderModal from './BatchBuilderModal';
 import "@/assets/css/batches.css";
 
 const BatchesDataTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Static data - 4 rows as requested
-  const batches = [
-    {
-      batchNumber: '52-8385',
-      date: '04-16-23 14:57',
-      campaign: 'AL Statewide abatee non LLC owned 5+ years 4/11/23',
-      user: 'Jacob Scott',
-      messages: '150 sent 0 in queue',
-      deliverability: '96.00%',
-      response: '21.53%',
-      template: '4th sms',
-      lastSend: 'April 16, 2023',
-      status: 'success'
-    },
-    {
-      batchNumber: '51-8385',
-      date: '04-16-23 08:19',
-      campaign: 'AL Statewide abatee non LLC owned 5+ years 4/11/23',
-      user: 'Jacob Scott',
-      messages: '150 sent 0 in queue',
-      deliverability: '96.00%',
-      response: '25.69%',
-      template: '2nd sms template',
-      lastSend: 'April 16, 2023',
-      status: 'success'
-    },
-    {
-      batchNumber: '50-8385',
-      date: '04-16-23 08:16',
-      campaign: 'AL Statewide abatee non LLC owned 5+ years 4/11/23',
-      user: 'Jacob Scott',
-      messages: '150 sent 0 in queue',
-      deliverability: '92.67%',
-      response: '25.18%',
-      template: '2nd sms template',
-      lastSend: 'April 16, 2023',
-      status: 'success'
-    },
-    {
-      batchNumber: '49-8385',
-      date: '04-16-23 08:15',
-      campaign: 'AL Statewide abatee non LLC owned 5+ years 4/11/23',
-      user: 'Jacob Scott',
-      messages: '150 sent 0 in queue',
-      deliverability: '94.67%',
-      response: '20.42%',
-      template: '2nd sms template',
-      lastSend: 'April 16, 2023',
-      status: 'success'
-    }
-  ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Sorting functionality
   const [sortField, setSortField] = useState('');
@@ -72,46 +22,36 @@ const BatchesDataTable = () => {
     }
   };
 
-  // Apply sorting and filtering
-  const filteredBatches = batches.filter(batch => {
-    return Object.values(batch).some(value => 
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
-  const sortedBatches = [...filteredBatches].sort((a, b) => {
-    if (!sortField) return 0;
-    
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
-  });
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="batches-container">
       <div className="batches-header" style={{fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '80px 0 20px 0'}}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-  <h1 
-    className="dashboard-title" 
-    style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0' }}
-  >
-    Batches
-  </h1>
-  <div 
-    style={{ 
-      height: '4px', 
-      width: '60%',  // Adjust to span the full width of the container or as required
-      backgroundColor: '#22c55e', // Green color
-      marginTop: '1px' 
-    }} 
-  />
-</div>
-        <button className="create-button create-user-button">Create New Batches</button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <h1 
+            className="dashboard-title" 
+            style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '10px 0' }}
+          >
+            Batches
+          </h1>
+          <div 
+            style={{ 
+              height: '4px', 
+              width: '60%',
+              backgroundColor: '#22c55e',
+              marginTop: '1px' 
+            }} 
+          />
+        </div>
+        <button className="create-button create-user-button" onClick={openModal}>
+          Create New Batches
+        </button>
       </div>
 
       <div className="batches-content">
@@ -149,33 +89,21 @@ const BatchesDataTable = () => {
           <table className="batches-table">
             <thead>
               <tr>
-                <th onClick={() => handleSort('batchNumber')}>
+                <th>
                   <div className="th-content">
                     <span>Batch Number</span>
-                    <div className={`sort-indicator ${sortField === 'batchNumber' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
-                <th onClick={() => handleSort('campaign')}>
+                <th>
                   <div className="th-content">
                     <span>Campaign</span>
                     <Info className="info-icon" size={16} />
-                    <div className={`sort-indicator ${sortField === 'campaign' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
-                <th onClick={() => handleSort('user')}>
+                <th>
                   <div className="th-content">
                     <span>User</span>
                     <Info className="info-icon" size={16} />
-                    <div className={`sort-indicator ${sortField === 'user' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
                 <th>
@@ -184,24 +112,16 @@ const BatchesDataTable = () => {
                     <Info className="info-icon" size={16} />
                   </div>
                 </th>
-                <th onClick={() => handleSort('deliverability')}>
+                <th>
                   <div className="th-content">
                     <span>Deliverability</span>
                     <Info className="info-icon" size={16} />
-                    <div className={`sort-indicator ${sortField === 'deliverability' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
-                <th onClick={() => handleSort('response')}>
+                <th>
                   <div className="th-content">
                     <span>Response</span>
                     <Info className="info-icon" size={16} />
-                    <div className={`sort-indicator ${sortField === 'response' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
                 <th>
@@ -210,78 +130,60 @@ const BatchesDataTable = () => {
                     <Info className="info-icon" size={16} />
                   </div>
                 </th>
-                <th onClick={() => handleSort('lastSend')}>
+                <th>
                   <div className="th-content">
                     <span>Last Send</span>
                     <Info className="info-icon" size={16} />
-                    <div className={`sort-indicator ${sortField === 'lastSend' ? 'active-' + sortDirection : ''}`}>
-                      <span className="up-arrow">▲</span>
-                      <span className="down-arrow">▼</span>
-                    </div>
                   </div>
                 </th>
-                <th>Status</th>
+                <th>
+                  <div className="th-content">
+                    <span>Status</span>
+                    <Info className="info-icon" size={16} />
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {sortedBatches.map((batch, index) => (
-                <tr key={index} className="data-row">
+                <tr>
                   <td>
                     <div className="batch-number">
-                      <div>{batch.batchNumber}</div>
-                      <div className="batch-date">{batch.date}</div>
+                      <div></div>
+                      <div></div>
                     </div>
                   </td>
                   <td>
-                    <div className="campaign-cell">{batch.campaign}</div>
+                    <div></div>
                   </td>
-                  <td>{batch.user}</td>
-                  <td>{batch.messages}</td>
+                  <td></td>
+                  <td></td>
                   <td>
                     <div className="progress-cell">
                       <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: batch.deliverability }}></div>
+                        <div></div>
                       </div>
-                      <span>{batch.deliverability}</span>
+                      <span></span>
                     </div>
                   </td>
                   <td>
                     <div className="progress-cell">
                       <div className="progress-bar response-bar">
-                        <div className="progress-fill" style={{ width: batch.response }}></div>
+                        <div></div>
                       </div>
-                      <span>{batch.response}</span>
+                      <span></span>
                     </div>
                   </td>
-                  <td>{batch.template}</td>
-                  <td>{batch.lastSend}</td>
-                  <td>
-                    <div className="status-cell">
-                      <div className={`status-icon ${batch.status}`}>
-                        <Check size={16} color="white" />
-                      </div>
-                      <div className="action-dropdown">
-                        <button className="action-btn">
-                          <MoreVertical size={16} />
-                        </button>
-                        <div className="dropdown-menu">
-                          <a href="#">View Details</a>
-                          <a href="#">Export Data</a>
-                          <a href="#">Clone Batch</a>
-                          <a href="#">Delete</a>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
-              ))}
             </tbody>
           </table>
         </div>
 
         <div className="pagination">
           <div className="total-records">
-            Total: <strong>4</strong> batches
+            Total: <strong>0</strong> batches
           </div>
           <div className="pagination-controls">
             <button className="pagination-btn"><ChevronsLeft size={16} /></button>
@@ -292,7 +194,7 @@ const BatchesDataTable = () => {
           </div>
           <div className="entries-selector">
             <span>Entries</span>
-            <select value={entriesPerPage} onChange={(e) => setEntriesPerPage(parseInt(e.target.value))}>
+            <select>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
@@ -301,6 +203,9 @@ const BatchesDataTable = () => {
           </div>
         </div>
       </div>
+
+      {/* Batch Builder Modal */}
+      <BatchBuilderModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };
