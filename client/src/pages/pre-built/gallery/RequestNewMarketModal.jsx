@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import {
   Modal,
   ModalBody,
@@ -15,12 +16,23 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 
 const RequestNewMarketModal = ({ isOpen, onClose }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+const loggedInCustomerId = user && user.id ? user.id : null;
+
 
     const [formData, setFormData] = useState({ name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' });
-      
+  
+    const handleChange = (name, value) => {
+      setFormData({ ...formData, [name]: value });
+    };
+
     const handleSubmit = async () => {
         try {
-            await axios.post(`http://localhost:3000/api/markets/createmarket`, formData);
+          const payload = {
+            ...formData,
+            customerId: loggedInCustomerId, // Attach customer ID
+          };
+            await axios.post(`http://localhost:3000/api/markets/createmarket`, payload);
 
           onClose();
         } catch (error) {
@@ -58,8 +70,9 @@ const RequestNewMarketModal = ({ isOpen, onClose }) => {
           <div className="form-group">
             <label className="form-label">Area Code <span className="required">*</span></label>
             <div className="select-container">
-              <input type="text" className="form-input" placeholder="Search..." value={formData.areaCode} onChange={(e) => setFormData({ ...formData, areaCode: e.target.value })} />
+          
               {/* <span className="dropdown-icon">▼</span> */}
+              <input type="text" className="form-input" value={formData.areaCode} onChange={(e) => setFormData({ ...formData, areaCode: e.target.value })} />
             </div>
           </div>
           
@@ -70,8 +83,9 @@ const RequestNewMarketModal = ({ isOpen, onClose }) => {
         </div>
         
         <div className="modal-footer">
-          <button className="cancel-button" onClick={onClose}>Cancel</button>
-          <button className="save-button" onClick={handleSubmit} >Save</button>
+        <Button color="secondary" onClick={(e) => { e.preventDefault(); onClose(); }}>Cancel</Button>
+<Button color="primary" onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Save</Button>
+
         </div>
       </Modal>
     );

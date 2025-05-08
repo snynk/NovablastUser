@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const marketSchema = new mongoose.Schema({
+  customerId : { type: String, required: true },
   name: { type: String, required: true },
   callForwardingNumber: { type: String, required: true },
   areaCode: { type: String, required: true },

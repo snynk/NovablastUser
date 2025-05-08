@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 const tenDlcSchema = new mongoose.Schema({
-  marketId: { type: mongoose.Schema.Types.ObjectId, ref: 'Market' }, // Linking to Market Table
+  // marketId: { type: mongoose.Schema.Types.ObjectId, ref: 'Market' }, // Linking to Market Table
+  marketname: { type: String, required: true },
+  customerId: { type: String, required: true },
   businessType: { type: String, required: true },
   taxId: { type: String, required: true },
   websiteUrl: { type: String, required: true },

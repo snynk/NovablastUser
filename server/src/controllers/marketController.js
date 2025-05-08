@@ -12,8 +12,8 @@ exports.getMarkets = async (req, res) => {
 
 exports.createMarket = async (req, res) => {
   try {
-    const { name, callForwardingNumber, areaCode, timeZone, status } = req.body;
-    const newMarket = await Market.create({  name, callForwardingNumber, areaCode, timeZone, status });
+    const { name, callForwardingNumber, areaCode, timeZone, status, customerId  } = req.body;
+    const newMarket = await Market.create({  name, callForwardingNumber, areaCode, timeZone, status, customerId  });
     res.status(201).json(newMarket);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -48,12 +48,13 @@ exports.deleteMarket = async (req, res) => {
 
 exports.createMarketWithDLC = async (req, res) => {
     try {
-      const { name, callForwardingNumber, areaCode, timeZone, businessType, taxId, websiteUrl, brandName, email, firstName, lastName, verticalType, zip, phoneNumber, state } = req.body;
+      const { marketname,  businessType, taxId, websiteUrl, brandName, email, firstName, lastName, verticalType, zip, phoneNumber, state, customerId  } = req.body;
   
-      const market = await Market.create({ name, callForwardingNumber, areaCode, timeZone, status: 'Pending' });
+      // const market = await Market.create({ name, callForwardingNumber, areaCode, timeZone, status: 'Pending' });
   
       const tenDlcForm = await TenDLC.create({
-        marketId: market._id,
+        // marketId: market._id,
+        marketname,
         businessType,
         taxId,
         websiteUrl,
@@ -64,7 +65,8 @@ exports.createMarketWithDLC = async (req, res) => {
         verticalType,
         zip,
         phoneNumber,
-        state
+        state,
+        customerId,  // ✅ Storing customer ID
       });
   
       res.status(201).json({ market, tenDlcForm });

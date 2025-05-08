@@ -5,11 +5,14 @@ import DoNotCallsTabContent from "./DoNotCallsTabContent";
 import TagsTabContent from "./TagsTabContent";
 import ComingSoonTabContent from "./ComingSoonTabContent";
 import RequestNewMarketModal from "./RequestNewMarketModal";
+import EditMarketModal from "./EditMarketModal";
 import DlcFormModal from "./DlcFormModal";
 
 const SettingsScreen = () => {
+  const [selectedMarket, setSelectedMarket] = useState(null);
+const [markets, setMarkets] = useState([]); // Add this to store markets
   const [activeTab, setActiveTab] = useState('markets');
-  const [isModalOpen, setIsModalOpen] = useState({ market: false, dlc: false });
+  const [isModalOpen, setIsModalOpen] = useState({ market: false, dlc: false, editmarket: false, });
 
   const tabs = [
     { id: 'markets', label: 'Markets & Limits' },
@@ -23,6 +26,11 @@ const SettingsScreen = () => {
     const tabComponents = {
       markets: <MarketsTabContent 
       onOpenMarketModal={() => setIsModalOpen({ ...isModalOpen, market: true })} 
+      onOpenEditMarketModal={(market) => {
+        setSelectedMarket(market); // ✅ Store selected market
+        setIsModalOpen({ ...isModalOpen, editmarket: true });
+      }}
+       
       onOpenDlcForm={() => setIsModalOpen({ ...isModalOpen, dlc: true })}
    />,
       dnc: <DoNotCallsTabContent />,
@@ -56,6 +64,13 @@ const SettingsScreen = () => {
 
       {/* Modals */}
       <RequestNewMarketModal isOpen={isModalOpen.market} onClose={() => setIsModalOpen({ ...isModalOpen, market: false })} />
+      <EditMarketModal 
+  isOpen={isModalOpen.editmarket} 
+  onClose={() => setIsModalOpen({ ...isModalOpen, editmarket: false })} 
+  marketData={selectedMarket} 
+  setMarkets={setMarkets} // ✅ Pass setMarkets so table updates instantly
+/>
+
       <DlcFormModal isOpen={isModalOpen.dlc} onClose={() => setIsModalOpen({ ...isModalOpen, dlc: false })} />
     </div>
   );
