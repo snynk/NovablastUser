@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Info, ChevronDown } from 'lucide-react';
-// import "./ModalStyles.css";
+// import "../../../assets/css/modal.css";
 
 const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
   const [newCampaign, setNewCampaign] = useState({
@@ -9,7 +9,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
     callForwardingNumber: ''
   });
   const [isVisible, setIsVisible] = useState(false);
-
+  
   useEffect(() => {
     if (isOpen) {
       // Set timeout to allow the DOM to update before adding visible class
@@ -20,7 +20,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
       document.body.style.overflow = '';
     }
   }, [isOpen]);
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewCampaign({
@@ -28,13 +28,13 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
       [name]: value
     });
   };
-
+  
   const handleSave = () => {
     onSave(newCampaign);
     setNewCampaign({ name: '', market: '', callForwardingNumber: '' });
     handleClose();
   };
-
+  
   const handleClose = () => {
     setIsVisible(false);
     // Wait for animation to complete before closing
@@ -42,15 +42,15 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
       onClose();
     }, 400);
   };
-
+  
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       handleClose();
     }
   };
-
+  
   if (!isOpen) return null;
-
+  
   return (
     <div 
       className={`modal-overlay ${isVisible ? 'visible' : ''}`}
@@ -65,7 +65,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
         </div>
         <div className="modal-content">
           <div className="form-group">
-            <label htmlFor="campaign-name">Campaign name</label>
+            <label htmlFor="campaign-name">Campaign name <span style={{ color: 'red' }}>*</span></label>
             <input
               type="text"
               id="campaign-name"
@@ -75,9 +75,9 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
               onChange={handleChange}
             />
           </div>
-
+          
           <div className="form-group">
-            <label htmlFor="market">Select Market</label>
+            <label htmlFor="market">Select Market <span style={{ color: 'red' }}>*</span></label>
             <div className="select-wrapper">
               <select
                 id="market"
@@ -93,11 +93,11 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
               <ChevronDown size={16} className="select-icon" />
             </div>
           </div>
-
+          
           <div className="form-group">
             <label htmlFor="forwarding-number" className="info-label">
-              Call Forwarding Number
-              <Info size={16} className="info-icon" />
+              Call Forwarding Number <span style={{ color: 'red' }}>*</span>
+              {/* <Info size={16} className="info-icon" /> */}
             </label>
             <input
               type="text"
@@ -113,7 +113,11 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
           <button className="cancel-button" onClick={handleClose}>
             Cancel
           </button>
-          <button className="save-button" onClick={handleSave}>
+          <button 
+            className="save-button" 
+            onClick={handleSave}
+            disabled={!newCampaign.name || !newCampaign.market || !newCampaign.callForwardingNumber}
+          >
             Save
           </button>
         </div>

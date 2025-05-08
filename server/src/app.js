@@ -13,6 +13,7 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const groupedContactRoutes = require("./routes/groupedContactRoutes");
 const subUserRoutes = require("./routes/subUserRoutes");
+const dripAutomationRoutes = require('./routes/dripAutomationRoutes'); // Import drip automation routes
 
 const profileRouter = require("./routes/ProfileRoutes");
 const loginActivityRouter = require("./routes/LoginActivityRoutes");
@@ -21,7 +22,6 @@ const templateRoutes = require("./routes/templateRoutes");
 const markets =require('./routes/marketRoutes');
 const blocked = require('./routes/blockedRoutes');
 const tags =require('./routes/tagRoutes');
-
 
 // Init express
 const app = express();
@@ -52,6 +52,7 @@ app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/groupedContacts", groupedContactRoutes);
 app.use("/api/subusers", subUserRoutes);
+app.use('/api/drip-automations', dripAutomationRoutes); // Register drip automation routes
 
 app.use("/api/customers", profileRouter);
 app.use("/api/login-activity", loginActivityRouter);
@@ -66,6 +67,16 @@ app.use('/api/blocked', blocked);
 // Default route
 app.get('/', (req, res) => {
   res.send('🚀 Welcome to the NovaBlast');
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Global error:', err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
+  });
 });
 
 // Start server

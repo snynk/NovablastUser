@@ -1,17 +1,36 @@
-const express = require('express');
-const router = express.Router();
-const campaignController = require('../controllers/campaignController');
+    const express = require("express");
+    const {
+    createCampaign,
+    getCampaigns,
+    getCampaignById,
+    updateCampaign,
+    deleteCampaign,
+    searchCampaigns,
+    createFollowUpCampaign,
+    getParentCampaigns
+    } = require("../controllers/campaignController");
 
-// GET all campaigns
-router.get('/', campaignController.getAllCampaigns);
+    // Optional authentication middleware
+    // const { protect } = require("../middleware/authMiddleware");
 
-// POST create a new campaign
-router.post('/', campaignController.createCampaign);
+    const router = express.Router();
 
-// PUT update a campaign by ID
-router.put('/:id', campaignController.updateCampaign);
+    // Create new campaigns
+    router.post("/", createCampaign);
+    router.post("/follow-up", createFollowUpCampaign);
 
-// DELETE a campaign by ID
-router.delete('/:id', campaignController.deleteCampaign);
+    // Get all campaigns with optional filtering
+    router.get("/", getCampaigns);
 
-module.exports = router;
+    // Get parent campaigns (for follow-up selection)
+    router.get("/parents", getParentCampaigns);
+
+    // Search campaigns
+    router.get("/search", searchCampaigns);
+
+    // Get, update, and delete campaigns by ID
+    router.get("/:campaignId", getCampaignById);
+    router.put("/:campaignId", updateCampaign);
+    router.delete("/:campaignId", deleteCampaign);
+
+    module.exports = router;
