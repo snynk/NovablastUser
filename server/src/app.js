@@ -19,7 +19,9 @@ const profileRouter = require("./routes/ProfileRoutes");
 const loginActivityRouter = require("./routes/LoginActivityRoutes");
 
 const templateRoutes = require("./routes/templateRoutes");
-const profileRoutes = require("./routes/profileRoutes"); // Added profile routes
+const markets =require('./routes/marketRoutes');
+const blocked = require('./routes/blockedRoutes');
+const tags =require('./routes/tagRoutes');
 
 // Init express
 const app = express();
@@ -31,7 +33,7 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/suny2';
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -56,6 +58,10 @@ app.use("/api/customers", profileRouter);
 app.use("/api/login-activity", loginActivityRouter);
 
 app.use("/api/templates", templateRoutes);
+app.use('/api/markets', markets);
+app.use('/api/tags', tags);
+app.use('/api/blocked', blocked);
+
 
 
 // Default route
