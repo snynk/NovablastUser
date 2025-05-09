@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const blockedSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true, unique: true },
-  firstName: { type: String },
-  lastName: { type: String },
+  customerId: { type: String },  
   permanent: { type: Boolean, default: true }
 }, { timestamps: true });
 

@@ -1,27 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketModal }) => {
-  const [markets, setMarkets] = useState([]);
-  const [filteredMarkets, setFilteredMarkets] = useState([]);
+const MarketsTabContent = ({markets, fetchMarkets, onOpenMarketModal, onOpenDlcForm, onOpenEditMarketModal }) => {
+   const [filteredMarkets, setFilteredMarkets] = useState([]);
   const [marketFilter, setMarketFilter] = useState("");
   const [areaFilter, setAreaFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 10;
 
-  useEffect(() => {
-    fetchMarkets();
-  }, []);
 
-  const fetchMarkets = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:3000/api/markets/getmarket");
-      setMarkets(Array.isArray(data) ? data : []);
-      setFilteredMarkets(Array.isArray(data) ? data : []); // Initialize filtered list
-    } catch (error) {
-      console.error("Error fetching markets:", error);
-    }
-  };
 
   useEffect(() => {
     let filtered = markets;
@@ -43,8 +30,7 @@ const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketM
 
     try {
       await axios.delete(`http://localhost:3000/api/markets/${marketId}`);
-      setMarkets((prevMarkets) => prevMarkets.filter((market) => market._id !== marketId));
-      setFilteredMarkets((prevFilteredMarkets) => prevFilteredMarkets.filter((market) => market._id !== marketId));
+      fetchMarkets(); // ✅ Instantly refresh market table
     } catch (error) {
       console.error("Error deleting market:", error);
     }
@@ -55,6 +41,7 @@ const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketM
 
   return (
     <div className="tab-content">
+        {/* Filters & Actions */}
       <div className="filters-row">
         <div className="filter-dropdown">
           <select className="filter-select" value={marketFilter} onChange={(e) => setMarketFilter(e.target.value)}>
@@ -77,6 +64,8 @@ const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketM
         <button className="create-button create-user-button" onClick={onOpenMarketModal}><span className="plus">+</span>Request New Market</button>
       </div>
 
+       {/* Market Table */}
+
       <div className="table-container">
         <table className="data-table">
           <thead>
@@ -91,7 +80,7 @@ const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketM
           </thead>
           <tbody>
             {paginatedMarkets.map((market) => (
-              <tr key={market.id}>
+              <tr key={market._id}>
                 <td>
                   <div className="expandable-row">
                     <span className="expand-icon">▾</span>
@@ -113,6 +102,8 @@ const MarketsTabContent = ({ onOpenMarketModal, onOpenDlcForm, onOpenEditMarketM
           </tbody>
         </table>
       </div>
+
+       {/* Pagination Controls */}
 
       <div className="pagination-container">
         <div className="pagination-info">Total: {filteredMarkets.length}</div>

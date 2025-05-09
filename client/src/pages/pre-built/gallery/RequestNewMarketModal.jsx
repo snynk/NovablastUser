@@ -15,16 +15,19 @@ import axios from "axios";
 
 import { useForm } from "react-hook-form";
 
-const RequestNewMarketModal = ({ isOpen, onClose }) => {
+const RequestNewMarketModal = ({ isOpen, onClose, fetchMarkets }) => {
+  const defaultFormState = { name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' };
   const user = JSON.parse(localStorage.getItem("user"));
 const loggedInCustomerId = user && user.id ? user.id : null;
 
 
-    const [formData, setFormData] = useState({ name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' });
+    const [formData, setFormData] = useState(defaultFormState);
   
-    const handleChange = (name, value) => {
-      setFormData({ ...formData, [name]: value });
-    };
+// **Reset form data when modal opens**
+React.useEffect(() => {
+  if (isOpen) setFormData(defaultFormState);
+}, [isOpen]);
+
 
     const handleSubmit = async () => {
         try {
@@ -33,7 +36,7 @@ const loggedInCustomerId = user && user.id ? user.id : null;
             customerId: loggedInCustomerId, // Attach customer ID
           };
             await axios.post(`http://localhost:3000/api/markets/createmarket`, payload);
-
+            fetchMarkets();
           onClose();
         } catch (error) {
           console.error("Error submitting market  form:", error);
