@@ -11,19 +11,20 @@ import {
 } from "@/components/Component";
 import axios from "axios";
 
-const EditMarketModal = ({ isOpen, onClose, marketData, setMarkets }) => {
-//   const [areaCodes, setAreaCodes] = useState([]);
-  const [formData, setFormData] = useState({
+const EditMarketModal = ({ isOpen, onClose, marketData, fetchMarkets }) => {
+
+  const defaultFormState  ={
     name: '',
     callForwardingNumber: '',
     areaCode: '',
     timeZone: '',
     status: 'Pending',
-  });
+  };
+  const [formData, setFormData] = useState(defaultFormState);
 
   useEffect(() => {
     console.log("marketData:", marketData); // Debug log
-    if (marketData) {
+    if (isOpen && marketData) {
       setFormData({
         name: marketData.name || "",
         callForwardingNumber: marketData.callForwardingNumber || "",
@@ -32,22 +33,14 @@ const EditMarketModal = ({ isOpen, onClose, marketData, setMarkets }) => {
         status: marketData.status || "Pending",
       });
     }
-  }, [marketData]);
+  }, [isOpen, marketData]);
 
-
-const handleChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
   const handleSubmit = async () => {
     try {
-      const { data } = await axios.put(`http://localhost:3000/api/markets/${marketData._id}`, formData);
+      await axios.put(`http://localhost:3000/api/markets/${marketData._id}`, formData);
   
-      // ✅ Update the market list dynamically
-      setMarkets((prevMarkets) => prevMarkets.map((market) =>
-        market._id === data._id ? data : market // Replace the updated market
-      ));
-  
-      onClose(); // Close modal after update
+      fetchMarkets(); // ✅ Instantly refresh market table after edit
+      onClose(); // ✅ Close modal after update
     } catch (error) {
       console.error("Error updating market:", error);
     }
@@ -96,8 +89,8 @@ const handleChange = (name, value) => {
            </div>
            
            <div className="modal-footer">
-           <Button color="secondary" onClick={(e) => { e.preventDefault(); onClose(); }}>Cancel</Button>
-   <Button color="primary" onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Save</Button>
+           <Button color="secondary" onClick={onClose}>Cancel</Button>
+   <Button color="primary" onClick={handleSubmit}>Save</Button>
    
            </div>
          </Modal>
