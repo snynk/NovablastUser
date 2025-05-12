@@ -17,13 +17,7 @@
     margin: 0;
     padding: 0;
   }
-  
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: var(--text-color);
-    background-color: #f5f7fa;
-  }
-  
+
   .settings-container {
     width: 100%;
     max-width: 100%;
@@ -633,7 +627,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(255, 255, 255);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -645,12 +639,13 @@
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    width: 650px;
-    max-width: 95vw;
+    width: 1100px;
+    /* max-width: 1100px; */
     max-height: 75vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    margin-left: 250px;
   }
   
   /* Modal Header */
@@ -733,4 +728,322 @@
   }
   
 
+  /* DlcFormModal.css - Classic professional styling */
+
+/* Modal Base Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f8f9fa;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #64748b;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.modal-close-button:hover {
+  color: #334155;
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f8f9fa;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Step Navigation */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.step-button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  position: relative;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.step-button.active {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.step-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1e3a8a;
+}
+
+.step-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #334155;
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #334155;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+}
+
+.form-input[readonly] {
+  background-color: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.form-helper {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Required Field Indicator */
+.required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+/* Phone Input */
+.phone-input {
+  display: flex;
+  align-items: center;
+}
+
+.country-code {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-right: none;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.flag {
+  margin-right: 6px;
+}
+
+.phone-input .form-input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Buttons */
+.save-button,
+.cancel-button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.save-button {
+  background-color: #1e40af;
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #1e3a8a;
+}
+
+.save-button:active {
+  transform: translateY(1px);
+}
+
+.cancel-button {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.cancel-button:hover {
+  background-color: #e2e8f0;
+}
+
+.cancel-button:active {
+  transform: translateY(1px);
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Step Form Specific Styles */
+.modal-step-form p {
+  color: #334155;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .modal-container {
+    width: 95%;
+    max-height: 95vh;
+  }
   
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .step-button {
+    font-size: 12px;
+    padding: 10px 4px;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .save-button,
+  .cancel-button {
+    width: 100%;
+  }
+}
+.info-box {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.info-box.success {
+  background-color: #e6f4ea;
+  border: 1px solid #6bc78e;
+}
+
+.info-box.warning {
+  background-color: #fff4e5;
+  border: 1px solid #f1b24a;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
