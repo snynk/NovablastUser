@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { 
   X, 
@@ -14,22 +15,52 @@ import {
   BarChart, 
   MessageCircle, 
   CalendarCheck, 
-  RefreshCw
+  RefreshCw,
+  List,
+  Users,
+  PhoneCall
 } from 'lucide-react';
+import { getContactListPhoneNumbers } from '../../../services/campaignService';
 
 const ViewCampaignModal = ({ isOpen, campaign, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [phoneNumbers, setPhoneNumbers] = useState([]);
+  const [loadingPhones, setLoadingPhones] = useState(false);
   
   // Handle modal visibility with animation
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       setTimeout(() => setIsVisible(true), 10);
+      
+      // Fetch phone numbers if campaign has a contact list
+      if (campaign && campaign.contactListId) {
+        fetchPhoneNumbers(campaign.contactListId);
+      }
     } else {
       setIsVisible(false);
       document.body.style.overflow = '';
     }
-  }, [isOpen]);
+  }, [isOpen, campaign]);
+  
+  // Fetch phone numbers for the contact list
+  const fetchPhoneNumbers = async (contactListId) => {
+    if (!contactListId) {
+      setPhoneNumbers([]);
+      return;
+    }
+
+    try {
+      setLoadingPhones(true);
+      const phones = await getContactListPhoneNumbers(contactListId);
+      setPhoneNumbers(phones);
+      setLoadingPhones(false);
+    } catch (error) {
+      console.error('Error fetching phone numbers:', error);
+      setPhoneNumbers([]);
+      setLoadingPhones(false);
+    }
+  };
   
   // Handle ESC key to close modal
   useEffect(() => {
@@ -145,6 +176,66 @@ const ViewCampaignModal = ({ isOpen, campaign, onClose }) => {
                 <div className="card-content">
                   <span className="card-label">Month Without Response</span>
                   <span className="card-value">{campaign.monthWithoutResponse}</span>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Contact List Information Section */}
+          <h3 className="metrics-heading">Contact List Information</h3>
+          <div className="contact-list-info">
+            <div className="info-card full-width">
+              <div className="card-icon">
+                <List size={20} />
+              </div>
+              <div className="card-content">
+                <span className="card-label">Contact List Name</span>
+                <span className="card-value">{campaign.contactListId || 'No contact list assigned'}</span>
+              </div>
+            </div>
+            
+            <div className="info-card full-width">
+              <div className="card-icon">
+                <Users size={20} />
+              </div>
+              <div className="card-content">
+                <span className="card-label">Number of Contacts</span>
+                <span className="card-value contact-count">{phoneNumbers.length}</span>
+                <div className="contact-bar-container">
+                  <div 
+                    className="contact-bar" 
+                    style={{ width: `${Math.min(100, (phoneNumbers.length / 10) * 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Display Phone Numbers */}
+            {phoneNumbers.length > 0 && (
+              <div className="info-card full-width phone-list-card">
+                <div className="card-icon">
+                  <PhoneCall size={20} />
+                </div>
+                <div className="card-content">
+                  <span className="card-label">Contact Phone Numbers</span>
+                  <div className="phone-list">
+                    {phoneNumbers.map((phone, index) => (
+                      <div key={index} className="phone-item">
+                        <Phone size={14} />
+                        <span>{phone.number}</span>
+                        {phone.type && <span className="phone-type">{phone.type}</span>}
+                        {phone.contact && <span className="phone-contact">({phone.contact})</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {loadingPhones && (
+              <div className="info-card full-width">
+                <div className="card-content centered">
+                  <span className="loading-text">Loading phone numbers...</span>
                 </div>
               </div>
             )}

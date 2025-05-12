@@ -111,3 +111,18 @@ exports.deleteContact = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete contact." });
   }
 };
+
+exports.getContactCountByListId = async (req, res) => {
+  try {
+    const { listId } = req.params;
+    
+    // Find count of contacts matching the Sample Name (List Name)
+    // This assumes the campaign.contactListId is actually storing the sample name
+    const count = await Contact.countDocuments({ SampleName: listId });
+    
+    return res.status(200).json({ count });
+  } catch (error) {
+    console.error("Error fetching contact count:", error);
+    return res.status(500).json({ error: "Failed to retrieve contact count." });
+  }
+};

@@ -45,6 +45,19 @@ export const getCampaigns = async (filters = {}) => {
 };
 
 /**
+ * Get all contact lists for dropdown selection
+ * @returns {Promise<Array>} Array of contact lists
+ */
+export const getContactLists = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/contact-lists`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || 'Failed to fetch contact lists';
+  }
+};
+
+/**
  * Get parent campaigns (for follow-up selection)
  * @returns {Promise<Array>} Array of parent campaigns
  */
@@ -113,5 +126,14 @@ export const searchCampaigns = async (query, additionalFilters = {}) => {
     return response.data;
   } catch (error) {
     throw error.response?.data?.error || 'Failed to search campaigns';
+  }
+};
+
+export const getContactListPhoneNumbers = async (sampleName) => {
+  try {
+    const response = await axios.get(`${API_URL}/contact-lists/${sampleName}/phones`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || 'Failed to fetch phone numbers';
   }
 };
