@@ -478,7 +478,7 @@ const UserManagement = () => {
                   </select>
                 </div>
 
-                <div className="form-group1 checkbox-group">
+                <div className="checkbox-group">
                   <input
                     type="checkbox"
                     id="active"

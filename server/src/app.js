@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require("express-fileupload");
 const path = require("path");
 
+
 // Routes
 const assignNumberRoutes = require('./routes/assignNumberRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -23,6 +24,7 @@ const markets =require('./routes/marketRoutes');
 const blocked = require('./routes/blockedRoutes');
 const tags =require('./routes/tagRoutes');
 
+
 // Init express
 const app = express();
 app.use(express.json());
@@ -37,7 +39,7 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// MongoDB Connection
+// MongoDB Connection - connect before importing any models
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -46,22 +48,33 @@ mongoose.connect(MONGO_URI, {
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Routes
+const assignNumberRoutes = require('./routes/assignNumberRoutes');
+const authRoutes = require('./routes/authRoutes');
+const campaignRoutes = require('./routes/campaignRoutes');
+const contactRoutes = require("./routes/contactRoutes");
+const groupedContactRoutes = require("./routes/groupedContactRoutes");
+const subUserRoutes = require("./routes/subUserRoutes");
+const dripAutomationRoutes = require('./routes/dripAutomationRoutes');
+const batchRoutes = require('./routes/batchRoutes'); // Fixed: use correct filename
+const profileRouter = require("./routes/ProfileRoutes");
+const loginActivityRouter = require("./routes/LoginActivityRoutes");
+const templateRoutes = require("./routes/templateRoutes");
+
+// Routes setup
 app.use('/api/auth', authRoutes);
 app.use('/api/assignnumbers', assignNumberRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/groupedContacts", groupedContactRoutes);
 app.use("/api/subusers", subUserRoutes);
-app.use('/api/drip-automations', dripAutomationRoutes); // Register drip automation routes
-
+app.use('/api/drip-automations', dripAutomationRoutes);
+app.use('/api/batches', batchRoutes); // Fixed: use consistent variable name
 app.use("/api/customers", profileRouter);
 app.use("/api/login-activity", loginActivityRouter);
-
 app.use("/api/templates", templateRoutes);
 app.use('/api/markets', markets);
 app.use('/api/tags', tags);
 app.use('/api/blocked', blocked);
-
 
 
 // Default route

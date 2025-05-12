@@ -702,8 +702,8 @@ const TemplatesManagement = () => {
                   </div>
                 )}
                 
-                <div className="form-row">
-                  <div className="form-group">
+                <div className="form-row1">
+                  <div className="form-group1">
                     <label htmlFor="templateName">Template Name <span style={{ color: 'red' }}>*</span></label>
                     <input 
                       type="text" 
@@ -718,14 +718,14 @@ const TemplatesManagement = () => {
                     />
                     {formErrors.templateName && <div className="error-text">{formErrors.templateName}</div>}
                   </div>
-                  <div className="form-group">
+                  <div className="form-group1">
                     <label htmlFor="templateType">Template Type <span style={{ color: 'red' }}>*</span></label>
                     <div className="select-wrapper">
                       <select id="templateType" value={templateType} onChange={(e) => setTemplateType(e.target.value)}>
                         <option value="Residential">Residential</option>
                         <option value="Commercial">Commercial</option>
                       </select>
-                      <ChevronDown className="select-icon" />
+                      {/* <ChevronDown className="select-icon" /> */}
                     </div>
                   </div>
                 </div>
@@ -833,7 +833,7 @@ const TemplatesManagement = () => {
               </div>
             </div>
             
-            <div className="modal-footer">
+            <div className="modal-footer4">
               <button className="cancel-button" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </button>
