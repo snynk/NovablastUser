@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Profile = require("../models/ProfileModel");
+const bcrypt = require("bcryptjs");
 
 // ✅ Get customer data by ID
 exports.getCustomerData = async (req, res) => {
@@ -78,5 +79,36 @@ exports.updateCustomerData = async (req, res) => {
   } catch (error) {
     console.error("Error updating customer data:", error);
     res.status(500).json({ error: "Failed to update customer data." });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, customerId } = req.body;
+
+    // ✅ Ensure customerId is present
+    if (!customerId) {
+      return res.status(400).json({ error: "Customer ID is required." });
+    }
+
+    const user = await User.findById(customerId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // ✅ Verify old password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Incorrect current password." });
+    }
+
+    // ✅ Hash new password & update
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({ success: true, message: "Password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error: " + error.message });
   }
 };
