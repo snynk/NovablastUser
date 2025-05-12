@@ -323,7 +323,7 @@ const CampaignManagement = () => {
         {error && <div className="error-message">{error}</div>}
         
         <div className="search-filter">
-          <div className="search-wrapper">
+          <div className="search-box">
             <input 
               type="text" 
               placeholder="Search for a Campaign" 

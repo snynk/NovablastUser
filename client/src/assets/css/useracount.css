@@ -283,7 +283,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -296,12 +296,22 @@
   border-radius: 10px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   width: 90%;
-  max-width: 650px;
+  max-width: 1100px;
   height: 500px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin: 0 auto; /* Center on small screens */
 }
+
+/* Apply margin-left only on screens wider than 768px (tablet/desktop) */
+@media (min-width: 768px) {
+  .create-user-modal {
+    margin-left: 250px;
+    margin-right: 0;
+  }
+}
+
 
 /* Modal Header */
 .modal-header {

@@ -128,3 +128,12 @@ export const searchCampaigns = async (query, additionalFilters = {}) => {
     throw error.response?.data?.error || 'Failed to search campaigns';
   }
 };
+
+export const getContactListPhoneNumbers = async (sampleName) => {
+  try {
+    const response = await axios.get(`${API_URL}/contact-lists/${sampleName}/phones`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || 'Failed to fetch phone numbers';
+  }
+};

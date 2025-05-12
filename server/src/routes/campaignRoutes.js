@@ -8,7 +8,8 @@ const {
   searchCampaigns,
   createFollowUpCampaign,
   getParentCampaigns,
-  getContactLists
+  getContactLists,
+  getContactListPhoneNumbers
 } = require("../controllers/campaignController");
 
 // Optional authentication middleware
@@ -28,6 +29,9 @@ router.get("/parents", getParentCampaigns);
 
 // Get contact lists for dropdown
 router.get("/contact-lists", getContactLists);
+
+// Get phone numbers for a specific contact list
+router.get("/contact-lists/:sampleName/phones", getContactListPhoneNumbers);
 
 // Search campaigns
 router.get("/search", searchCampaigns);

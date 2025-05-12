@@ -286,3 +286,60 @@ exports.getParentCampaigns = async (req, res) => {
     return res.status(500).json({ error: "Failed to retrieve parent campaigns." });
   }
 };
+
+exports.getContactListPhoneNumbers = async (req, res) => {
+  try {
+    const { sampleName } = req.params;
+    
+    if (!sampleName) {
+      return res.status(400).json({ error: "SampleName is required." });
+    }
+    
+    // Find contacts by SampleName
+    const contacts = await Contact.find({ SampleName: sampleName });
+    
+    if (!contacts || contacts.length === 0) {
+      return res.status(404).json({ error: "No contacts found for the specified SampleName." });
+    }
+    
+    // Extract and deduplicate phone numbers
+    const phoneNumbers = [];
+    
+    contacts.forEach(contact => {
+      // Add Phone1 if it exists and isn't already in the array
+      if (contact.Phone1 && !phoneNumbers.some(phone => phone.number === contact.Phone1)) {
+        phoneNumbers.push({
+          id: `${contact._id}-1`,
+          number: contact.Phone1,
+          type: 'Primary',
+          contact: `${contact.FirstName} ${contact.LastName}`
+        });
+      }
+      
+      // Add Phone2 if it exists and isn't already in the array
+      if (contact.Phone2 && !phoneNumbers.some(phone => phone.number === contact.Phone2)) {
+        phoneNumbers.push({
+          id: `${contact._id}-2`,
+          number: contact.Phone2,
+          type: 'Secondary',
+          contact: `${contact.FirstName} ${contact.LastName}`
+        });
+      }
+      
+      // Add Phone3 if it exists and isn't already in the array
+      if (contact.Phone3 && !phoneNumbers.some(phone => phone.number === contact.Phone3)) {
+        phoneNumbers.push({
+          id: `${contact._id}-3`,
+          number: contact.Phone3,
+          type: 'Additional',
+          contact: `${contact.FirstName} ${contact.LastName}`
+        });
+      }
+    });
+    
+    return res.status(200).json(phoneNumbers);
+  } catch (error) {
+    console.error("Error fetching contact list phone numbers:", error);
+    return res.status(500).json({ error: "Failed to retrieve phone numbers." });
+  }
+};
