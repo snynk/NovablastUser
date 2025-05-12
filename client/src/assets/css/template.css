@@ -885,7 +885,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -893,18 +893,51 @@
 }
 
 .modal-container2 {
-  width: 95%;
-  max-width: 600px;
-  max-height: 90vh;
+  width: 1100px;
+  max-width: 95%;
+  height: 550px; /* Fixed height as requested */
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
+  overflow-y: auto; /* Enable vertical scrolling */
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
 }
 
+/* Content area inside modal */
+.modal-content2 {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media (min-width: 1200px) {
+  .modal-container2 {
+    margin-left: 250px;
+    margin-top: 100px;
+  }
+}
+
+/* Tablet and smaller desktop screens */
+@media (max-width: 1199px) {
+  .modal-container2 {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 768px) {
+  .modal-container2 {
+    max-width: 90%;
+    height: 450px; /* Slightly smaller for mobile */
+    margin-top: 60px;
+  }
+}
 /* Modal Header */
 .modal-header {
   display: flex;
@@ -953,13 +986,13 @@ flex-direction: column;
 gap: 16px;
 }
 
-.form-row {
+.form-row1 {
 display: flex;
 gap: 16px;
 flex-direction: row; /* Default for desktop */
 }
 
-.form-group {
+.form-group1 {
 flex: 1;
 display: flex;
 flex-direction: column;
@@ -1097,8 +1130,8 @@ display: flex;
 align-items: center;
 justify-content: center;
 min-width: 24px;
-height: 24px;
-border-radius: 50%;
+/* height: 24px; */
+border-radius: 10%;
 background-color: #e5e7eb;
 font-size: 12px;
 font-weight: 500;
@@ -1310,7 +1343,7 @@ background-color: #1d4ed8;
 }
 
 /* Modal Footer */
-.modal-footer {
+/* .modal-footer {
 padding: 16px 24px;
 display: flex;
 justify-content: flex-end;
@@ -1320,8 +1353,8 @@ background-color: #fff;
 position: sticky;
 bottom: 0;
 z-index: 10;
-flex-wrap: wrap; /* Allow buttons to wrap on small screens */
-}
+flex-wrap: wrap; 
+} */
 
 .cancel-button {
 padding: 8px 16px;
