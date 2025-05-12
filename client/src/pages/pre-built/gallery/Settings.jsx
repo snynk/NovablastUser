@@ -72,7 +72,6 @@ const SettingsScreen = () => {
         onOpenMarketModal={() => setIsModalOpen({ ...isModalOpen, market: true })} 
         onOpenEditMarketModal={(market) => { setSelectedMarket(market); setIsModalOpen({ ...isModalOpen, editmarket: true }); }}
          onOpenDlcForm={() => setIsModalOpen({ ...isModalOpen, dlc: true })} 
-
       />,
       dnc: <DoNotCallsTabContent dncEntries={dncEntries} fetchDncEntries={fetchDncEntries}
         onOpenDncModal={() => setIsModalOpen({ ...isModalOpen, dnc: true })}
