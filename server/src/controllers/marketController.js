@@ -46,40 +46,29 @@ exports.deleteMarket = async (req, res) => {
 
 //===============10dlc form==================
 
+
 exports.createMarketWithDLC = async (req, res) => {
-    try {
-      const { marketname,  businessType, taxId, websiteUrl, brandName, email, firstName, lastName, verticalType, zip, phoneNumber, state, customerId  } = req.body;
-  
-      // const market = await Market.create({ name, callForwardingNumber, areaCode, timeZone, status: 'Pending' });
-  
-      const tenDlcForm = await TenDLC.create({
-        // marketId: market._id,
-        marketname,
-        businessType,
-        taxId,
-        websiteUrl,
-        brandName,
-        email,
-        firstName,
-        lastName,
-        verticalType,
-        zip,
-        phoneNumber,
-        state,
-        customerId,  // ✅ Storing customer ID
-      });
-  
-      res.status(201).json({ market, tenDlcForm });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+  try {
+    const tenDlcForm = new TenDLC(req.body);
+
+    await tenDlcForm.validate(); // ✅ Explicit validation before saving
+
+    await tenDlcForm.save();
+    res.status(201).json({ success: true, tenDlcForm });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ error: Object.values(error.errors).map(err => err.message) });
     }
-  };
-  
-  exports.getMarketsWithDLC = async (req, res) => {
-    try {
-      const markets = await Market.find().populate('tenDlcForm');
-      res.json(markets);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getMarketsWithDLC = async (req, res) => {
+  try {
+    const markets = await TenDLC.find();
+    res.json(markets);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

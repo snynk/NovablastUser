@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
+import axios from "axios";
 
 const initialData = {
   locatedInUSOrCanada: '',
@@ -59,13 +60,15 @@ const requiredFields = new Set([
 ]);
 
 const DlcFormModal = ({ isOpen, onClose }) => {
+  const user = JSON.parse(localStorage.getItem("user")); // ✅ Retrieve logged-in user
+  const loggedInCustomerId = user && user.id ? user.id : "";
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({...initialData, customerId: loggedInCustomerId});
 
   useEffect(() => {
     if (!isOpen) {
       setStep(0);
-      setFormData(initialData);
+      setFormData({...initialData, customerId: loggedInCustomerId});
     }
   }, [isOpen]);
 
@@ -80,11 +83,14 @@ const DlcFormModal = ({ isOpen, onClose }) => {
   const next = () => isStepValid() && setStep(s => s + 1);
   const prev = () => setStep(s => Math.max(0, s - 1));
 
-  const handleSubmit = e => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isStepValid()) {
-      console.log('Submitted:', formData);
+    try {
+      await axios.post("http://localhost:3000/api/markets/create", formData);
+      alert("DLC Form Submitted Successfully!");
       onClose();
+    } catch (error) {
+      alert(error.response.data.error);
     }
   };
 
@@ -133,7 +139,7 @@ const DlcFormModal = ({ isOpen, onClose }) => {
                         value="yes"
                         checked={formData[name] === 'yes'}
                         onChange={handleChange}
-                        disabled={name === 'hasTaxId'}
+                        // disabled={name === 'hasTaxId'}
                       /> Yes
                     </label>
                     <label>
@@ -143,7 +149,7 @@ const DlcFormModal = ({ isOpen, onClose }) => {
                         value="no"
                         checked={formData[name] === 'no'}
                         onChange={handleChange}
-                        disabled={name === 'hasTaxId'}
+                        // disabled={name === 'hasTaxId'}
                       /> No
                     </label>
                   </div>
