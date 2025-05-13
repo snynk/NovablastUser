@@ -84,31 +84,40 @@ exports.updateCustomerData = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
   try {
-    const { oldPassword, newPassword, customerId } = req.body;
+    console.log("🔍 Incoming Request Data:", req.body);
+    const { oldPassword, newPassword } = req.body;
+    const customerId = req.params.customerId; // ✅ Corrected: Get ID from URL
 
-    // ✅ Ensure customerId is present
-    if (!customerId) {
-      return res.status(400).json({ error: "Customer ID is required." });
+    // ✅ Validate ObjectId before querying MongoDB
+    if (!mongoose.Types.ObjectId.isValid(customerId)) {
+      return res.status(400).json({ error: "Invalid customer ID format." });
     }
 
-    const user = await User.findById(customerId);
+    const user = await Profile.findById(customerId);
+    console.log("👤 Retrieved User:", user);
+
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
 
     // ✅ Verify old password
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(oldPassword, user.passcode);
+    console.log("🔑 Password Match:", isMatch);
+
     if (!isMatch) {
       return res.status(400).json({ error: "Incorrect current password." });
     }
 
     // ✅ Hash new password & update
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
+    user.passcode = await bcrypt.hash(newPassword, salt);
     await user.save();
 
+    console.log("✅ Password Updated Successfully");
     res.json({ success: true, message: "Password updated successfully." });
   } catch (error) {
+    console.error("❌ Error updating password:", error);
     res.status(500).json({ error: "Server Error: " + error.message });
   }
 };
+

@@ -67,23 +67,29 @@ const UserProfileSettingPage = () => {
   //     console.error("Error fetching user data:", error);
   //   }
   // };
-
   const handleChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
+
 
   const handleSubmit = async () => {
-    try {
-      const response = await axios.put("http://localhost:3000/api/customers/change-password", formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+  try {
+    // ✅ Append customerId to the URL instead of formData
+    const response = await axios.put(`http://localhost:3000/api/customers/${formData.customerId}/change-password`, {
+      oldPassword: formData.oldPassword,
+      newPassword: formData.newPassword,
+    });
 
-      setMessage(response.data.message);
-      setIsModalOpen(false); // ✅ Close modal after success
-    } catch (error) {
-      setMessage(error.response.data.error);
-    }
-  };
+    setMessage(response.data.message);
+    setIsModalOpen(false); // ✅ Close modal after success
+  } catch (error) {
+    setMessage(error.response.data.error);
+  }
+};
+
 
   return (
     <React.Fragment>

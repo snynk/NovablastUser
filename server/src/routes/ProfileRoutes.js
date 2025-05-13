@@ -8,6 +8,7 @@ router.get("/:customerId", getCustomerData);
 // ✅ Update customer data dynamically
 router.put("/:customerId", updateCustomerData);
 
-router.put("/change-password",  changePassword);
+router.put("/:customerId/change-password", changePassword);
+
 
 module.exports = router;
