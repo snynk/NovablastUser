@@ -82,13 +82,13 @@ exports.updateCustomerData = async (req, res) => {
   }
 };
 
+
 exports.changePassword = async (req, res) => {
   try {
     console.log("🔍 Incoming Request Data:", req.body);
     const { oldPassword, newPassword } = req.body;
-    const customerId = req.params.customerId; // ✅ Corrected: Get ID from URL
+    const customerId = req.params.customerId;
 
-    // ✅ Validate ObjectId before querying MongoDB
     if (!mongoose.Types.ObjectId.isValid(customerId)) {
       return res.status(400).json({ error: "Invalid customer ID format." });
     }
@@ -100,7 +100,7 @@ exports.changePassword = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    // ✅ Verify old password
+    // ✅ Compare entered old password with the stored hashed password
     const isMatch = await bcrypt.compare(oldPassword, user.passcode);
     console.log("🔑 Password Match:", isMatch);
 
@@ -108,9 +108,8 @@ exports.changePassword = async (req, res) => {
       return res.status(400).json({ error: "Incorrect current password." });
     }
 
-    // ✅ Hash new password & update
-    const salt = await bcrypt.genSalt(10);
-    user.passcode = await bcrypt.hash(newPassword, salt);
+    // ✅ JUST update the password without hashing it manually
+    user.passcode = newPassword; // Let the model handle hashing
     await user.save();
 
     console.log("✅ Password Updated Successfully");
