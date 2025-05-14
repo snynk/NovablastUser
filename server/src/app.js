@@ -42,6 +42,7 @@ const templateRoutes = require('./routes/templateRoutes');
 const marketRoutes = require('./routes/marketRoutes');
 const blockedRoutes = require('./routes/blockedRoutes');
 const tagRoutes = require('./routes/tagRoutes');
+const twilioRoutes = require("./routes/twilioRoutes");
 
 // Use Routes
 app.use('/api/auth', authRoutes);
@@ -58,6 +59,7 @@ app.use('/api/templates', templateRoutes);
 app.use('/api/markets', marketRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/blocked', blockedRoutes);
+app.use("/api", twilioRoutes);
 
 // Default route
 app.get('/', (req, res) => {
