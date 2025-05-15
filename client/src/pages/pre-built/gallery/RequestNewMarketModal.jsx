@@ -16,7 +16,8 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 
 const RequestNewMarketModal = ({ isOpen, onClose, fetchMarkets }) => {
-  const defaultFormState = { name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' };
+  // const defaultFormState = { name: '', callForwardingNumber: '', areaCode: '', timeZone: '', status: 'Pending' };
+  const defaultFormState = { name: '', areaCode: '', timeZone: '', status: 'Pending' };
   const user = JSON.parse(localStorage.getItem("user"));
 const loggedInCustomerId = user && user.id ? user.id : null;
 
@@ -56,20 +57,7 @@ React.useEffect(() => {
             <label className="form-label">Market Name <span className="required">*</span></label>
             <input type="text" className="form-input" placeholder="Enter Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
           </div>
-          
-          <div className="form-group">
-            <label className="form-label">Call Forwarding Number <span className="required">*</span></label>
-            <div className="phone-input">
-              {/* <div className="country-code">
-                <span className="flag">🇺🇸</span>
-                <span>+1</span>
-              </div> */}
-              <input type="text" className="form-input" value={formData.callForwardingNumber} onChange={(e) => setFormData({ ...formData, callForwardingNumber: e.target.value })} />
-            </div>
-          </div>
-        </div>
-        
-        <div className="form-row">
+
           <div className="form-group">
             <label className="form-label">Area Code <span className="required">*</span></label>
             <div className="select-container">
@@ -78,6 +66,23 @@ React.useEffect(() => {
               <input type="text" className="form-input" value={formData.areaCode} onChange={(e) => setFormData({ ...formData, areaCode: e.target.value })} />
             </div>
           </div>
+          
+         
+        </div>
+        
+        <div className="form-row">
+
+           {/* <div className="form-group">
+            <label className="form-label">Call Forwarding Number <span className="required">*</span></label>
+            <div className="phone-input">
+              <div className="country-code">
+                <span className="flag">🇺🇸</span>
+                <span>+1</span>
+              </div>
+              <input type="text" className="form-input" value={formData.callForwardingNumber} onChange={(e) => setFormData({ ...formData, callForwardingNumber: e.target.value })} />
+            </div>
+          </div> */}
+          
           
           <div className="form-group">
             <label className="form-label">Time Zone</label>
