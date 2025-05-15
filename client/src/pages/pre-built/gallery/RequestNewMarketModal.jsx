@@ -60,10 +60,10 @@ React.useEffect(() => {
           <div className="form-group">
             <label className="form-label">Call Forwarding Number <span className="required">*</span></label>
             <div className="phone-input">
-              <div className="country-code">
-                {/* <span className="flag">🇺🇸</span>
-                <span>+1</span> */}
-              </div>
+              {/* <div className="country-code">
+                <span className="flag">🇺🇸</span>
+                <span>+1</span>
+              </div> */}
               <input type="text" className="form-input" value={formData.callForwardingNumber} onChange={(e) => setFormData({ ...formData, callForwardingNumber: e.target.value })} />
             </div>
           </div>
