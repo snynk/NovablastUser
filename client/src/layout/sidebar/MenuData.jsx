@@ -68,11 +68,7 @@ const menu = [
     text: "Contact List",
     link: "/Contact-list",
   },
-  // {
-  //   icon: "file-docs",
-  //   text: "view contacts",
-  //   link: "/View-contacts/:samplename",
-  // },
+
   {
     icon: "view-col",
     text: "Campaigns",
@@ -105,6 +101,11 @@ const menu = [
     icon: "setting",
     text: "Setting",
     link: "/Settings",
+  },
+    {
+    icon: "file-docs",
+    text: "Billing",
+    link: "/Billing",
   },
   {
     icon: "img",

@@ -1,97 +1,99 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Search, X, AlertCircle } from 'lucide-react';
 import { batchesService } from '@/services/batchesService';
 import '@/assets/css/batch-builder-modal.css';
-import BatchCreateSendModal from './BatchCreateSendModal'; // Import the second modal
+import BatchCreateSendModal from './BatchCreateSendModal';
+
+
 
 const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
+  // Core state management  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStep, setSelectedStep] = useState(1);
-  
-  // Campaign data
+  const [isCreateSendModalOpen, setIsCreateSendModalOpen] = useState(false);
+
+  // Data state
   const [campaigns, setCampaigns] = useState([]);
-  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [templates, setTemplates] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [contactCount, setContactCount] = useState(0);
-  
-  // Template data
-  const [templates, setTemplates] = useState([]);
-  const [templateTypes, setTemplateTypes] = useState(['Residential', 'Commercial']);
-  const [selectedTemplateType, setSelectedTemplateType] = useState('');
+  const [templateTypes] = useState(['Residential', 'Commercial']);
   const [filteredTemplates, setFilteredTemplates] = useState([]);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [templateMessages, setTemplateMessages] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [createdBatchData, setCreatedBatchData] = useState(null);
+
+  // Selected data
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   
-  // Batch settings
+  // Batch settings with proper date and time format
   const [batchSettings, setBatchSettings] = useState({
     batchSize: 100,
     sendRate: 'normal',
     scheduleDate: '',
     scheduleTime: ''
   });
-  
-  // State for second modal
-  const [isCreateSendModalOpen, setIsCreateSendModalOpen] = useState(false);
-  const [createdBatchData, setCreatedBatchData] = useState(null);
-  
-  // Fetch campaigns when modal opens
+
+  // Load data when modal opens
   useEffect(() => {
     if (isOpen) {
       fetchCampaigns();
       fetchTemplates();
     }
     // Reset state when modal closes
-    return () => {
-      if (!isOpen) {
-        setSelectedStep(1);
-        setSelectedCampaign(null);
-        setSelectedTemplate(null);
-        setSelectedTemplateType('');
-        setTemplateMessages([]);
-        setSearchTerm('');
-        setContactCount(0);
-        setBatchSettings({
-          batchSize: 100,
-          sendRate: 'normal',
-          scheduleDate: '',
-          scheduleTime: ''
-        });
-      }
-    };
+    if (!isOpen) {
+      resetForm();
+    }
   }, [isOpen]);
 
   // Filter templates when template type changes
   useEffect(() => {
     if (selectedTemplateType) {
-      const filtered = templates.filter(template => template.type === selectedTemplateType);
-      setFilteredTemplates(filtered);
+      setFilteredTemplates(templates.filter(template => template.type === selectedTemplateType));
     } else {
       setFilteredTemplates([]);
     }
-    // Reset selected template when type changes
     setSelectedTemplate(null);
     setTemplateMessages([]);
   }, [selectedTemplateType, templates]);
 
-  // Fetch contact count when campaign is selected
+  // Get contact count when campaign is selected
   useEffect(() => {
-    if (selectedCampaign && selectedCampaign.contactListId) {
+    if (selectedCampaign?.contactListId) {
       fetchContactCount(selectedCampaign.contactListId);
     }
   }, [selectedCampaign]);
 
+  // Reset all form data
+  const resetForm = () => {
+    setSelectedStep(1);
+    setSelectedCampaign(null);
+    setSelectedTemplate(null);
+    setSelectedTemplateType('');
+    setTemplateMessages([]);
+    setSearchTerm('');
+    setContactCount(0);
+    setBatchSettings({
+      batchSize: 100,
+      sendRate: 'normal',
+      scheduleDate: '',
+      scheduleTime: ''
+    });
+  };
+
+  // Data fetching functions
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await batchesService.getAllCampaigns();
       setCampaigns(data);
-      setLoading(false);
     } catch (err) {
-      console.error('Failed to load campaigns:', err);
       setError('Failed to load campaigns. Please try again.');
+      console.error('Failed to load campaigns:', err);
+    } finally {
       setLoading(false);
     }
   };
@@ -99,13 +101,12 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
   const fetchTemplates = async () => {
     try {
       setLoadingTemplates(true);
-      setError(null);
       const data = await batchesService.getAllTemplates();
       setTemplates(data);
-      setLoadingTemplates(false);
     } catch (err) {
-      console.error('Failed to load templates:', err);
       setError('Failed to load templates. Please try again.');
+      console.error('Failed to load templates:', err);
+    } finally {
       setLoadingTemplates(false);
     }
   };
@@ -115,15 +116,11 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
       setLoading(true);
       const count = await batchesService.getContactCountByListId(contactListId);
       setContactCount(count);
-      // Set the batch size to match the contact count
-      setBatchSettings(prev => ({
-        ...prev,
-        batchSize: count
-      }));
-      setLoading(false);
+      setBatchSettings(prev => ({ ...prev, batchSize: count }));
     } catch (err) {
-      console.error('Failed to load contact count:', err);
       setError('Failed to load contact count. Please try again.');
+      console.error('Failed to load contact count:', err);
+    } finally {
       setLoading(false);
     }
   };
@@ -133,25 +130,21 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
       setLoadingTemplates(true);
       // Try to find template in local state first
       const template = templates.find(t => t._id === templateId);
-      if (template && template.messages) {
+      if (template?.messages) {
         setTemplateMessages(template.messages);
       } else {
-        // If you need to fetch messages separately
         const data = await batchesService.getTemplateMessages(templateId);
         setTemplateMessages(data);
       }
-      setLoadingTemplates(false);
     } catch (err) {
-      console.error('Failed to load template messages:', err);
       setError('Failed to load template messages. Please try again.');
+      console.error('Failed to load template messages:', err);
+    } finally {
       setLoadingTemplates(false);
     }
   };
 
-  const filteredCampaigns = campaigns.filter(campaign => 
-    campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  // Event handlers
   const handleCampaignSelect = (campaign) => {
     setSelectedCampaign(campaign);
     setSelectedStep(2);
@@ -175,17 +168,15 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
 
   const handleBatchSettingChange = (e) => {
     const { name, value } = e.target;
-    // Don't allow changing batch size since it's autofilled based on contact count
+    // Don't allow batch size changes
     if (name !== 'batchSize') {
-      setBatchSettings({
-        ...prev,
-        [name]: value
-      });
+      setBatchSettings(prev => ({ ...prev, [name]: value }));
     }
   };
 
+  // Navigation
   const handleNextStep = () => {
-    if (selectedStep < 3 && selectedStep === 2 && selectedTemplate) {
+    if (selectedStep === 2 && selectedTemplate) {
       setSelectedStep(3);
     }
   };
@@ -196,7 +187,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
-  // Generate a batch number
+  // Generate batch number with format B + YYYYMM + random 4 digits
   const generateBatchNumber = () => {
     const date = new Date();
     const prefix = `B${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -204,20 +195,13 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
     return `${prefix}${randomNum}`;
   };
 
-  // Handle closing the create send modal
-  const handleCloseCreateSendModal = () => {
-    setIsCreateSendModalOpen(false);
-    // Close the BatchBuilderModal too if needed
-    if (onSuccess) onSuccess();
-    onClose();
-  };
-
+  // Handle create batch action
   const handleCreateBatch = async () => {
     try {
       setError(null);
       
       // Validate required fields
-      if (!selectedCampaign || !selectedCampaign._id) {
+      if (!selectedCampaign?._id) {
         setError('Campaign not selected. Please go back and select a campaign.');
         return;
       }
@@ -227,45 +211,48 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
         return;
       }
       
-      // Combine date and time for scheduled date if both exist
+      // Process date and time for scheduled date
       let scheduledDate = null;
       if (batchSettings.scheduleDate && batchSettings.scheduleTime) {
         scheduledDate = new Date(`${batchSettings.scheduleDate}T${batchSettings.scheduleTime}`);
-        // Check if the date is valid
         if (isNaN(scheduledDate.getTime())) {
           setError('Invalid schedule date/time. Please check the format.');
           return;
         }
       }
       
-      // Create batch data object with all required fields
+      // Create batch data object
       const batchData = {
-        batchNumber: generateBatchNumber(), // Generate a batch number
+        batchNumber: generateBatchNumber(),
         campaignId: selectedCampaign._id,
-        // Get userId from localStorage or context - assuming we store it after login
-        userId: localStorage.getItem('userId') || '60d0fe4f5311236168a109ca', // Fallback to a default ID
+        userId: localStorage.getItem('userId') || '60d0fe4f5311236168a109ca',
         totalMessages: parseInt(batchSettings.batchSize) || 0,
         sendRate: batchSettings.sendRate,
         scheduledDate: scheduledDate,
-        templateUsed: selectedTemplate ? selectedTemplate.name : 'Default',
-        status: 'pending' // Use a valid enum value
+        templateUsed: selectedTemplate?.name || 'Default',
+        status: 'pending'
       };
       
-      console.log('Creating batch with data:', batchData);
-      
       const result = await batchesService.createBatch(batchData);
-      console.log('Batch created successfully:', result);
-      
-      // Store the created batch data
       setCreatedBatchData(result);
-      
-      // Open the BatchCreateSendModal
       setIsCreateSendModalOpen(true);
     } catch (err) {
       console.error('Failed to create batch:', err);
       setError(`Failed to create batch: ${err.message || 'Please try again'}`);
     }
   };
+
+  // Handle second modal close
+  const handleCloseCreateSendModal = () => {
+    setIsCreateSendModalOpen(false);
+    if (onSuccess) onSuccess();
+    onClose();
+  };
+
+  // Filter campaigns by search term
+  const filteredCampaigns = campaigns.filter(campaign => 
+    campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (!isOpen) return null;
 
@@ -289,18 +276,17 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* Modal Content */}
-          <div className="modal-content4">
-            {/* Steps Indicator */}
-            <div className="steps-indicator4">
-              {[1, 2, 3].map((step, index) => (
-                <div key={step} className={`step ${selectedStep >= step ? 'active' : ''}`}>
-                  <div className="step-number4">{step}</div>
-                  {index < 2 && <div className="step-line4"></div>}
-                </div>
-              ))}
-            </div>
+          {/* Steps Indicator */}
+          <div className="steps-indicator4">
+            {[1, 2, 3].map((step, index) => (
+              <div key={step} className={`step ${selectedStep >= step ? 'active' : ''}`}>
+                <div className="step-number4">{step}</div>
+                {index < 2 && <div className="step-line4"></div>}
+              </div>
+            ))}
+          </div>
 
+          <div className="modal-content4">
             <div className="steps-container4">
               {/* Step 1: Select Campaign */}
               <div className={`step-content4 ${selectedStep === 1 ? 'active-step' : 'hidden-step'}`}>
@@ -321,14 +307,12 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
 
                 {/* Campaign List */}
                 <div className="campaign-list4">
-                  {/* Header */}
                   <div className="campaign-header4">
                     <div className="created-at4">Created at</div>
                     <div className="campaign-name4">Campaign</div>
                     <div className="actions4">Actions</div>
                   </div>
 
-                  {/* Campaign Items */}
                   <div className="campaign-items4">
                     {loading ? (
                       <div className="loading-indicator">Loading campaigns...</div>
@@ -343,8 +327,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
                           <div className="campaign-info4">
                             <div className="campaign-name4">{campaign.name}</div>
                             <div className="prospects-available4">
-                              Market: {campaign.market} 
-                              {/* | Response: {campaign.response || '0%'} */}
+                              Market: {campaign.market}
                             </div>
                           </div>
                           <div className="actions4">
@@ -366,39 +349,33 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
               <div className={`step-content4 ${selectedStep === 2 ? 'active-step' : 'hidden-step'}`}>
                 <h3>Message Template</h3>
                 
-                {/* Template Selection Area */}
+                {/* Template Selection */}
                 <div className="template-selection-area">
-                  {/* Template Type Dropdown */}
                   <div className="template-form-group">
-                    <div className="dropdown-container">
-                      <select 
-                        value={selectedTemplateType}
-                        onChange={handleTemplateTypeChange}
-                        className="template-dropdown"
-                      >
-                        <option value="">Select Template Type</option>
-                        {templateTypes.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <select 
+                      value={selectedTemplateType}
+                      onChange={handleTemplateTypeChange}
+                      className="template-dropdown"
+                    >
+                      <option value="">Select Template Type</option>
+                      {templateTypes.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
                   </div>
                   
-                  {/* Template Name Dropdown */}
                   <div className="template-form-group">
-                    <div className="dropdown-container">
-                      <select 
-                        value={selectedTemplate ? selectedTemplate._id : ''}
-                        onChange={handleTemplateSelect}
-                        className="template-dropdown"
-                        disabled={!selectedTemplateType}
-                      >
-                        <option value="">Select Template</option>
-                        {filteredTemplates.map((template) => (
-                          <option key={template._id} value={template._id}>{template.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <select 
+                      value={selectedTemplate?._id || ''}
+                      onChange={handleTemplateSelect}
+                      className="template-dropdown"
+                      disabled={!selectedTemplateType}
+                    >
+                      <option value="">Select Template</option>
+                      {filteredTemplates.map(template => (
+                        <option key={template._id} value={template._id}>{template.name}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 
@@ -457,9 +434,8 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
               <div className={`step-content4 ${selectedStep === 3 ? 'active-step' : 'hidden-step'}`}>
                 <h3>Batch Size and Settings</h3>
                 
-                {/* Batch Settings Form */}
                 <div className="batch-settings-form">
-                  {/* Batch Size Input - Now read-only */}
+                  {/* Batch Size - Read only */}
                   <div className="form-group">
                     <label htmlFor="batchSize">Batch Size (Auto-filled from Contact List)</label>
                     <input
@@ -476,7 +452,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
                     </small>
                   </div>
                   
-                  {/* Send Rate Select */}
+                  {/* Send Rate */}
                   <div className="form-group">
                     <label htmlFor="sendRate">Send Rate</label>
                     <select
@@ -485,13 +461,13 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
                       value={batchSettings.sendRate}
                       onChange={handleBatchSettingChange}
                     >
-                      <option value="slow">Slow</option>
-                      <option value="normal">Normal</option>
-                      <option value="fast">Fast</option>
+                      {['slow', 'normal', 'fast'].map(rate => (
+                        <option key={rate} value={rate}>{rate.charAt(0).toUpperCase() + rate.slice(1)}</option>
+                      ))}
                     </select>
                   </div>
                   
-                  {/* Schedule Date & Time */}
+                  {/* Schedule Date & Time - Fixed implementation */}
                   <div className="form-group">
                     <label>Schedule (Optional)</label>
                     <div className="schedule-inputs">
@@ -501,7 +477,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
                           name="scheduleDate"
                           value={batchSettings.scheduleDate}
                           onChange={handleBatchSettingChange}
-                          min={new Date().toISOString().split('T')[0]} // Prevent past dates
+                          min={new Date().toISOString().split('T')[0]}
                         />
                       </div>
                       <div className="time-input">
@@ -531,7 +507,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
         </div>
       </div>
 
-      {/* BatchCreateSendModal - This will be displayed when isCreateSendModalOpen is true */}
+      {/* BatchCreateSendModal */}
       <BatchCreateSendModal 
         isOpen={isCreateSendModalOpen}
         onClose={handleCloseCreateSendModal}

@@ -187,5 +187,6 @@ export const batchesService = {
   getTemplateMessages,
   getContactCountByListId
 };
+ 
 
 export default batchesService;

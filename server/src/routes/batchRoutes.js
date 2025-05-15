@@ -2,14 +2,23 @@ const express = require('express');
 const router = express.Router();
 const Batch = require('../models/Batch');
 
+// Error handler helper
+const handleError = (res, error, action, status = 500) => {
+  console.error(`Error ${action}:`, error);
+  return res.status(status).json({ 
+    success: false, 
+    message: `Failed to ${action}`, 
+    error: error.message 
+  });
+};
+
 // Get all batches
 router.get('/', async (req, res) => {
   try {
     const batches = await Batch.find();
     res.json({ success: true, data: batches });
   } catch (error) {
-    console.error('Error fetching batches:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch batches', error: error.message });
+    handleError(res, error, 'fetch batches');
   }
 });
 
@@ -17,25 +26,20 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const batch = await Batch.findById(req.params.id);
-    if (!batch) {
-      return res.status(404).json({ success: false, message: 'Batch not found' });
-    }
+    if (!batch) return res.status(404).json({ success: false, message: 'Batch not found' });
     res.json({ success: true, data: batch });
   } catch (error) {
-    console.error('Error fetching batch:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch batch', error: error.message });
+    handleError(res, error, 'fetch batch');
   }
 });
 
 // Create a new batch
 router.post('/', async (req, res) => {
   try {
-    const newBatch = new Batch(req.body);
-    const savedBatch = await newBatch.save();
+    const savedBatch = await new Batch(req.body).save();
     res.status(201).json({ success: true, data: savedBatch });
   } catch (error) {
-    console.error('Error creating batch:', error);
-    res.status(400).json({ success: false, message: 'Failed to create batch', error: error.message });
+    handleError(res, error, 'create batch', 400);
   }
 });
 
@@ -47,13 +51,10 @@ router.put('/:id', async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    if (!updatedBatch) {
-      return res.status(404).json({ success: false, message: 'Batch not found' });
-    }
+    if (!updatedBatch) return res.status(404).json({ success: false, message: 'Batch not found' });
     res.json({ success: true, data: updatedBatch });
   } catch (error) {
-    console.error('Error updating batch:', error);
-    res.status(400).json({ success: false, message: 'Failed to update batch', error: error.message });
+    handleError(res, error, 'update batch', 400);
   }
 });
 
@@ -61,13 +62,10 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const deletedBatch = await Batch.findByIdAndDelete(req.params.id);
-    if (!deletedBatch) {
-      return res.status(404).json({ success: false, message: 'Batch not found' });
-    }
+    if (!deletedBatch) return res.status(404).json({ success: false, message: 'Batch not found' });
     res.json({ success: true, data: deletedBatch });
   } catch (error) {
-    console.error('Error deleting batch:', error);
-    res.status(500).json({ success: false, message: 'Failed to delete batch', error: error.message });
+    handleError(res, error, 'delete batch');
   }
 });
 
