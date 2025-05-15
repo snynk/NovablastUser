@@ -13,7 +13,8 @@ exports.getMarkets = async (req, res) => {
 
 exports.createMarket = async (req, res) => {
   try {
-    const { name, callForwardingNumber, areaCode, timeZone, status, customerId } = req.body;
+    // const { name, callForwardingNumber, areaCode, timeZone, status, customerId } = req.body;
+    const { name,  areaCode, timeZone, status, customerId } = req.body;
 
     // ✅ Purchase Twilio number for the market
     const twilioNumber = await buyTwilioNumber(areaCode);
@@ -22,7 +23,7 @@ exports.createMarket = async (req, res) => {
     const newMarket = await Market.create({
       customerId,
       name,
-      callForwardingNumber,
+      // callForwardingNumber,
       areaCode,
       timeZone,
       twilioNumber, // ✅ Save Twilio number

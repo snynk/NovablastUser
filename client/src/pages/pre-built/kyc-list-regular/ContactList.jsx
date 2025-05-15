@@ -16,6 +16,8 @@ const ContactList = () => {
   }, []);
 
   const handleDelete = (sampleName) => {
+    const isConfirmed = window.confirm(`Are you sure you want to delete "${sampleName}"?`)
+     if (!isConfirmed) return; // Stop execution if user cancels
     fetch(`http://localhost:3000/api/groupedContacts/${sampleName}`, {
       method: "DELETE",
     })
@@ -111,12 +113,23 @@ const ContactList = () => {
                     <td>{formatDate(group.created)}</td>
                     <td>
                   <div className="actions-cell">
-                    <button className="icon-button">
+                    <button 
+                          className="icon-button" 
+                          title="View contact"
+                          onClick={() => navigate(`/View-contacts/${group.sampleName}`)} // ✅ Correct Placement
+                        >
+                          <span className="view-icon">👁️</span>
+                        </button>
+                    {/* <button className="icon-button">
                       <span className="edit-icon">✏️</span>
-                    </button>
-                    <button className="icon-button">
-                      <span className="delete-icon">🗑️</span>
-                    </button>
+                    </button> */}
+                   <button
+                          className="icon-button"
+                          title="Delete Contactlist"
+                          onClick={() => handleDelete(group.sampleName)}
+                        >
+                          <span className="delete-icon">🗑️</span>
+                        </button>
                   </div>
                 </td>
                   </tr>
