@@ -1,3 +1,4 @@
+// Update to campaignService.js
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api/campaigns';
@@ -54,6 +55,34 @@ export const getContactLists = async () => {
     return response.data;
   } catch (error) {
     throw error.response?.data?.error || 'Failed to fetch contact lists';
+  }
+};
+
+/**
+ * Get all markets for dropdown selection
+ * @returns {Promise<Array>} Array of markets with name and callForwardingNumber
+ */
+export const getMarkets = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/markets`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || 'Failed to fetch markets';
+  }
+};
+
+/**
+ * Get call forwarding number for a specific market
+ * @param {string} marketName - Market name to lookup
+ * @returns {Promise<string>} Call forwarding number
+ */
+export const getCallForwardingNumberByMarket = async (marketName) => {
+  try {
+    const markets = await getMarkets();
+    const market = markets.find(m => m.name === marketName);
+    return market ? market.callForwardingNumber : null;
+  } catch (error) {
+    throw 'Failed to get call forwarding number';
   }
 };
 

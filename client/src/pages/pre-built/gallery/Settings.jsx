@@ -90,9 +90,22 @@ const SettingsScreen = () => {
 
   return (
     <div className="settings-container">
-      <div className="header-section">
-        <h1 className="dashboard-title">Settings</h1>
-        <div className="highlight-bar" />
+         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <h1 
+          className="dashboard-title" 
+          style={{ fontSize: '2rem', fontWeight: 700, color: '#0f172a', margin: '100px 20px 10px' }}
+        >
+          Settings
+        </h1>
+        <div 
+          style={{ 
+            height: '4px', 
+            width: '70px', 
+            backgroundColor: '#22c55e',
+            borderRadius: '9999px',
+            marginLeft: '20px'
+          }} 
+        />
       </div>
 
       <div className="tabs-container">
