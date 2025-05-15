@@ -1,5 +1,6 @@
 const Market = require('../models/Market');
 const TenDLC = require('../models/TenDLC');
+const { buyTwilioNumber } = require("../twilio/phoneService");
 
 exports.getMarkets = async (req, res) => {
   try {
@@ -12,10 +13,25 @@ exports.getMarkets = async (req, res) => {
 
 exports.createMarket = async (req, res) => {
   try {
-    const { name, callForwardingNumber, areaCode, timeZone, status, customerId  } = req.body;
-    const newMarket = await Market.create({  name, callForwardingNumber, areaCode, timeZone, status, customerId  });
+    const { name, callForwardingNumber, areaCode, timeZone, status, customerId } = req.body;
+
+    // ✅ Purchase Twilio number for the market
+    const twilioNumber = await buyTwilioNumber(areaCode);
+
+    // ✅ Store the Twilio number in the market entry
+    const newMarket = await Market.create({
+      customerId,
+      name,
+      callForwardingNumber,
+      areaCode,
+      timeZone,
+      twilioNumber, // ✅ Save Twilio number
+      status,
+    });
+
     res.status(201).json(newMarket);
   } catch (error) {
+    console.error("❌ Error Creating Market:", error);
     res.status(400).json({ error: error.message });
   }
 };
