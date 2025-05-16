@@ -1,7 +1,9 @@
 const express = require("express");
-const { notifyUser } = require("../controllers/notificationController");
+const { sendBatch } = require("../controllers/notificationController");
 
 const router = express.Router();
-router.post("/send-sms", notifyUser);
 
-module.exports = router;  
+// ✅ Use `batchId` as a route parameter instead of request body
+router.post("/send-batch/:batchId", sendBatch);
+
+module.exports = router;
