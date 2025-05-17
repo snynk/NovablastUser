@@ -26,17 +26,18 @@ const verifyContactList = async (sampleName) => {
 // Create a new campaign
 exports.createCampaign = async (req, res) => {
   try {
-    const { name, market, callForwardingNumber, contactListId } = req.body;
+    const { name, marketId , callForwardingNumber, contactListId } = req.body;
 
     // Validate required fields
-    if (!name || !market || !contactListId) {
+    if (!name || !marketId  || !contactListId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Get call forwarding number from market if not provided
     let finalCallForwardingNumber = callForwardingNumber;
     if (!finalCallForwardingNumber) {
-      const marketData = await Market.findOne({ name: market });
+     const marketData = await Market.findById(marketId); // ✅ Corrected query
+
       if (marketData) {
         finalCallForwardingNumber = marketData.callForwardingNumber;
       } else {
@@ -49,7 +50,7 @@ exports.createCampaign = async (req, res) => {
     
     const campaign = new Campaign({
       name,
-      market,
+      marketId,
       callForwardingNumber: finalCallForwardingNumber,
       contactListId,
       userId: req.user?._id,

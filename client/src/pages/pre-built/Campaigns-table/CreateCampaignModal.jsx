@@ -5,7 +5,7 @@ import { getContactLists, getMarkets, getCallForwardingNumberByMarket } from '..
 const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
   const [newCampaign, setNewCampaign] = useState({
     name: '',
-    market: '',
+    marketId: '', // ✅ Store market ID
     callForwardingNumber: '',
     contactListId: ''
   });
@@ -34,11 +34,11 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
 
   // When market changes, auto-set the call forwarding number
   useEffect(() => {
-    if (newCampaign.market) {
+    if (newCampaign.marketId) {
       setAutoFilledPhone(false);
       setMarketLoading(true);
       
-      const selectedMarket = markets.find(m => m.name === newCampaign.market);
+      const selectedMarket = markets.find(m => m._id  === newCampaign.marketId);
       if (selectedMarket && selectedMarket.callForwardingNumber) {
         const formattedNumber = formatPhoneNumber(selectedMarket.callForwardingNumber);
         setNewCampaign(prev => ({
@@ -51,7 +51,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
       
       setMarketLoading(false);
     }
-  }, [newCampaign.market, markets]);
+  }, [newCampaign.marketId, markets]);
   
   // Functions
   const resetForm = () => {
@@ -112,31 +112,47 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
   };
   
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    if (name === 'contactListId') {
-      setNewCampaign({...newCampaign, [name]: value});
-    } else if (name === 'market') {
-      setNewCampaign({...newCampaign, [name]: value});
-      // The call forwarding number will be set by the useEffect
-    } else if (name === 'callForwardingNumber') {
-      // Only allow manual editing if not auto-filled or if there was a manual change
-      if (!autoFilledPhone || value !== newCampaign.callForwardingNumber) {
-        setAutoFilledPhone(false);
-        const formattedNumber = formatPhoneNumber(value);
-        validatePhoneNumber(formattedNumber);
-        setNewCampaign({...newCampaign, [name]: formattedNumber});
-      }
-    } else {
-      setNewCampaign({...newCampaign, [name]: value});
+  const { name, value } = e.target;
+
+  if (name === 'contactListId') {
+    setNewCampaign({ ...newCampaign, [name]: value }); // ✅ Stores contact list ID
+  } else if (name === 'marketId') {
+    setNewCampaign({ ...newCampaign, [name]: value }); // ✅ Stores market ID
+
+    // Find the selected market and update call forwarding number
+    const selectedMarket = markets.find((m) => m._id === value);
+    if (selectedMarket) {
+      setNewCampaign((prev) => ({
+        ...prev,
+        callForwardingNumber: formatPhoneNumber(selectedMarket.callForwardingNumber),
+      }));
     }
-  };
+  } else if (name === 'callForwardingNumber') {
+    if (!autoFilledPhone || value !== newCampaign.callForwardingNumber) {
+      setAutoFilledPhone(false);
+      const formattedNumber = formatPhoneNumber(value);
+      validatePhoneNumber(formattedNumber);
+      setNewCampaign({ ...newCampaign, [name]: formattedNumber });
+    }
+  } else {
+    setNewCampaign({ ...newCampaign, [name]: value });
+  }
+};
+
   
-  const handleSave = () => {
-    onSave(newCampaign);
-    resetForm();
-    handleClose();
+ const handleSave = () => {
+  const payload = {
+    name: newCampaign.name,
+    marketId: newCampaign.marketId, // ✅ Sending market ID instead of name
+    callForwardingNumber: newCampaign.callForwardingNumber,
+    contactListId: newCampaign.contactListId, // ✅ Sending contact list ID instead of name
   };
+
+  onSave(payload); // ✅ Send correct data structure to backend
+  resetForm();
+  handleClose();
+};
+
   
   const handleClose = () => {
     setIsVisible(false);
@@ -175,14 +191,14 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
               <div className="select-wrapper7">
                 <select 
                   id="market" 
-                  name="market" 
-                  value={newCampaign.market} 
+                  name="marketId" 
+                  value={newCampaign.marketId} 
                   onChange={handleChange}
                   disabled={marketLoading}
                 >
                   <option value="">Select</option>
                   {markets.map((market) => (
-                    <option key={market._id || market.name} value={market.name}>
+                    <option key={market._id } value={market._id}>
                       {market.name}
                     </option>
                   ))}
@@ -252,7 +268,7 @@ const CreateCampaignModal = ({ isOpen, onClose, onSave }) => {
           <button 
             className="save-button" 
             onClick={handleSave}
-            disabled={!newCampaign.name || !newCampaign.market || !phoneValid || !newCampaign.contactListId}
+            disabled={!newCampaign.name || !newCampaign.marketId  || !phoneValid || !newCampaign.contactListId}
           >
             Save
           </button>

@@ -43,21 +43,47 @@ const BatchCreateSendModal = ({ isOpen, onClose, campaignData, templateData, bat
     }
   }, [isOpen, campaignData, templateData, batchData]);
   
-  const handleSendMessage = () => {
-    // Prevent sending if already in progress
-    if (sendingInProgress) return;
+  // const handleSendMessage = () => {
+  //   // Prevent sending if already in progress
+  //   if (sendingInProgress) return;
     
-    // Start sending
-    setSendingInProgress(true);
+  //   // Start sending
+  //   setSendingInProgress(true);
     
-    // Simulate sending delay (1 second)
-    setTimeout(() => {
-      setMessagesSent(prev => {
-        const newCount = prev + 1;
-        return newCount;
+  //   // Simulate sending delay (1 second)
+  //   setTimeout(() => {
+  //     setMessagesSent(prev => {
+  //       const newCount = prev + 1;
+  //       return newCount;
+  //     });
+  //     setSendingInProgress(false);
+  //   }, 1000);
+  // };
+  const handleSendMessages = async (batchId) => {
+    console.log (batchData);
+    try {
+      setLoading(true);
+      setError(null);
+      console.log(`🚀 Sending messages for batch: ${batchId}`);
+  
+      const response = await fetch(`/api/messages/sendBatch/${batchId}`, {
+        method: "POST",
       });
-      setSendingInProgress(false);
-    }, 1000);
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        console.log("✅ Messages sent successfully!");
+      } else {
+        setError(result.error || "Message sending failed.");
+      }
+  
+    } catch (err) {
+      setError("❌ Error sending messages. Please try again.");
+      console.error("❌ Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Format campaign and batch info for display
@@ -128,13 +154,19 @@ const BatchCreateSendModal = ({ isOpen, onClose, campaignData, templateData, bat
               </div>
               
               <div className="send-button-container">
-                <button 
+                {/* <button 
                   className={`send-message-button ${sendingInProgress ? 'sending' : ''}`}
                   onClick={handleSendMessage}
                   disabled={sendingInProgress || messagesSent >= totalMessages}
                 >
                   {sendingInProgress ? 'Sending...' : 'Send Message'}
-                </button>
+                </button> */}
+                <button 
+  className="send-message-button"
+  onClick={() => handleSendMessages(batch._id)}
+>
+  Send Messages
+</button>
               </div>
             </div>
           </div>

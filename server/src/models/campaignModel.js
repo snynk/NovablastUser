@@ -7,7 +7,7 @@ const campaignSchema = new mongoose.Schema(
       required: [true, "Campaign name is required"],
       trim: true,
     },
-    market: {
+    marketId : {
       type: String,
       required: [true, "Market is required"],
       trim: true,

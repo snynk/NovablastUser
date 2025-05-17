@@ -1,11 +1,20 @@
-const { sendSMS } = require("../twilio/smsService");
+const { sendBatchMessages } = require("../twilio/smsService");
 
-exports.notifyUser = async (req, res) => {
+exports.sendBatch = async (req, res) => {
   try {
-    const { userId, phone, message } = req.body;
-    const savedMessage = await sendSMS(userId, phone, message);
-    res.json({ success: true, message: "SMS sent successfully!", data: savedMessage });
+    const { batchId } = req.params; // ✅ Extract batchId from route
+
+    if (!batchId) {
+      return res.status(400).json({ error: "Batch ID is required!" });
+    }
+
+    console.log(`🚀 Sending messages for batch: ${batchId}`);
+    
+    const result = await sendBatchMessages(batchId);
+    
+    res.json({ success: true, message: "Batch message processing started!", data: result });
   } catch (error) {
-    res.status(500).json({ error: "Failed to send SMS." });
+    console.error("❌ Error processing batch:", error);
+    res.status(500).json({ error: "Failed to process batch messages." });
   }
 };

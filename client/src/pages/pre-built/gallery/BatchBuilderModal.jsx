@@ -229,7 +229,8 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
         totalMessages: parseInt(batchSettings.batchSize) || 0,
         sendRate: batchSettings.sendRate,
         scheduledDate: scheduledDate,
-        templateUsed: selectedTemplate?.name || 'Default',
+       templateUsed: selectedTemplate?._id || 'Default',
+
         status: 'pending'
       };
       
@@ -240,7 +241,9 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
       console.error('Failed to create batch:', err);
       setError(`Failed to create batch: ${err.message || 'Please try again'}`);
     }
+
   };
+
 
   // Handle second modal close
   const handleCloseCreateSendModal = () => {
@@ -248,6 +251,7 @@ const BatchBuilderModal = ({ isOpen, onClose, onSuccess }) => {
     if (onSuccess) onSuccess();
     onClose();
   };
+
 
   // Filter campaigns by search term
   const filteredCampaigns = campaigns.filter(campaign => 
