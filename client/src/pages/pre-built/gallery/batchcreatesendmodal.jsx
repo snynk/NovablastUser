@@ -19,6 +19,7 @@ const BatchCreateSendModal = ({ isOpen, onClose, campaignData, templateData, bat
   // Initialize state when modal opens
   useEffect(() => {
     if (isOpen) {
+      console.log (batchData);
       // Reset counters
       setMessagesSent(0);
       setSendingInProgress(false);
@@ -59,32 +60,40 @@ const BatchCreateSendModal = ({ isOpen, onClose, campaignData, templateData, bat
   //     setSendingInProgress(false);
   //   }, 1000);
   // };
-  const handleSendMessages = async (batchId) => {
-    console.log (batchData);
-    try {
-      setLoading(true);
-      setError(null);
-      console.log(`🚀 Sending messages for batch: ${batchId}`);
-  
-      const response = await fetch(`/api/messages/sendBatch/${batchId}`, {
-        method: "POST",
-      });
-  
-      const result = await response.json();
-  
-      if (result.success) {
-        console.log("✅ Messages sent successfully!");
-      } else {
-        setError(result.error || "Message sending failed.");
-      }
-  
-    } catch (err) {
-      setError("❌ Error sending messages. Please try again.");
-      console.error("❌ Error:", err);
-    } finally {
-      setLoading(false);
+const handleSendMessages = async () => {
+  console.log("Batch Data:", batchData); // ✅ Ensure batchData is defined
+
+  try {
+    const batchId = batchData._id; // ✅ Extract batchId safely
+    if (!batchId) {
+      console.error("❌ Batch ID is missing");
+      return;
     }
-  };
+
+    setLoading(true);
+    setError(null);
+    console.log(`🚀 Sending messages for batch: ${batchId}`);
+
+    const response = await fetch(`/api/messages/sendBatch/${batchId}`, {
+      method: "POST",
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("✅ Messages sent successfully!");
+    } else {
+      setError(result.error || "Message sending failed.");
+    }
+
+  } catch (err) {
+    setError("❌ Error sending messages. Please try again.");
+    console.error("❌ Error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
   
   // Format campaign and batch info for display
   const campaignName = campaignData?.name || "Campaign";
@@ -163,7 +172,7 @@ const BatchCreateSendModal = ({ isOpen, onClose, campaignData, templateData, bat
                 </button> */}
                 <button 
   className="send-message-button"
-  onClick={() => handleSendMessages(batch._id)}
+  onClick={() => handleSendMessages(batchData._id)}
 >
   Send Messages
 </button>
