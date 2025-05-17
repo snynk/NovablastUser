@@ -48,6 +48,7 @@ exports.sendBatchMessages = async (batchId) => {
             body: messageContent,
             from: campaign.callForwardingNumber,
             to: phone,
+             statusCallback:"https://4cab-2401-4900-a639-c431-a191-6d93-49c0-2217.ngrok-free.app/api/twilio/status", // ✅ Use Ngrok URL
           });
 
           console.log(`✅ SMS Sent to ${phone}: ${response.sid}`);
