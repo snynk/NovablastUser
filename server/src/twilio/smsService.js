@@ -43,22 +43,24 @@ exports.sendBatchMessages = async (batchId) => {
       const phoneNumbers = [contact.Phone1, contact.Phone2, contact.Phone3].filter(Boolean);
 
       for (const phone of phoneNumbers) {
+         // ✅ Ensure +91 is added to Indian numbers
+  const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
         try {
           const response = await twilioClient.messages.create({
             body: messageContent,
             from: campaign.callForwardingNumber,
-            to: phone,
-             statusCallback:"https://4cab-2401-4900-a639-c431-a191-6d93-49c0-2217.ngrok-free.app/api/twilio/status", // ✅ Use Ngrok URL
+            to: formattedPhone,
+             statusCallback:"https://3520-2401-4900-84cd-18c6-2c37-7229-17be-be21.ngrok-free.app/api/twilio/status", // ✅ Use Ngrok URL
           });
 
-          console.log(`✅ SMS Sent to ${phone}: ${response.sid}`);
+          console.log(`✅ SMS Sent to ${formattedPhone}: ${response.sid}`);
 
           // ✅ Save sent message in MongoDB with Twilio response values
           await Message.create({
             userId: batch.userId,
             type: "sent", // ✅ Set message type
             twilioNumber: campaign.callForwardingNumber,
-            number: phone,
+            number: formattedPhone,
             message: messageContent,
             status: response.status || "Sent", // ✅ Status from Twilio
             sid: response.sid,
