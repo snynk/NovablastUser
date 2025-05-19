@@ -59,7 +59,7 @@ app.use('/api/templates', templateRoutes);
 app.use('/api/markets', marketRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/blocked', blockedRoutes);
-app.use("/api", twilioRoutes);
+app.use("/api/messages", twilioRoutes);
 
 // Default route
 app.get('/', (req, res) => {

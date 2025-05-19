@@ -4,7 +4,7 @@ const { sendBatch, handleTwilioStatus, handleIncomingMessage } = require("../con
 const router = express.Router();
 
 // ✅ Use `batchId` as a route parameter instead of request body
-router.post("/send-batch/:batchId", sendBatch);
+router.post("/sendBatch/:batchId", sendBatch);
 
 // ✅ Twilio Webhook for SMS Status Updates
 router.post("/twilio/status", handleTwilioStatus);

@@ -55,7 +55,8 @@ exports.handleIncomingMessage = async (req, res) => {
     await Message.create({
       number: From,
       message: Body,
-      status: "Received",
+      type: "Received",
+      
     });
 
     res.status(200).send("Reply stored successfully");
