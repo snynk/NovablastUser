@@ -74,9 +74,9 @@ const DoNotCallsTabContent = ({ dncEntries, fetchDncEntries, onOpenDncModal, onO
       <button className="create-button create-user-button" onClick={onOpenDncModal}>
         <span className="plus">+</span> Create New DNC
       </button>
-      <button className="create-button create-user-button">
+      {/* <button className="create-button create-user-button">
         <span className="plus">+</span> Import New DNC
-      </button>
+      </button> */}
     </div>
      {/* DNC Table */}
     <div className="table-container">
