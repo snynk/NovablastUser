@@ -1,11 +1,58 @@
 const Blocked = require('../models/Blocked');
+const Contact  = require('../models/contactModel');
 const ExcelJS = require("exceljs"); // ✅ Use ExcelJS to generate the file
+
+// exports.getBlockedNumbers = async (req, res) => {
+//   try {
+//     const blockedNumbers = await Blocked.find();
+//     res.json(blockedNumbers);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 exports.getBlockedNumbers = async (req, res) => {
   try {
-    const blockedNumbers = await Blocked.find();
+    const blockedNumbers = await Blocked.aggregate([
+      {
+        $lookup: {
+          from: "contacts",
+          let: { blockedPhone: "$phoneNumber" }, // ✅ Using `phoneNumber` field
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: ["$Phone1", "$$blockedPhone"] },
+                    { $eq: ["$Phone2", "$$blockedPhone"] },
+                    { $eq: ["$Phone3", "$$blockedPhone"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "contactInfo",
+        },
+      },
+      {
+        $unwind: {
+          path: "$contactInfo",
+          preserveNullAndEmptyArrays: true, // ✅ Keeps blocked numbers even if no match is found
+        },
+      },
+      {
+        $project: {
+          phoneNumber: 1, // ✅ Return blocked number
+          firstName: { $ifNull: ["$contactInfo.FirstName", ""] }, // ✅ Empty string if no match
+          lastName: { $ifNull: ["$contactInfo.LastName", ""] }, // ✅ Empty string if no match
+          permanent: 1, // ✅ Include permanent status
+        },
+      },
+    ]);
+
     res.json(blockedNumbers);
   } catch (error) {
+    console.error("❌ Error fetching blocked numbers:", error);
     res.status(500).json({ error: error.message });
   }
 };
