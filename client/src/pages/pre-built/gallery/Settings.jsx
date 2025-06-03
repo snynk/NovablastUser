@@ -126,12 +126,12 @@ const SettingsScreen = () => {
       <EditDncModal 
   isOpen={isModalOpen.editdnc} 
   onClose={() => setIsModalOpen({ ...isModalOpen, editdnc: false })} 
-  dncData={selectedDncEntry} 
-  fetchDncEntries={fetchDncEntries} 
+  dncData={selectedDncEntry}                
+  fetchDncEntries={fetchDncEntries}  
 />
 <RequestNewTagModal isOpen={isModalOpen.tag} onClose={() => setIsModalOpen({ ...isModalOpen, tag: false })} fetchTags={fetchTags} />
 <EditTagModal isOpen={isModalOpen.edittag} onClose={() => setIsModalOpen({ ...isModalOpen, edittag: false })} tagData={selectedTag} fetchTags={fetchTags} />
-
+        
     </div>
   );
 };

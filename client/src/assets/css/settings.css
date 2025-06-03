@@ -673,7 +673,7 @@
   }
   
   /* Modal Content */
-  .modal-content {
+  .modal-content111 {
     padding: 24px;
     flex-grow: 1;
     overflow-y: auto;
@@ -791,7 +791,7 @@
   color: #334155;
 }
 
-.modal-content {
+.modal-content111 {
   padding: 24px;
 }
 
