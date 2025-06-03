@@ -11,7 +11,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
           <h2>{title}</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
-        <div className="modal-content">
+        <div className="modal-content111">
           {children}
         </div>
       </div>
